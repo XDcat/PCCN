@@ -5,8 +5,8 @@
 # @File : TripletFinder.py
 
 from graphviz import Graph
-from myProCon import MuiSite
-from myProCon import Triplet
+from . import MuiSite
+from . import Triplet
 
 
 class TripletFinder:

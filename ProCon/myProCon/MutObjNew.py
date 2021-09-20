@@ -4,7 +4,7 @@
 # @Email : qianneng_se@163.com
 # @File : MutObjNew.py
 
-from myProCon import MutInfo
+from . import MutInfo
 
 
 class MutObjNew:

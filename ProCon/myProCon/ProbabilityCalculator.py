@@ -5,7 +5,8 @@
 # @File : ProbabilityCalculator.py
 
 import math
-from myProCon import RankProbaa
+import traceback
+from . import RankProbaa
 
 
 class ProbabilityCalculator:
@@ -91,9 +92,9 @@ class ProbabilityCalculator:
                     self.__rpaa[i][j].set_rankaa(name)
                 for j in range(7):
                     self.__prob6aa[i].append(0.0)  # Initialize the probability of Amino Acids (Initial Value 0.0, 6+1)
-        except:
+        except Exception as e:
             self.__available = False
-            print("出现错误")
+            print("出现错误", e)
 
         # The number of occurrences of each amino acid in the sequence is included in the dictionary (20 + 1 group)
         # and the list (6 + 1 group).
@@ -212,9 +213,10 @@ class ProbabilityCalculator:
                                 self.__seq_tmp[self.__sequence_number - 1].append('-')
                             sindex += 1
                 f.close()
-        except:
+        except Exception as e:
             self.__available = False
-            print("出现错误")
+            print("出现错误", )
+            traceback.print_exc()
 
         self.calculate_entropy()
 

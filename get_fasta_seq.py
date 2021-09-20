@@ -4,6 +4,8 @@ __author__ = 'XD'
 __mtime__ = 2019/12/11
 __project__ = Ponsol
 Fix the Problem, Not the Blame.
+
+计算 diamond 找到的同原序列的序列
 '''
 import pandas as pd
 import requests
@@ -11,7 +13,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(lineno)d - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-FILE_PATH = r"./data/YP_009724390.1.100.tsv"
+FILE_PATH = r"./data/YP_009724390.1.25.tsv"
 NAMES = "qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore".split()
 
 def get_genes():
@@ -33,7 +35,7 @@ def craw(gene, to_path):
         logger.info(response.status_code)
         if response.status_code == 200:
             with open(to_path, "a") as f:
-                f.write(response.text)
+                f.write(response.text.strip() + "\n")
         else:
             logger.warning("{}出错".format(gene))
     except Exception as e:
@@ -43,7 +45,7 @@ def craw(gene, to_path):
 
 
 if __name__ == '__main__':
-    to_path = "./data/YP_009724390.1.fasta"
+    to_path = "./data/YP_009724390.1.25.fasta"
     craw("YP_009724390.1", to_path)
     genes = get_genes()  # 获取所有基因
     for g in genes:

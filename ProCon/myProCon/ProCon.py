@@ -5,9 +5,9 @@
 # @File : myProCon.py
 
 
-from myProCon import ProbabilityCalculator
-from myProCon import MutualInformation
-from myProCon import TripletFinder
+from . import ProbabilityCalculator
+from . import MutualInformation
+from . import TripletFinder
 
 
 class ProCon:

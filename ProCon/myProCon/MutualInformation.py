@@ -5,7 +5,7 @@
 # @File : MutualInformation.py
 
 import math
-from myProCon import ProbabilityCalculator, MutObjNew
+from . import ProbabilityCalculator, MutObjNew
 
 
 class MutualInformation:
