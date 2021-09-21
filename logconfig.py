@@ -23,7 +23,7 @@ default_config = {
             "format": "%(name)s %(asctime)s [%(filename)s %(funcName)s()] <%(levelname)s>: %(message)s",
         },
         "brief": {
-            "format": "%(name)s %(asctime)s [%(funcName)s()] <%(levelname)s>: %(message)s",
+            "format": "%(name)s %(asctime)s [%(funcName)s() %(lineno)d] <%(levelname)s>: %(message)s",
         }
     },
     "filters": {},  # 过滤器，需要自定义类，一般不会用到
@@ -42,12 +42,21 @@ default_config = {
             "encoding": "utf8",
             "maxBytes": 10485760,  # 日志文件最大个数 1024B * 1024 * 10 = 10MB
             "backupCount": 10,  # 日志文件最大个数
+        },
+        "file_info": {  # 输出到文件
+            "class": "logging.handlers.RotatingFileHandler",
+            "formatter": "default",
+            "level": "INFO",
+            "filename": "./log/info_logger.log",  # 必选, 文件名称
+            "encoding": "utf8",
+            "maxBytes": 10485760,  # 日志文件最大个数 1024B * 1024 * 10 = 10MB
+            "backupCount": 10,  # 日志文件最大个数
         }
     },
     "loggers": {
         "cov2": {
             "level": "DEBUG",
-            "handlers": ["console", "file_detail"],
+            "handlers": ["console", "file_detail", "file_info"],
             "propagate": False,  # 是否传给父级
         }
     },
