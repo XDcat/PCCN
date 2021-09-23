@@ -7,11 +7,11 @@ Fix the Problem, Not the Blame.
 '''
 from ProCon.myProCon import ProbabilityCalculator, MutualInformation, TripletFinder
 from Bio import AlignIO
-import logging
-import logconfig
 import os
 import pandas as pd
 
+import logging
+import logconfig
 logconfig.setup_logging()
 log = logging.getLogger("cov2")
 
@@ -23,6 +23,7 @@ if __name__ == '__main__':
     # 读取原始序列对齐的序列
     align_seqs = AlignIO.parse(align_fasta, "fasta")
     origin_seq = next(align_seqs)[0]
+    log.debug(len(origin_seq.seq))
     assert origin_seq.id == "YP_009724390.1"
     # 建立 align 前后索引映射
     # align_map = []
