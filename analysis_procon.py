@@ -89,11 +89,14 @@ if __name__ == '__main__':
     for i, row in fasta.items():
         aas = row["aas"]
         fasta[i]["type1"] = []
+        fasta[i]["t1"] = {}
         for aa in aas:
             pst = int(aa[1:-1])
-            res = pr1.get(pst, None)
-            if res is not None:
-                fasta[i].get("type1", ).append(res)
+            res = pr1.get(pst, {})
+            res["aa"] = aa
+            # if res is not None:
+            fasta[i].get("type1", ).append(res)
+            fasta[i]["t1"][aa] = res
     log.debug("type1 result: %s", fasta)
 
     log.info("解析 type2")
@@ -102,11 +105,13 @@ if __name__ == '__main__':
     for i, row in fasta.items():
         aas = row["aas"]
         fasta[i]["type2"] = []
+        # fasta[i]["t2"] = {}
         for aa2 in itertools.combinations(aas, 2):
-            aa2 = tuple(sorted([int(a[1:-1]) for a in aa2]))
-            res = pr2.get(aa2, None)
+            pst2 = tuple(sorted([int(a[1:-1]) for a in aa2]))
+            res = pr2.get(pst2, )
             if res is not None:
                 fasta[i].get("type2").append(res)
+            # fasta[i]["t2"][tuple(aa2)] = res
     log.debug("type2 result: %s", fasta)
 
     log.info("解析 type3")
@@ -114,11 +119,13 @@ if __name__ == '__main__':
     for i, row in fasta.items():
         aas = row["aas"]
         fasta[i]["type3"] = []
+        # fasta[i]["t3"] = {}
         for aa3 in itertools.combinations(aas, 3):
-            aa3 = tuple(sorted([int(a[1:-1]) for a in aa3]))
-            res = pr3.get(aa3, None)
+            pst3 = tuple(sorted([int(a[1:-1]) for a in aa3]))
+            res = pr3.get(pst3, None)
             if res is not None:
                 fasta[i].get("type3").append(res)
+            # fasta[i]["t3"][pst3] = res
     log.debug("type3 result: %s", fasta)
 
     log.info("保存解析结果")

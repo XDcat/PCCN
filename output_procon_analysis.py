@@ -7,6 +7,8 @@ Fix the Problem, Not the Blame.
 '''
 
 import json
+import math
+
 import pandas as pd
 import numpy as np
 from scipy.interpolate import make_interp_spline, interp1d
@@ -31,14 +33,19 @@ def output_excel(analysis, outpath="./data/procon/analysis.xlsx"):
         k = "编号:{}, WHO 标签:{}, Lineage:{}, 变异:{}, 类别:{}".format(i, row["WHO label"],
                                                                 row["Lineage + additional mutations"],
                                                                 row["Spike mutations of interest"], row["type"])
+        if row["WHO label"]:
+            k = "{}-{}({})".format(i, row["Lineage + additional mutations"], row["WHO label"], )
+        else:
+            k = "{}-{}".format(i, row["Lineage + additional mutations"], )
+
         keys.append(k)
         type1.append(pd.DataFrame(row["type1"]))
         type2.append(pd.DataFrame(row["type2"]))
         type3.append(pd.DataFrame(row["type3"]))
 
-    type1 = pd.concat(type1, keys=keys)
-    type1 = type1.reindex(["position", "rank", "information"], axis=1)
     count = 1612
+    type1 = pd.concat(type1, keys=keys)
+    type1 = type1.reindex(["aa", "position", "rank", "information"], axis=1)
     type1["rate(%)"] = type1["rank"] / count * 100
 
     type2 = pd.concat(type2, keys=keys)
@@ -90,9 +97,13 @@ def output_picture(analysis, outpath="./data/procon/analysis.png", font_size="x-
         #     continue
         t1 = row["type1"]
         t1 = pd.DataFrame(t1)
-
-        t1["name"] = "{}. {}".format(i, row["WHO label"])
-        t1["y"] = int(i)
+        t1 = t1[~t1["rank"].isna()]
+        if row["WHO label"] != "nan":
+            name = "{}-{}({})".format(i, row["Lineage + additional mutations"], row["WHO label"], )
+        else:
+            name = "{}-{}".format(i, row["Lineage + additional mutations"], )
+        t1["name"] = name
+        t1["y"] = int(i) - 1
 
         t1["idx"] = t1["position"].str[:-1].astype(int)
         position_2_aa = {int(i[1: -1]): i for i in row["aas"]}  # 位置的到变异的映射
@@ -101,7 +112,7 @@ def output_picture(analysis, outpath="./data/procon/analysis.png", font_size="x-
         # type2
         t2 = row["type2"]
         t2 = pd.DataFrame(t2)
-        t2["y1"] = t2["y2"] = int(i)
+        t2["y1"] = t2["y2"] = int(i) - 1
 
         type1.append(t1)
         type2.append(t2)
@@ -153,17 +164,32 @@ def output_picture(analysis, outpath="./data/procon/analysis.png", font_size="x-
     arg_sort = xtick_names.str[:-1].astype(int).argsort()
     xtick_names = xtick_names.iloc[arg_sort]
     ytick_names = type1["name"].drop_duplicates()
-    arg_sort = ytick_names.apply(lambda x: int(x.split(".")[0])).astype(int).argsort()
+    arg_sort = ytick_names.apply(lambda x: int(x.split("-")[0])).astype(int).argsort()
     ytick_names = ytick_names.iloc[arg_sort]
 
     ax.set_xticks(range(len(xtick_names)))
-    ax.set_xticklabels(xtick_names, rotation=0, size=font_size)
+    ax.set_xticklabels("")
     ax.set_yticks(range(len(ytick_names)))
     ax.set_yticklabels(ytick_names, size=font_size)
 
     # ax.invert_yaxis()  # 反转y轴
     ax.set_ymargin(0.03)
 
+    # 绘制表格
+    table_cells = type1.loc[~type1["position"].duplicated(), :]
+    table_cells = table_cells.iloc[table_cells["position"].str[:-1].astype(int).argsort()]
+    col_labels = xtick_names.to_list()
+    table_cells = table_cells.loc[:, ["rank", "position", "information"]]
+    table_cells = table_cells.reset_index(drop=True)
+    table_cells = table_cells.T
+    log.debug("table_cells = %s", table_cells)
+    # log.debug(type1["position"].duplicated())
+    table = plt.table(cellText=table_cells.values,
+                      rowLabels=table_cells.index.to_list(),
+                      colLabels=col_labels,
+                      loc='bottom',
+                      cellLoc="center"
+                      )
     flg.show()
     flg.savefig(outpath, dpi=300)
 

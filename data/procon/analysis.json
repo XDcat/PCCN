@@ -19,14 +19,36 @@
 			{
 				"rank": 1070,
 				"position": "501N",
-				"information": 1.385
+				"information": 1.385,
+				"aa": "N501Y"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "P681H"
 			}
 		],
+		"t1": {
+			"N501Y": {
+				"rank": 1070,
+				"position": "501N",
+				"information": 1.385,
+				"aa": "N501Y"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"P681H": {
+				"aa": "P681H"
+			}
+		},
 		"type2": [
 			{
 				"rank": 261081,
@@ -56,16 +78,44 @@
 		],
 		"type1": [
 			{
+				"aa": "E484K"
+			},
+			{
 				"rank": 1070,
 				"position": "501N",
-				"information": 1.385
+				"information": 1.385,
+				"aa": "N501Y"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "P681H"
 			}
 		],
+		"t1": {
+			"E484K": {
+				"aa": "E484K"
+			},
+			"N501Y": {
+				"rank": 1070,
+				"position": "501N",
+				"information": 1.385,
+				"aa": "N501Y"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"P681H": {
+				"aa": "P681H"
+			}
+		},
 		"type2": [
 			{
 				"rank": 261081,
@@ -98,24 +148,60 @@
 			{
 				"rank": 1046,
 				"position": "417K",
-				"information": 1.426
+				"information": 1.426,
+				"aa": "K417N"
+			},
+			{
+				"aa": "E484K"
 			},
 			{
 				"rank": 1070,
 				"position": "501N",
-				"information": 1.385
+				"information": 1.385,
+				"aa": "N501Y"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
 			},
 			{
 				"rank": 928,
 				"position": "701A",
-				"information": 1.608
+				"information": 1.608,
+				"aa": "A701V"
 			}
 		],
+		"t1": {
+			"K417N": {
+				"rank": 1046,
+				"position": "417K",
+				"information": 1.426,
+				"aa": "K417N"
+			},
+			"E484K": {
+				"aa": "E484K"
+			},
+			"N501Y": {
+				"rank": 1070,
+				"position": "501N",
+				"information": 1.385,
+				"aa": "N501Y"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"A701V": {
+				"rank": 928,
+				"position": "701A",
+				"information": 1.608,
+				"aa": "A701V"
+			}
+		},
 		"type2": [
 			{
 				"rank": 242644,
@@ -178,24 +264,60 @@
 			{
 				"rank": 1046,
 				"position": "417K",
-				"information": 1.426
+				"information": 1.426,
+				"aa": "K417N"
+			},
+			{
+				"aa": "E484K"
 			},
 			{
 				"rank": 1070,
 				"position": "501N",
-				"information": 1.385
+				"information": 1.385,
+				"aa": "N501Y"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
 			},
 			{
 				"rank": 491,
 				"position": "655H",
-				"information": 2.07
+				"information": 2.07,
+				"aa": "H655Y"
 			}
 		],
+		"t1": {
+			"K417T": {
+				"rank": 1046,
+				"position": "417K",
+				"information": 1.426,
+				"aa": "K417N"
+			},
+			"E484K": {
+				"aa": "E484K"
+			},
+			"N501Y": {
+				"rank": 1070,
+				"position": "501N",
+				"information": 1.385,
+				"aa": "N501Y"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"H655Y": {
+				"rank": 491,
+				"position": "655H",
+				"information": 2.07,
+				"aa": "H655Y"
+			}
+		},
 		"type2": [
 			{
 				"rank": 242644,
@@ -257,14 +379,42 @@
 			{
 				"rank": 1089,
 				"position": "452L",
-				"information": 1.324
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			{
+				"aa": "T478K"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "P681R"
 			}
 		],
+		"t1": {
+			"L452R": {
+				"rank": 1089,
+				"position": "452L",
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			"T478K": {
+				"aa": "T478K"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"P681R": {
+				"aa": "P681R"
+			}
+		},
 		"type2": [
 			{
 				"rank": 239731,
@@ -293,11 +443,32 @@
 		],
 		"type1": [
 			{
+				"aa": "E484K"
+			},
+			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "Q677H"
 			}
 		],
+		"t1": {
+			"E484K": {
+				"aa": "E484K"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"Q677H": {
+				"aa": "Q677H"
+			}
+		},
 		"type2": [],
 		"type3": []
 	},
@@ -320,16 +491,44 @@
 		],
 		"type1": [
 			{
+				"aa": "E484K"
+			},
+			{
 				"rank": 1070,
 				"position": "501N",
-				"information": 1.385
+				"information": 1.385,
+				"aa": "N501Y"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "P681H"
 			}
 		],
+		"t1": {
+			"E484K": {
+				"aa": "E484K"
+			},
+			"N501Y": {
+				"rank": 1070,
+				"position": "501N",
+				"information": 1.385,
+				"aa": "N501Y"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"P681H": {
+				"aa": "P681H"
+			}
+		},
 		"type2": [
 			{
 				"rank": 261081,
@@ -361,14 +560,42 @@
 			{
 				"rank": 1089,
 				"position": "452L",
-				"information": 1.324
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			{
+				"aa": "E484Q"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "P681R"
 			}
 		],
+		"t1": {
+			"L452R": {
+				"rank": 1089,
+				"position": "452L",
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			"E484Q": {
+				"aa": "E484Q"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"P681R": {
+				"aa": "P681R"
+			}
+		},
 		"type2": [
 			{
 				"rank": 239731,
@@ -398,11 +625,38 @@
 		],
 		"type1": [
 			{
+				"aa": "S477N"
+			},
+			{
+				"aa": "E484K"
+			},
+			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "P681H"
 			}
 		],
+		"t1": {
+			"S477N": {
+				"aa": "S477N"
+			},
+			"E484K": {
+				"aa": "E484K"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"P681H": {
+				"aa": "P681H"
+			}
+		},
 		"type2": [],
 		"type3": []
 	},
@@ -428,19 +682,54 @@
 			{
 				"rank": 1103,
 				"position": "346R",
-				"information": 1.251
+				"information": 1.251,
+				"aa": "R346K"
+			},
+			{
+				"aa": "E484K"
 			},
 			{
 				"rank": 1070,
 				"position": "501N",
-				"information": 1.385
+				"information": 1.385,
+				"aa": "N501Y"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "P681H"
 			}
 		],
+		"t1": {
+			"R346K": {
+				"rank": 1103,
+				"position": "346R",
+				"information": 1.251,
+				"aa": "R346K"
+			},
+			"E484K": {
+				"aa": "E484K"
+			},
+			"N501Y": {
+				"rank": 1070,
+				"position": "501N",
+				"information": 1.385,
+				"aa": "N501Y"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"P681H": {
+				"aa": "P681H"
+			}
+		},
 		"type2": [
 			{
 				"rank": 219396,
@@ -483,14 +772,36 @@
 			{
 				"rank": 1089,
 				"position": "452L",
-				"information": 1.324
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			{
+				"aa": "F490S"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
 			}
 		],
+		"t1": {
+			"L452Q": {
+				"rank": 1089,
+				"position": "452L",
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			"F490S": {
+				"aa": "F490S"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			}
+		},
 		"type2": [
 			{
 				"rank": 239731,
@@ -522,14 +833,42 @@
 			{
 				"rank": 1089,
 				"position": "452L",
-				"information": 1.324
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			{
+				"aa": "E484Q"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "P681R"
 			}
 		],
+		"t1": {
+			"L452R": {
+				"rank": 1089,
+				"position": "452L",
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			"E484Q": {
+				"aa": "E484Q"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"P681R": {
+				"aa": "P681R"
+			}
+		},
 		"type2": [
 			{
 				"rank": 239731,
@@ -560,19 +899,42 @@
 			{
 				"rank": 1018,
 				"position": "414Q",
-				"information": 1.482
+				"information": 1.482,
+				"aa": "Q414K"
 			},
 			{
 				"rank": 679,
 				"position": "450N",
-				"information": 1.871
+				"information": 1.871,
+				"aa": "N450K"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
 			}
 		],
+		"t1": {
+			"Q414K": {
+				"rank": 1018,
+				"position": "414Q",
+				"information": 1.482,
+				"aa": "Q414K"
+			},
+			"N450K": {
+				"rank": 679,
+				"position": "450N",
+				"information": 1.871,
+				"aa": "N450K"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			}
+		},
 		"type2": [
 			{
 				"rank": 236062,
@@ -615,14 +977,36 @@
 			{
 				"rank": 766,
 				"position": "367V",
-				"information": 1.789
+				"information": 1.789,
+				"aa": "V367F"
+			},
+			{
+				"aa": "E484K"
 			},
 			{
 				"rank": 708,
 				"position": "613Q",
-				"information": 1.845
+				"information": 1.845,
+				"aa": "Q613H"
 			}
 		],
+		"t1": {
+			"V367F": {
+				"rank": 766,
+				"position": "367V",
+				"information": 1.789,
+				"aa": "V367F"
+			},
+			"E484K": {
+				"aa": "E484K"
+			},
+			"Q613H": {
+				"rank": 708,
+				"position": "613Q",
+				"information": 1.845,
+				"aa": "Q613H"
+			}
+		},
 		"type2": [
 			{
 				"rank": 17523,
@@ -654,24 +1038,54 @@
 			{
 				"rank": 1089,
 				"position": "452L",
-				"information": 1.324
+				"information": 1.324,
+				"aa": "L452R"
 			},
 			{
 				"rank": 1070,
 				"position": "501N",
-				"information": 1.385
+				"information": 1.385,
+				"aa": "N501Y"
 			},
 			{
 				"rank": 273,
 				"position": "653A",
-				"information": 2.425
+				"information": 2.425,
+				"aa": "A653V"
 			},
 			{
 				"rank": 491,
 				"position": "655H",
-				"information": 2.07
+				"information": 2.07,
+				"aa": "H655Y"
 			}
 		],
+		"t1": {
+			"L452R": {
+				"rank": 1089,
+				"position": "452L",
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			"N501Y": {
+				"rank": 1070,
+				"position": "501N",
+				"information": 1.385,
+				"aa": "N501Y"
+			},
+			"A653V": {
+				"rank": 273,
+				"position": "653A",
+				"information": 2.425,
+				"aa": "A653V"
+			},
+			"H655Y": {
+				"rank": 491,
+				"position": "655H",
+				"information": 2.07,
+				"aa": "H655Y"
+			}
+		},
 		"type2": [
 			{
 				"rank": 114044,
@@ -724,16 +1138,38 @@
 		],
 		"type1": [
 			{
+				"aa": "E484K"
+			},
+			{
 				"rank": 1070,
 				"position": "501N",
-				"information": 1.385
+				"information": 1.385,
+				"aa": "N501Y"
 			},
 			{
 				"rank": 491,
 				"position": "655H",
-				"information": 2.07
+				"information": 2.07,
+				"aa": "H655Y"
 			}
 		],
+		"t1": {
+			"E484K": {
+				"aa": "E484K"
+			},
+			"N501T": {
+				"rank": 1070,
+				"position": "501N",
+				"information": 1.385,
+				"aa": "N501Y"
+			},
+			"H655Y": {
+				"rank": 491,
+				"position": "655H",
+				"information": 2.07,
+				"aa": "H655Y"
+			}
+		},
 		"type2": [
 			{
 				"rank": 256848,
@@ -763,14 +1199,30 @@
 			{
 				"rank": 1089,
 				"position": "452L",
-				"information": 1.324
+				"information": 1.324,
+				"aa": "L452R"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
 			}
 		],
+		"t1": {
+			"L452R": {
+				"rank": 1089,
+				"position": "452L",
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			}
+		},
 		"type2": [
 			{
 				"rank": 239731,
@@ -804,29 +1256,72 @@
 			{
 				"rank": 348,
 				"position": "384P",
-				"information": 2.278
+				"information": 2.278,
+				"aa": "P384L"
 			},
 			{
 				"rank": 1046,
 				"position": "417K",
-				"information": 1.426
+				"information": 1.426,
+				"aa": "K417N"
+			},
+			{
+				"aa": "E484K"
 			},
 			{
 				"rank": 1070,
 				"position": "501N",
-				"information": 1.385
+				"information": 1.385,
+				"aa": "N501Y"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
 			},
 			{
 				"rank": 928,
 				"position": "701A",
-				"information": 1.608
+				"information": 1.608,
+				"aa": "A701V"
 			}
 		],
+		"t1": {
+			"P384L": {
+				"rank": 348,
+				"position": "384P",
+				"information": 2.278,
+				"aa": "P384L"
+			},
+			"K417N": {
+				"rank": 1046,
+				"position": "417K",
+				"information": 1.426,
+				"aa": "K417N"
+			},
+			"E484K": {
+				"aa": "E484K"
+			},
+			"N501Y": {
+				"rank": 1070,
+				"position": "501N",
+				"information": 1.385,
+				"aa": "N501Y"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"A701V": {
+				"rank": 928,
+				"position": "701A",
+				"information": 1.608,
+				"aa": "A701V"
+			}
+		},
 		"type2": [
 			{
 				"rank": 185431,
@@ -902,29 +1397,72 @@
 			{
 				"rank": 1046,
 				"position": "417K",
-				"information": 1.426
+				"information": 1.426,
+				"aa": "K417N"
+			},
+			{
+				"aa": "E484K"
 			},
 			{
 				"rank": 1070,
 				"position": "501N",
-				"information": 1.385
+				"information": 1.385,
+				"aa": "N501Y"
 			},
 			{
 				"rank": 792,
 				"position": "516E",
-				"information": 1.76
+				"information": 1.76,
+				"aa": "E516Q"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
 			},
 			{
 				"rank": 928,
 				"position": "701A",
-				"information": 1.608
+				"information": 1.608,
+				"aa": "A701V"
 			}
 		],
+		"t1": {
+			"K417N": {
+				"rank": 1046,
+				"position": "417K",
+				"information": 1.426,
+				"aa": "K417N"
+			},
+			"E484K": {
+				"aa": "E484K"
+			},
+			"N501Y": {
+				"rank": 1070,
+				"position": "501N",
+				"information": 1.385,
+				"aa": "N501Y"
+			},
+			"E516Q": {
+				"rank": 792,
+				"position": "516E",
+				"information": 1.76,
+				"aa": "E516Q"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"A701V": {
+				"rank": 928,
+				"position": "701A",
+				"information": 1.608,
+				"aa": "A701V"
+			}
+		},
 		"type2": [
 			{
 				"rank": 242644,
@@ -1010,19 +1548,48 @@
 			{
 				"rank": 1089,
 				"position": "452L",
-				"information": 1.324
+				"information": 1.324,
+				"aa": "L452R"
 			},
 			{
 				"rank": 1070,
 				"position": "501N",
-				"information": 1.385
+				"information": 1.385,
+				"aa": "N501Y"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "P681H"
 			}
 		],
+		"t1": {
+			"L452R": {
+				"rank": 1089,
+				"position": "452L",
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			"N501Y": {
+				"rank": 1070,
+				"position": "501N",
+				"information": 1.385,
+				"aa": "N501Y"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"P681H": {
+				"aa": "P681H"
+			}
+		},
 		"type2": [
 			{
 				"rank": 114044,
@@ -1064,16 +1631,44 @@
 		],
 		"type1": [
 			{
+				"aa": "S494P"
+			},
+			{
 				"rank": 1070,
 				"position": "501N",
-				"information": 1.385
+				"information": 1.385,
+				"aa": "N501Y"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "P681H"
 			}
 		],
+		"t1": {
+			"S494P": {
+				"aa": "S494P"
+			},
+			"N501Y": {
+				"rank": 1070,
+				"position": "501N",
+				"information": 1.385,
+				"aa": "N501Y"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"P681H": {
+				"aa": "P681H"
+			}
+		},
 		"type2": [
 			{
 				"rank": 261081,
@@ -1104,14 +1699,36 @@
 			{
 				"rank": 1089,
 				"position": "452L",
-				"information": 1.324
+				"information": 1.324,
+				"aa": "L452R"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "Q677H"
 			}
 		],
+		"t1": {
+			"L452R": {
+				"rank": 1089,
+				"position": "452L",
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"Q677H": {
+				"aa": "Q677H"
+			}
+		},
 		"type2": [
 			{
 				"rank": 239731,
@@ -1140,11 +1757,32 @@
 		],
 		"type1": [
 			{
+				"aa": "E484K"
+			},
+			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "N679K"
 			}
 		],
+		"t1": {
+			"E484K": {
+				"aa": "E484K"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"N679K": {
+				"aa": "N679K"
+			}
+		},
 		"type2": [],
 		"type3": []
 	},
@@ -1166,16 +1804,38 @@
 		],
 		"type1": [
 			{
+				"aa": "E484K"
+			},
+			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
 			},
 			{
 				"rank": 928,
 				"position": "701A",
-				"information": 1.608
+				"information": 1.608,
+				"aa": "A701V"
 			}
 		],
+		"t1": {
+			"E484K": {
+				"aa": "E484K"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"A701V": {
+				"rank": 928,
+				"position": "701A",
+				"information": 1.608,
+				"aa": "A701V"
+			}
+		},
 		"type2": [
 			{
 				"rank": 28218,
@@ -1205,14 +1865,30 @@
 			{
 				"rank": 1089,
 				"position": "452L",
-				"information": 1.324
+				"information": 1.324,
+				"aa": "L452R"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
 			}
 		],
+		"t1": {
+			"L452R": {
+				"rank": 1089,
+				"position": "452L",
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			}
+		},
 		"type2": [
 			{
 				"rank": 239731,
@@ -1240,11 +1916,26 @@
 		],
 		"type1": [
 			{
+				"aa": "S477N"
+			},
+			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
 			}
 		],
+		"t1": {
+			"S477N": {
+				"aa": "S477N"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			}
+		},
 		"type2": [],
 		"type3": []
 	},
@@ -1266,11 +1957,32 @@
 		],
 		"type1": [
 			{
+				"aa": "E484K"
+			},
+			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "P681H"
 			}
 		],
+		"t1": {
+			"E484K": {
+				"aa": "E484K"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"P681H": {
+				"aa": "P681H"
+			}
+		},
 		"type2": [],
 		"type3": []
 	},
@@ -1291,11 +2003,26 @@
 		],
 		"type1": [
 			{
+				"aa": "E484K"
+			},
+			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
 			}
 		],
+		"t1": {
+			"E484K": {
+				"aa": "E484K"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			}
+		},
 		"type2": [],
 		"type3": []
 	},
@@ -1316,11 +2043,26 @@
 		],
 		"type1": [
 			{
+				"aa": "T478K"
+			},
+			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
 			}
 		],
+		"t1": {
+			"T478K": {
+				"aa": "T478K"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			}
+		},
 		"type2": [],
 		"type3": []
 	},
@@ -1345,14 +2087,42 @@
 			{
 				"rank": 996,
 				"position": "439N",
-				"information": 1.516
+				"information": 1.516,
+				"aa": "N439K"
+			},
+			{
+				"aa": "E484K"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "P681H"
 			}
 		],
+		"t1": {
+			"N439K": {
+				"rank": 996,
+				"position": "439N",
+				"information": 1.516,
+				"aa": "N439K"
+			},
+			"E484K": {
+				"aa": "E484K"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"P681H": {
+				"aa": "P681H"
+			}
+		},
 		"type2": [
 			{
 				"rank": 60223,
@@ -1386,24 +2156,66 @@
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "E484K"
 			},
 			{
 				"rank": 491,
 				"position": "655H",
-				"information": 2.07
+				"information": 2.07,
+				"aa": "H655Y"
 			},
 			{
 				"rank": 1046,
 				"position": "417K",
-				"information": 1.426
+				"information": 1.426,
+				"aa": "K417N"
 			},
 			{
 				"rank": 1070,
 				"position": "501N",
-				"information": 1.385
+				"information": 1.385,
+				"aa": "N501Y"
+			},
+			{
+				"aa": "P681H"
 			}
 		],
+		"t1": {
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"E484K": {
+				"aa": "E484K"
+			},
+			"H655Y": {
+				"rank": 491,
+				"position": "655H",
+				"information": 2.07,
+				"aa": "H655Y"
+			},
+			"K417T": {
+				"rank": 1046,
+				"position": "417K",
+				"information": 1.426,
+				"aa": "K417N"
+			},
+			"N501Y": {
+				"rank": 1070,
+				"position": "501N",
+				"information": 1.385,
+				"aa": "N501Y"
+			},
+			"P681H": {
+				"aa": "P681H"
+			}
+		},
 		"type2": [
 			{
 				"rank": 2713,
@@ -1466,19 +2278,54 @@
 			{
 				"rank": 1089,
 				"position": "452L",
-				"information": 1.324
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			{
+				"aa": "T478K"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "P681R"
 			},
 			{
 				"rank": 1046,
 				"position": "417K",
-				"information": 1.426
+				"information": 1.426,
+				"aa": "K417N"
 			}
 		],
+		"t1": {
+			"L452R": {
+				"rank": 1089,
+				"position": "452L",
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			"T478K": {
+				"aa": "T478K"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"P681R": {
+				"aa": "P681R"
+			},
+			"K417N": {
+				"rank": 1046,
+				"position": "417K",
+				"information": 1.426,
+				"aa": "K417N"
+			}
+		},
 		"type2": [
 			{
 				"rank": 239731,
@@ -1524,19 +2371,60 @@
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "E484K"
 			},
 			{
 				"rank": 491,
 				"position": "655H",
-				"information": 2.07
+				"information": 2.07,
+				"aa": "H655Y"
 			},
 			{
 				"rank": 1070,
 				"position": "501N",
-				"information": 1.385
+				"information": 1.385,
+				"aa": "N501Y"
+			},
+			{
+				"aa": "N679K"
+			},
+			{
+				"aa": "Y449H"
 			}
 		],
+		"t1": {
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"E484K": {
+				"aa": "E484K"
+			},
+			"H655Y": {
+				"rank": 491,
+				"position": "655H",
+				"information": 2.07,
+				"aa": "H655Y"
+			},
+			"N501Y": {
+				"rank": 1070,
+				"position": "501N",
+				"information": 1.385,
+				"aa": "N501Y"
+			},
+			"N679K": {
+				"aa": "N679K"
+			},
+			"Y449H": {
+				"aa": "Y449H"
+			}
+		},
 		"type2": [
 			{
 				"rank": 2713,
@@ -1581,14 +2469,48 @@
 			{
 				"rank": 1089,
 				"position": "452L",
-				"information": 1.324
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			{
+				"aa": "T478K"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "P681R"
+			},
+			{
+				"aa": "E484Q"
 			}
 		],
+		"t1": {
+			"L452R": {
+				"rank": 1089,
+				"position": "452L",
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			"T478K": {
+				"aa": "T478K"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"P681R": {
+				"aa": "P681R"
+			},
+			"E484Q": {
+				"aa": "E484Q"
+			}
+		},
 		"type2": [
 			{
 				"rank": 239731,
@@ -1621,19 +2543,54 @@
 			{
 				"rank": 1089,
 				"position": "452L",
-				"information": 1.324
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			{
+				"aa": "T478K"
 			},
 			{
 				"rank": 654,
 				"position": "614D",
-				"information": 1.892
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			{
+				"aa": "P681R"
 			},
 			{
 				"rank": 708,
 				"position": "613Q",
-				"information": 1.845
+				"information": 1.845,
+				"aa": "Q613H"
 			}
 		],
+		"t1": {
+			"L452R": {
+				"rank": 1089,
+				"position": "452L",
+				"information": 1.324,
+				"aa": "L452R"
+			},
+			"T478K": {
+				"aa": "T478K"
+			},
+			"D614G": {
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"aa": "D614G"
+			},
+			"P681R": {
+				"aa": "P681R"
+			},
+			"Q613H": {
+				"rank": 708,
+				"position": "613Q",
+				"information": 1.845,
+				"aa": "Q613H"
+			}
+		},
 		"type2": [
 			{
 				"rank": 239731,
