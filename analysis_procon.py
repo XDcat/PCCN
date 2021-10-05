@@ -92,11 +92,12 @@ if __name__ == '__main__':
         fasta[i]["t1"] = {}
         for aa in aas:
             pst = int(aa[1:-1])
-            res = pr1.get(pst, {})
+            res = pr1.get(pst, None)
+            if res is None:
+                res = {"rank": "", "position": aa[1:-1] + aa[0], "information": "", "rate": ""}
             res["aa"] = aa
-            # if res is not None:
             fasta[i].get("type1", ).append(res)
-            fasta[i]["t1"][aa] = res
+            # fasta[i]["t1"][aa] = res
     log.debug("type1 result: %s", fasta)
 
     log.info("解析 type2")

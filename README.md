@@ -30,4 +30,5 @@ How to use?
 5. 使用`cal_procon.py`计算保守性，结果为 `data/procon/type{}.txt`。由于输出格式是默认的，不方便后续分析数据，
    将数据解析为csv格式，结果为`data/procon/type{}_parse.csv`
    
-6. `analysis_procon.py`找出重要的变异的保守性，并保存结果为 csv 文件，方便后续分析,结果为 `data/procon/analysis.json`
+6. `analysis_procon.py`找出相关的变异的保守性，并保存结果为 json 文件，方便后续分析,结果为 `data/procon/analysis.json`
+7. `output_procon_analysis`将上一步得到的结果，解析为excel、图片格式

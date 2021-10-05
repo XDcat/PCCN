@@ -6,21 +6,31 @@ __project__ = Cov2_protein
 Fix the Problem, Not the Blame.
 '''
 from ProCon.myProCon import ProbabilityCalculator, MutualInformation, TripletFinder
-from Bio import AlignIO
+from Bio import AlignIO, SeqIO
 import os
 import pandas as pd
+import numpy as np
 
 import logging
 import logconfig
+
 logconfig.setup_logging()
 log = logging.getLogger("cov2")
 
 if __name__ == '__main__':
-    align_fasta = r"D:\Box\python\Cov2_protein\data\protein-matching-IPR042578.filter.fasta.aligned"
+    align_fasta = r".\data\protein-matching-IPR042578.filter.fasta.aligned"
+    origin_fasta_file = r"./data/YP_009724390.1.txt"
     result_dir = "./data/procon"
     result_files = [os.path.join(result_dir, "type{}.txt".format(i)) for i in range(1, 4)]
 
-    # 读取原始序列对齐的序列
+    # 原始 fasta 序列
+    origin_fasta = SeqIO.parse(origin_fasta_file, "fasta")
+    origin_fasta = next(origin_fasta)
+    origin_fasta_len = len(origin_fasta.seq)
+    log.debug("原始序列长度: %s", origin_fasta_len)
+    log.debug("原始序列: %s", origin_fasta)
+
+    # 读取原始序列对齐的序列(对齐序列)
     align_seqs = AlignIO.parse(align_fasta, "fasta")
     origin_seq = next(align_seqs)[0]
     log.debug(len(origin_seq.seq))
@@ -84,14 +94,20 @@ if __name__ == '__main__':
     log.info("解析 type1")
     t1 = pd.read_csv(result_files[0], sep="\s+", skipfooter=1)
     # t1["restore"] = restore_aa(t1["position"], align_map)
+    t1 = t1[t1["position"].apply(lambda x: x[-1] != "-")]  # 过滤 -
     t1["position"] = restore_aa(t1["position"], align_map)
+    t1["rank"] = np.arange(t1.shape[0]) + 1  # 重置排名
+    t1["rate"] = t1["rank"] / origin_fasta_len * 100
     t1.to_csv(result_files[0][:-4] + "_parse.csv", index=False)
 
     log.info("解析 type2")
     t2 = pd.read_csv(result_files[1], sep="\s+", ).iloc[:, :-1]
     t2.columns = "rank site1 site2 info".split()
+    t2 = t2[t2["site1"].apply(lambda x: x[-1] != "-") & t2["site2"].apply(lambda x: x[-1] != "-")]
     t2["site1"] = restore_aa(t2["site1"], align_map)
     t2["site2"] = restore_aa(t2["site2"], align_map)
+    n = origin_fasta_len ** 2
+    t2["rate"] = t2["rank"] / n * 100
     t2.to_csv(result_files[1][:-4] + "_parse.csv", index=False)
 
     log.info("解析 type3")
