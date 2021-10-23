@@ -8,6 +8,9 @@ Fix the Problem, Not the Blame.
 
 import json
 import math
+import seaborn as sns
+from Bio import SeqIO
+import networkx as nx
 
 import pandas as pd
 import numpy as np
@@ -145,16 +148,16 @@ def plot_2D(type1, type2, pst_2_x, analysis, outpath, font_size):
     flg.savefig(outpath, dpi=500)
 
 
-def plot_graph(nodes, links):
+def plot_graph(nodes, links, name, layout="circular"):
     c = (
         Graph(init_opts=opts.InitOpts(width="100%", height="1000px"))
-            .add("", nodes, links, repulsion=8000, layout="circular",)
+            .add("", nodes, links, repulsion=8000, layout=layout, )
             .set_global_opts(
             title_opts=opts.TitleOpts(title="count"),
             toolbox_opts=opts.ToolboxOpts(
                 feature=opts.ToolBoxFeatureOpts(
                     save_as_image=opts.ToolBoxFeatureSaveAsImageOpts(pixel_ratio=3, background_color="white"))), )
-            .render("graph.html")
+            .render(name)
     )
 
 
@@ -211,7 +214,7 @@ def output_picture(analysis, outpath="./data/procon/analysis.png", font_size="x-
     log.debug("type2_info = %s", type2_info)
     # 绘图
     # 绘制二维坐标图
-    # plot_2D(type1, type2, pst_2_x, analysis, outpath, font_size)
+    plot_2D(type1, type2, pst_2_x, analysis, outpath, font_size)
     # 关系图
     nodes = type1.loc[:, ["position", "information"]]
     nodes = nodes.loc[:, "position"].value_counts()
@@ -226,10 +229,94 @@ def output_picture(analysis, outpath="./data/procon/analysis.png", font_size="x-
     log.debug("links = %s", links)
     links = links.to_dict("records")
 
-    plot_graph(nodes, links)
+    plot_graph(nodes, links, "./data/procon/count.html", None)
 
-def output_picture_global(fasta, parse1, parse2):
-    pass
+
+def output_picture_global(fasta,analysis,  parse1="./data/procon/type1_parse.csv", parse2="./data/procon/type2_parse.csv"):
+    type1 = pd.read_csv(parse1)
+    type2 = pd.read_csv(parse2)
+    # 节点
+    nodes = ["{}{}".format(i + 1, j) for i, j in enumerate(fasta)]
+    nodes = pd.DataFrame({"position": nodes})
+    nodes = pd.merge(nodes, type1, how="left", left_on="position", right_on="position")
+    nodes = nodes.loc[:, ["position", "information"]]
+    nodes.columns = ["name", "symbolSize"]
+    nodes = nodes.fillna(0)
+    log.debug("nodes = %s", nodes)
+    type2 = type2[type2["info"] > 300]
+    log.debug("type2 = %s", type2)
+    # 边
+    links = type2.loc[:, ["site1", "site2"]]
+    links.columns = ["source", "target"]
+    log.debug("links = %s", links)
+
+    # nodes = nodes.to_dict("records")
+    # links = links.to_dict("records")
+    # plot_graph(nodes, links, "./data/procon/global_info.html", "force")
+    # 绘制关系图
+    G = nx.Graph()
+    for i, row in nodes.iterrows():
+        G.add_node(row["name"], name=nodes["name"],)
+        
+    for i, row in links.iterrows():
+        G.add_edge(row["source"], row["target"])
+
+    log.debug("G.nodes = %s", G.nodes)
+    log.debug("G.edges = %s", G.edges)
+    log.debug("节点个数: %s", len(G.nodes))
+    log.debug("连接个数: %s", len(G.edges))
+    # 1. 所有节点
+    flg = plt.figure(figsize=(20, 20))
+    nx.draw_circular(G, node_size=1, width=1, with_labels=False)
+    nx.draw_networkx_labels(G, nx.drawing.circular_layout(G, scale=1.05), font_size=3, font_color="g",)
+    flg.show()
+    flg.savefig("./data/procon/1. global_graph.png", dpi=300)
+
+    # 2. 删除孤立节点
+    # G.remove_nodes_from(list(nx.isolates(G)))  # 删除孤立节点
+    G_not_isolaties = G.subgraph([n for n in G if n not in list(nx.isolates(G))])
+    flg = plt.figure(figsize=(20, 20))
+    nx.draw_kamada_kawai(G_not_isolaties, node_size=5, width=1, with_labels=True)
+    flg.show()
+    flg.savefig("./data/procon/2. global_graph(remove isolated).png", dpi=300)
+
+    # 3. 所有节点，但只显示关注的节点的标签
+    psts = get_position_from_parse(analysis)
+    G_psts = G.subgraph(psts)
+    edge_colors = ["b" if (s1 in psts or s2 in psts) else "k" for s1, s2 in G.edges()]
+    node_colors = ["r" if n in psts else "#1f78b4" for n in G.nodes]
+    flg = plt.figure(figsize=(20, 20))
+    nx.draw_circular(G, node_size=1, width=1, with_labels=False, edge_color=edge_colors, node_color=node_colors)
+    nx.draw_networkx_labels(G_psts, nx.drawing.circular_layout(G, scale=1.01), font_size=3, font_color="r",)
+    flg.show()
+    flg.savefig("./data/procon/3. global_graph(only display part labels).png", dpi=300)
+
+
+
+    # 绘制热力图
+    # heatmap_data = type2.set_index(["site1", "site2"])["info"]
+    # heatmap_data = heatmap_data.unstack()
+    # heatmap_data = heatmap_data.reindex(columns=all_sites, index=all_sites)
+    # heatmap_data = heatmap_data.fillna(0)
+    # log.debug("heatmap_data = %s", heatmap_data)
+    # sns.heatmap(heatmap_data)
+    # plt.savefig("./data/procon/heatmap.png")
+
+def get_position_from_parse(analysis):
+    aas = []
+    for i, row in analysis.items():
+        aas += row["aas"]
+
+    aas = pd.Series(aas)
+    aas = aas.str[1:-1] + aas.str[0]
+    aas = aas.drop_duplicates()
+    aas = aas.to_list()
+    log.debug("aas = %s", aas)
+    log.debug("len(aas) = %s", len(aas))
+    return aas
+
+
+
 
 if __name__ == '__main__':
     # 加载数据
@@ -238,10 +325,12 @@ if __name__ == '__main__':
         analysis = json.load(f)
     log.debug("analysis = %s", analysis)
 
+    fasta = SeqIO.parse(r"./data/YP_009724390.1.txt", "fasta")
+    fasta = next(fasta).seq
 
     # 解析到excel
     # output_excel(analysis)
     # 绘制图表
-    output_picture(analysis)
-
-
+    # output_picture(analysis)
+    # 绘制全局图像
+    output_picture_global(fasta, analysis)

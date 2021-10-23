@@ -51,7 +51,6 @@ if __name__ == '__main__':
     log.debug("fasta shape %s ", fasta.shape)
     log.debug("info columns: %s", info.columns)
     log.debug("info shape %s ", info.shape)
-
     # 过滤重名
     log.debug("info 中不重复的物种: %s", info.shape[0] - info.fullName.duplicated().sum())
     data = pd.merge(fasta, info, left_on="id", right_on="accession")
