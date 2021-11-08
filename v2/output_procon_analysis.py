@@ -1,6 +1,7 @@
 import json
 import math
 import seaborn as sns
+import time
 from Bio import SeqIO
 import networkx as nx
 from networkx.algorithms.centrality import degree_centrality, betweenness_centrality, closeness_centrality
@@ -171,6 +172,30 @@ class ProConNetwork:
         return res
 
     def analysisG(self):
+        # type2 分数的分布情况
+        # 获取 type2 的 info
+        # type2_info = pcn.type2["info"]
+        type2_info = pcn.type2["info"].astype(int)
+        type2_info_cut: pd.Series = pd.cut(type2_info, bins=range(
+            0,
+            (int(max(type2_info)) // 10 + 1) * 10,
+            10
+        ))
+        # 统计数目并排序
+        type2_info_distribution = type2_info_cut.value_counts().sort_index()
+        log.debug("len(self.type2) = %s", len(self.type2))
+        log.debug("type2_info_distribution = %s", type2_info_distribution)
+        x = type2_info_distribution.index.astype(str)
+        y = type2_info_distribution.values
+        fig: plt.Figure
+        ax: plt.Axes
+        fig, ax = plt.subplots(figsize=(12, 8))
+        fig.suptitle("Distribution of ProCon information")
+        ax.plot(x, y)
+        plt.xticks(rotation=90)
+        fig.show()
+        fig.savefig(os.path.join(self.data_dir, "共保守分数分布情况"))
+
         # 度分布 degree
         dh = nx.degree_histogram(self.G)
         log.debug("dh = %s", dh)
@@ -185,8 +210,9 @@ class ProConNetwork:
 
 
 if __name__ == '__main__':
+    start_time = time.time()
     # 保守性网络
-    pcn = ProConNetwork(procon_threshold=30)
+    pcn = ProConNetwork(procon_threshold=300)
     pcn.analysisG()
     # 需要关注的变异
     groups = AnalysisMutationGroup()
@@ -198,3 +224,6 @@ if __name__ == '__main__':
     for group in groups.get_aa_groups():
         res = pcn.analysis_group(group)
         log.debug("%s\t%s", group, res)
+
+    end_time = time.time()
+    log.info(f"程序运行时间: {end_time - start_time}")
