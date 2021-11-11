@@ -160,7 +160,7 @@ class MutualInformation:
                                 (self.__num_of_muincal - 1)
         self.__stand_dev = math.sqrt(self.__stand_dev)
         print("standdev = {}".format(self.__stand_dev))
-        limit_p1 = self.__ave_muinf + self.__stand_dev * self.get_z_value_1(self.__p_2)
+        limit_p1 = self.__ave_muinf + self.__stand_dev * self.get_z_value_1(self.__p_1)
         limit_p2 = self.__ave_muinf + self.__stand_dev * self.get_z_value_2(self.__p_2)
         self.__list_p1 = []
         self.__list_p2 = []
