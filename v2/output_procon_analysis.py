@@ -1,6 +1,7 @@
 import json
 import math
 import seaborn as sns
+import time
 from Bio import SeqIO
 import networkx as nx
 from networkx.algorithms.centrality import degree_centrality, betweenness_centrality, closeness_centrality
@@ -215,13 +216,14 @@ class ProConNetwork:
 
 
 if __name__ == '__main__':
+    start_time = time.time()
+    # 保守性网络
+    pcn = ProConNetwork(procon_threshold=300)
+    pcn.analysisG()
     # 需要关注的变异
     groups = AnalysisMutationGroup()
     aas = groups.get_non_duplicated_aas()
     log.debug("aas = %s", aas)
-    # 保守性网络
-    pcn = ProConNetwork(procon_threshold=300)
-    pcn.analysisG(aas)
 
     # for aa in aas:
     #     res = pcn.analysis_aa(aa)
@@ -230,3 +232,6 @@ if __name__ == '__main__':
     # for group in groups.get_aa_groups():
     #     res = pcn.analysis_group(group)
     #     log.debug("%s\t%s", group, res)
+
+    end_time = time.time()
+    log.info(f"程序运行时间: {end_time - start_time}")
