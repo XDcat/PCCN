@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from scipy.special import comb
-from itertools import combinations
+from itertools import combinations, permutations
 from collections import defaultdict
 from brokenaxes import brokenaxes
 from matplotlib.gridspec import GridSpec
@@ -138,7 +138,8 @@ class ProConNetwork:
 
     def _get_centralities(self):
         # 点度中心性 degree
-        outpath = [os.path.join(self.data_dir, "cache", f"{i}_centrality.json") for i in ["degree", "betweenness", "closeness"]]
+        outpath = [os.path.join(self.data_dir, "cache", f"{i}_centrality.json") for i in
+                   ["degree", "betweenness", "closeness"]]
         self.centrality_cache_dir = outpath
         if all([os.path.exists(i) for i in outpath]):
             log.debug("中心性存在缓存，直接读取")
@@ -256,10 +257,50 @@ class ProConNetwork:
         fig.savefig(os.path.join(self.data_dir, "boxplot.png"), dpi=500)
         log.debug("node_data = %s", node_data)
 
-    def analysisG(self, aas: list):
+    def _plot_edge_box(self, aas, groups):
+        aas2edge = defaultdict(list)
+        for group in groups:
+            # aas2edge += list(permutations(group, 2))
+            for n1, n2 in combinations(group, 2):
+                n1 = self._aa2position(n1)
+                n2 = self._aa2position(n2)
+                aas2edge[n1].append(n2)
+                aas2edge[n2].append(n1)
+        for k, v in aas2edge.items():
+            aas2edge[k] = set(v)
+
+        log.debug("aas2edge = %s", aas2edge)
+        edge_info = [[edge[0], edge[1], self.G.edges[edge]["weight"]] for edge in self.G.edges]
+        edge_data = pd.DataFrame(edge_info, columns=["node1", "node2", "info"])
+
+        def aux(s):
+            # return (s.node1 in aas) and (s.node2 in aas)
+            if (s.node1 in aas2edge.keys()) and (s.node2 in aas2edge[s.node1]):
+                return True
+            elif (s.node2 in aas2edge.keys()) and (s.node1 in aas2edge[s.node2]):
+                return True
+            else:
+                return False
+
+        edge_data["is_mutation"] = edge_data.apply(aux, axis=1)
+        log.debug("edge_data[edge_data.is_mutation] = %s", edge_data[edge_data.is_mutation])
+        log.debug("edge_data = %s", edge_data)
+        fig: plt.Figure
+        ax: plt.Axes
+        fig, ax = plt.subplots(1, 1, )
+        sns.boxplot(x=edge_data["info"], y=edge_data["is_mutation"], orient="h", ax=ax)
+        ax.set_xlabel("co-conservation")
+        fig.show()
+        fig.savefig(os.path.join(self.data_dir, "edge_boxplot.png"), dpi=500)
+
+    def _plot_edge_distribution(self, aas):
+        pass
+
+    def analysisG(self, aas: list, groups):
         aas = [self._aa2position(aa) for aa in aas]
         self._plot_degree_distribuition(aas)  # 度分布
-        self._plot_node_box(aas)  # 箱线图：中心性 + 保守性
+        self._plot_node_box(aas, )  # 箱线图：中心性 + 保守性
+        self._plot_edge_box(aas, groups)  # 共保守性
 
 
 if __name__ == '__main__':
@@ -271,8 +312,7 @@ if __name__ == '__main__':
     aas = groups.get_non_duplicated_aas()
     log.debug("aas = %s", aas)
 
-    pcn.analysisG(aas)
-
+    pcn.analysisG(aas, groups.get_aa_groups())
 
     end_time = time.time()
     log.info(f"程序运行时间: {end_time - start_time}")
