@@ -219,12 +219,12 @@ if __name__ == '__main__':
     start_time = time.time()
     # 保守性网络
     pcn = ProConNetwork(procon_threshold=300)
-    pcn.analysisG()
     # 需要关注的变异
     groups = AnalysisMutationGroup()
     aas = groups.get_non_duplicated_aas()
     log.debug("aas = %s", aas)
 
+    pcn.analysisG(aas)
     # for aa in aas:
     #     res = pcn.analysis_aa(aa)
     #     log.debug("%s %s", aa, res)
