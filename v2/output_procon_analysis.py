@@ -293,11 +293,30 @@ class ProConNetwork:
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "edge_boxplot.png"), dpi=500)
 
-    def _plot_edge_distribution(self, aas):
-        pass
+    def _plot_procon_distribution(self,):
+        type1_info = self.type1["information"]
+        type2_info = self.type2["info"]
+
+        type1_info_count = pd.cut(type1_info, np.arange(0, 4, 0.5)).value_counts().sort_index()
+        type2_info_count = pd.cut(type2_info, np.arange(0, 340, 10)).value_counts().sort_index()
+        fig: plt.Figure
+        axes: List[plt.Axes]
+        fig, axes = plt.subplots(2, 1, figsize=(10, 20))
+        axes[0].plot(range(len(type1_info_count)), type1_info_count.values)
+        axes[0].set_xticklabels(type1_info_count.index)
+        axes[1].plot(range(len(type2_info_count)), type2_info_count.values)
+        axes[1].set_xticklabels(type2_info_count.index)
+
+
+        plt.show()
+        fig.savefig(os.path.join(self.data_dir, "procon distribution.png"), dpi=500)
+        0/0
+
 
     def analysisG(self, aas: list, groups):
         aas = [self._aa2position(aa) for aa in aas]
+
+        self._plot_procon_distribution()  # 分数分布图
         self._plot_degree_distribuition(aas)  # 度分布
         self._plot_node_box(aas, )  # 箱线图：中心性 + 保守性
         self._plot_edge_box(aas, groups)  # 共保守性
