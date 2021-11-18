@@ -8,6 +8,7 @@ from networkx.algorithms.centrality import degree_centrality, betweenness_centra
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 import os
 from scipy.special import comb
 from itertools import combinations, permutations
@@ -75,7 +76,8 @@ class ProConNetwork:
         self.links = self._get_links(self.type2)
         # 构成图
         self.G = self._get_G(self.links, self.nodes)
-
+        log.debug(self.G.edges["734T", "937S"])
+        log.debug(self.G.edges["937S", "734T"])
         # 中心性
         log.info("确定中心性...")
         self.degree_c, self.betweenness_c, self.closeness_c = self._get_centralities()
@@ -298,28 +300,34 @@ class ProConNetwork:
         type2_info = self.type2["info"]
 
         type1_info_count = pd.cut(type1_info, np.arange(0, 4, 0.5)).value_counts().sort_index()
-        type2_info_count = pd.cut(type2_info, np.arange(0, 340, 10)).value_counts().sort_index()
+        type2_info_count = pd.cut(type2_info, np.arange(0, 350, 10)).value_counts().sort_index()
         fig: plt.Figure
         axes: List[plt.Axes]
-        fig, axes = plt.subplots(2, 1, figsize=(10, 20))
+        fig, axes = plt.subplots(1, 2, figsize=(20, 10))
+        log.debug("self.type1.min() = %s", self.type1["information"].min())
+        log.debug("self.type1.max() = %s", self.type1["information"].max())
+        log.debug("self.type2.min() = %s", self.type2["info"].min())
+        log.debug("self.type2.max() = %s", self.type2["info"].max())
         axes[0].plot(range(len(type1_info_count)), type1_info_count.values)
-        axes[0].set_xticklabels(type1_info_count.index)
+        axes[0].xaxis.set_major_locator(mticker.FixedLocator(range(len(type1_info_count))))
+        axes[0].set_xticklabels(type1_info_count.index.to_list())
+        axes[0].set_xlabel("conservation score")
+        axes[0].set_ylabel("count")
         axes[1].plot(range(len(type2_info_count)), type2_info_count.values)
-        axes[1].set_xticklabels(type2_info_count.index)
-
-
-        plt.show()
+        axes[1].xaxis.set_major_locator(mticker.FixedLocator(range(len(type2_info_count))))
+        axes[1].set_xticklabels(type2_info_count.index.to_list(), rotation=90)
+        axes[1].set_xlabel("co-conservation score")
+        axes[1].set_ylabel("count")
+        fig.show()
         fig.savefig(os.path.join(self.data_dir, "procon distribution.png"), dpi=500)
-        0/0
-
 
     def analysisG(self, aas: list, groups):
         aas = [self._aa2position(aa) for aa in aas]
 
         self._plot_procon_distribution()  # 分数分布图
         self._plot_degree_distribuition(aas)  # 度分布
-        self._plot_node_box(aas, )  # 箱线图：中心性 + 保守性
-        self._plot_edge_box(aas, groups)  # 共保守性
+        # self._plot_node_box(aas, )  # 箱线图：中心性 + 保守性
+        # self._plot_edge_box(aas, groups)  # 共保守性
 
 
 if __name__ == '__main__':
