@@ -26,6 +26,8 @@ log = logging.getLogger("cov2")
 
 AA = ['-', 'C', 'F', 'I', 'L', 'M', 'V', 'W', 'Y', 'A', 'T', 'D', 'E', 'G', 'P', 'N', 'Q', 'S', 'H', 'R', 'K']
 
+sns.set()
+
 
 class AnalysisMutationGroup:
     def __init__(self, analysis="../data/procon/analysis.json"):
@@ -191,13 +193,60 @@ class ProConNetwork:
 
     def _plot_degree_distribuition(self, aas):
         # 度分布 degree
-        dh = nx.degree_histogram(self.G)
-        log.debug("dh = %s", dh)
-        x = list(range(len(dh)))
-        y = np.array(dh) / sum(dh)
+        # 使用边的权重的平均值作为度
+        degrees = {}
+        # 遍历节点
+        for n, nbrs in self.G.adj.items():
+            # n 节点，nbrs 邻居节点
+            wts = []
+            for nbr, eattr in nbrs.items():
+                # nbr 邻居节点，eatter 边属性
+                wt = eattr["weight"]
+                wts.append(wt)
+            if wts:
+                avg_wt = np.mean(wts)
+            else:
+                avg_wt = 0.0
+            # degrees.append(avg_wt)
+            degrees[n] = avg_wt
+        degrees: pd.Series = pd.Series(degrees)
+        log.debug("degrees = %s", degrees)
+        log.debug("max(degrees) = %s", max(degrees))
+        log.debug("min(degrees) = %s", min(degrees))
+        log.debug("np.mean(degrees) = %s", np.mean(degrees))
+        # log.debug("pd.qcut(degrees) = %s", pd.cut(degrees, np.arange(0, 0.7, 0.01), right=False))
+        cut_split = np.arange(0, 0.7, 0.1)
+        degrees_distribution: pd.Series = pd.cut(degrees.values, cut_split, right=False)
+        degrees_distribution = degrees_distribution.value_counts()
+        degrees_distribution = degrees_distribution / len(degrees)
+        log.debug("sum(degrees_distribution) = %s", sum(degrees_distribution))
+        # 绘图
         fig: plt.Figure
-        axs: List[plt.Axes]
-        fig, axs = plt.subplots(2, 1)
+        axes: List[plt.Axes]
+        fig, axes = plt.subplots(1, 2, figsize=(15, 7.5))
+        degrees_distribution.plot.bar(ax=axes[0])
+        axes[0].set_title("degree distribution")
+        axes[0].set_xticklabels(degrees_distribution.index, rotation=0)
+
+        # 变异的分布
+        aas_degrees = degrees[aas].sort_index()
+        aas_degrees.to_csv(os.path.join(self.data_dir, "aas_degree_distribution.csv"))
+        aas_degrees_distribution = pd.cut(aas_degrees.values, cut_split, right=False).value_counts() / len(degrees)
+        log.debug("aas_degrees_distribution = %s", aas_degrees_distribution)
+        aas_degrees_distribution.plot.bar(ax=axes[1])
+        axes[1].set_title("degree distribution of mutations")
+        axes[1].set_xticklabels(aas_degrees_distribution.index, rotation=0)
+        # log.debug("aas_degrees.sort_values() = %s", aas_degrees.sort_values())
+
+        fig.show()
+        fig.savefig(os.path.join(self.data_dir, f"度分布.png"), dpi=300)
+        # dh = nx.degree_histogram(self.G)
+        # log.debug("dh = %s", dh)
+        # x = list(range(len(dh)))
+        # y = np.array(dh) / sum(dh)
+        # fig: plt.Figure
+        # axs: List[plt.Axes]
+        # fig, axs = plt.subplots(2, 1)
         # sps1, sps2 = GridSpec(2, 1)
         # fig = plt.figure()
         # hspace 双斜线间隔
@@ -212,33 +261,33 @@ class ProConNetwork:
         # bax_axes_top.get_ymajorticklabels
         # bax = brokenaxes(ylims=((0, 0.02), (0.8, 0.9)), hspace=0.2, subplot_spec=sps1, fig=fig, )
         # axs = [bax, plt.subplot(sps2)]
-        axs[0].plot(x[1:], y[1:])
-        axs[0].set_ylabel("degree distribution")
-        # axs[0].plot(x, y)
-        axs[1].loglog(x, y)
-        axs[1].set_ylabel("degree distribution")
-        # 将变异的点标注在度分布图中
-        ax_0_right: plt.Axes = axs[0].twinx()  # 双坐标轴
-        ax_0_right.set_ylabel("important mutations count")
-        ax_1_right: plt.Axes = axs[1].twinx()
-        ax_1_right.set_ylabel("important mutations count")
-        degree2count = dict(zip(x[1:], y[1:]))
-        count_degree_aa = defaultdict(int)
-        for aa in aas:
-            # 拿到节点，并计算度
-            node = self.G.nodes[aa]
-            degree = self.G.degree[aa]
-            # axs[0].annotate(aa, (degree, degree2count[degree]))
-            # axs[0].bar(degree, degree2count[degree])
-            if degree == 0:
-                continue
-            count_degree_aa[degree] += 1
-        # for degree, count in count_degree_aa.items():
-        ax_0_right.bar(count_degree_aa.keys(), count_degree_aa.values(), color="green")
-        ax_1_right.bar(count_degree_aa.keys(), count_degree_aa.values(), color="green")
-
-        fig.show()
-        fig.savefig(os.path.join(self.data_dir, f"度分布.png"), dpi=300)
+        # axs[0].plot(x[1:], y[1:])
+        # axs[0].set_ylabel("degree distribution")
+        # # axs[0].plot(x, y)
+        # axs[1].loglog(x, y)
+        # axs[1].set_ylabel("degree distribution")
+        # # 将变异的点标注在度分布图中
+        # ax_0_right: plt.Axes = axs[0].twinx()  # 双坐标轴
+        # ax_0_right.set_ylabel("important mutations count")
+        # ax_1_right: plt.Axes = axs[1].twinx()
+        # ax_1_right.set_ylabel("important mutations count")
+        # degree2count = dict(zip(x[1:], y[1:]))
+        # count_degree_aa = defaultdict(int)
+        # for aa in aas:
+        #     # 拿到节点，并计算度
+        #     node = self.G.nodes[aa]
+        #     degree = self.G.degree[aa]
+        #     # axs[0].annotate(aa, (degree, degree2count[degree]))
+        #     # axs[0].bar(degree, degree2count[degree])
+        #     if degree == 0:
+        #         continue
+        #     count_degree_aa[degree] += 1
+        # # for degree, count in count_degree_aa.items():
+        # ax_0_right.bar(count_degree_aa.keys(), count_degree_aa.values(), color="green")
+        # ax_1_right.bar(count_degree_aa.keys(), count_degree_aa.values(), color="green")
+        #
+        # fig.show()
+        # fig.savefig(os.path.join(self.data_dir, f"度分布.png"), dpi=300)
 
     def _plot_node_box(self, aas):
         nodes_size = {node: self.G.nodes[node]["size"] for node in self.G.nodes}
@@ -296,33 +345,42 @@ class ProConNetwork:
         fig.savefig(os.path.join(self.data_dir, "edge_boxplot.png"), dpi=500)
 
     def _plot_procon_distribution(self,):
-        type1_info = self.type1["information"]
-        type2_info = self.type2["info"]
-
-        type1_info_count = pd.cut(type1_info, np.arange(0, 4, 0.5)).value_counts().sort_index()
-        type2_info_count = pd.cut(type2_info, np.arange(0, 350, 10)).value_counts().sort_index()
-        fig: plt.Figure
-        axes: List[plt.Axes]
-        fig, axes = plt.subplots(1, 2, figsize=(20, 10))
         log.debug("self.type1.min() = %s", self.type1["information"].min())
         log.debug("self.type1.max() = %s", self.type1["information"].max())
         log.debug("self.type2.min() = %s", self.type2["info"].min())
         log.debug("self.type2.max() = %s", self.type2["info"].max())
-        axes[0].plot(range(len(type1_info_count)), type1_info_count.values)
-        axes[0].xaxis.set_major_locator(mticker.FixedLocator(range(len(type1_info_count))))
-        axes[0].set_xticklabels(type1_info_count.index.to_list())
-        axes[0].set_xlabel("conservation score")
-        axes[0].set_ylabel("count")
-        axes[1].plot(range(len(type2_info_count)), type2_info_count.values)
-        axes[1].xaxis.set_major_locator(mticker.FixedLocator(range(len(type2_info_count))))
-        axes[1].set_xticklabels(type2_info_count.index.to_list(), rotation=90)
-        axes[1].set_xlabel("co-conservation score")
-        axes[1].set_ylabel("count")
-        fig.show()
+        type1_info = self.type1["info_norm"]
+        type2_info = self.type2["info_norm"]
+
+        cut_list = np.arange(0, 1.1, 0.1).tolist()
+        log.debug("cut_list = %s", cut_list)
+        type1_info_count = pd.cut(type1_info, cut_list, ).value_counts().sort_index() / len(type1_info)
+        type2_info_count = pd.cut(type2_info, cut_list, ).value_counts().sort_index() / len(type2_info)
+        type1_info_count.plot.bar()
+        type2_info_count.plot.bar()
+        plot_data = pd.DataFrame([
+            type1_info_count.to_list() + type2_info_count.to_list(),
+            ["conservation"] * len(type1_info_count) + ["co-conservation"] * len(type2_info_count),
+            type1_info_count.index.to_list() + type2_info_count.index.to_list(),
+            # ])
+        ], index=["proportion", "type", "score"]).T
+        # fig: plt.Figure = plt.figure()
+        # ax: plt.Axes = fig.add_subplot()
+        fig = sns.catplot(
+            kind="bar",
+            x="type",
+            y="proportion",
+            hue="score",
+            data=plot_data,
+            height=10,
+        )
+        plt.show()
         fig.savefig(os.path.join(self.data_dir, "procon distribution.png"), dpi=500)
 
     def analysisG(self, aas: list, groups):
-        aas = [self._aa2position(aa) for aa in aas]
+        aas = [self._aa2position(aa) for aa in aas if aa]
+        aas = list(set(aas))
+        log.debug("aas = %s", aas)
 
         self._plot_procon_distribution()  # 分数分布图
         self._plot_degree_distribuition(aas)  # 度分布
