@@ -4,7 +4,8 @@ import seaborn as sns
 import time
 from Bio import SeqIO
 import networkx as nx
-from networkx.algorithms.centrality import degree_centrality, betweenness_centrality, closeness_centrality
+from networkx.algorithms.centrality import degree_centrality, betweenness_centrality, closeness_centrality, \
+    edge_betweenness_centrality
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,6 +21,7 @@ from sklearn import preprocessing
 # 日志
 import logging
 import logconfig
+import pickle
 from typing import List
 
 logconfig.setup_logging()
@@ -83,7 +85,7 @@ class ProConNetwork:
         log.debug(self.G.edges["937S", "734T"])
         # 中心性
         log.info("确定中心性...")
-        self.degree_c, self.betweenness_c, self.closeness_c = self._get_centralities()
+        self.degree_c, self.betweenness_c, self.closeness_c, self.edge_betweenness_c = self._get_centralities()
 
     @staticmethod
     def _normalize_info(info: np.ndarray):
@@ -142,48 +144,74 @@ class ProConNetwork:
         return counts.keys(), counts.values()
 
     def _get_centralities(self, is_weight=True):
+        file_names = ["degree", "betweenness", "closeness", "e_betweenness"]
         # 是否使用带全边
         if is_weight:
             weight = "weight"
             outpath = [os.path.join(self.data_dir, "cache", f"{i}_centrality.json") for i in
-                       ["degree", "betweenness", "closeness"]]
+                       file_names]
         else:
             weight = None
             outpath = [os.path.join(self.data_dir, "cache", f"{i}_centrality_no_weight.json") for i in
-                       ["degree", "betweenness", "closeness"]]
+                       file_names]
         # 点度中心性 degree
         self.centrality_cache_dir = outpath
-        if all([os.path.exists(i) for i in outpath]):
-            log.debug("中心性存在缓存，直接读取")
-            log.info("点度中心性 degree")
-            with open(outpath[0], ) as f:
-                dc = json.load(f)
-            # 中介中心性 betweenness
-            log.info("中介中心性 betweenness")
-            with open(outpath[1], ) as f:
-                bc = json.load(f)
-            # 接近中心性 closeness
-            log.info("接近中心性 closeness")
-            with open(outpath[2], ) as f:
-                cc = json.load(f)
 
-        else:
-            log.debug("中心性无缓存，直接计算")
+        if not os.path.exists(outpath[0]):
+            log.debug("无缓存，直接计算")
             log.info("点度中心性 degree")
             dc = degree_centrality(self.G)
             with open(outpath[0], "w") as f:
                 f.write(json.dumps(dc))
+        else:
+            log.debug("存在缓存，直接读取")
+            log.info("点度中心性 degree")
+            with open(outpath[0], ) as f:
+                dc = json.load(f)
+
+        if not os.path.exists(outpath[1]):
+            log.debug("无缓存，直接计算")
             # 中介中心性 betweenness
             log.info("中介中心性 betweenness")
             bc = betweenness_centrality(self.G, weight=weight)
             with open(outpath[1], "w") as f:
                 f.write(json.dumps(bc))
+        else:
+            log.debug("存在缓存，直接读取")
+            # 中介中心性 betweenness
+            log.info("中介中心性 betweenness")
+            with open(outpath[1], ) as f:
+                bc = json.load(f)
+
+        if not os.path.exists(outpath[2]):
+            log.debug("无缓存，直接计算")
             # 接近中心性 closeness
             log.info("接近中心性 closeness")
             cc = closeness_centrality(self.G, distance=weight)
             with open(outpath[2], "w") as f:
                 f.write(json.dumps(cc))
-        return dc, bc, cc
+        else:
+            log.debug("存在缓存，直接读取")
+            # 接近中心性 closeness
+            log.info("接近中心性 closeness")
+            with open(outpath[2], ) as f:
+                cc = json.load(f)
+
+        if not os.path.exists(outpath[3]):
+            log.debug("无缓存，直接计算")
+            # 边 betweenness
+            log.info("边 中介中心性 betweenness")
+            e_bc = edge_betweenness_centrality(self.G, weight=weight)
+            with open(outpath[3], "wb") as f:
+                pickle.dump(e_bc, f)
+        else:
+            log.debug("存在缓存，直接读取")
+            # 边 betweenness
+            log.info("边 中介中心性 betweenness")
+            with open(outpath[3], "rb") as f:
+                e_bc = pickle.load(f)
+
+        return dc, bc, cc, e_bc
 
     def analysis_aa(self, aa: str):
         aa = self._aa2position(aa)
@@ -290,54 +318,6 @@ class ProConNetwork:
 
         fig.show()
         fig.savefig(os.path.join(self.data_dir, f"度分布.png"), dpi=300)
-        # dh = nx.degree_histogram(self.G)
-        # log.debug("dh = %s", dh)
-        # x = list(range(len(dh)))
-        # y = np.array(dh) / sum(dh)
-        # fig: plt.Figure
-        # axs: List[plt.Axes]
-        # fig, axs = plt.subplots(2, 1)
-        # sps1, sps2 = GridSpec(2, 1)
-        # fig = plt.figure()
-        # hspace 双斜线间隔
-        # bax = brokenaxes(ylims=((0, 0.02), (0.8, 0.9)), hspace=0.2, subplot_spec=sps1, fig=fig, height_ratios=(3, 8))
-        # bax_axes_botton:plt.Axes = bax.axs[1]
-        # bax_axes_botton.set_yticklabels()
-        # t = bax_axes_botton.get_yticks()
-        # bax_axes_botton.set_yticks(np.arange(0, 0.01, 10))
-        # bax_axes_botton.set_yticklabels(np.arange(0, 0.01, 10))
-        # log.debug("bax_axes_top.get_ymajorticklabels= %s", bax_axes_botton.get_ymajorticklabels())
-
-        # bax_axes_top.get_ymajorticklabels
-        # bax = brokenaxes(ylims=((0, 0.02), (0.8, 0.9)), hspace=0.2, subplot_spec=sps1, fig=fig, )
-        # axs = [bax, plt.subplot(sps2)]
-        # axs[0].plot(x[1:], y[1:])
-        # axs[0].set_ylabel("degree distribution")
-        # # axs[0].plot(x, y)
-        # axs[1].loglog(x, y)
-        # axs[1].set_ylabel("degree distribution")
-        # # 将变异的点标注在度分布图中
-        # ax_0_right: plt.Axes = axs[0].twinx()  # 双坐标轴
-        # ax_0_right.set_ylabel("important mutations count")
-        # ax_1_right: plt.Axes = axs[1].twinx()
-        # ax_1_right.set_ylabel("important mutations count")
-        # degree2count = dict(zip(x[1:], y[1:]))
-        # count_degree_aa = defaultdict(int)
-        # for aa in aas:
-        #     # 拿到节点，并计算度
-        #     node = self.G.nodes[aa]
-        #     degree = self.G.degree[aa]
-        #     # axs[0].annotate(aa, (degree, degree2count[degree]))
-        #     # axs[0].bar(degree, degree2count[degree])
-        #     if degree == 0:
-        #         continue
-        #     count_degree_aa[degree] += 1
-        # # for degree, count in count_degree_aa.items():
-        # ax_0_right.bar(count_degree_aa.keys(), count_degree_aa.values(), color="green")
-        # ax_1_right.bar(count_degree_aa.keys(), count_degree_aa.values(), color="green")
-        #
-        # fig.show()
-        # fig.savefig(os.path.join(self.data_dir, f"度分布.png"), dpi=300)
 
     def _plot_node_box(self, aas):
         nodes_size = {node: self.G.nodes[node]["size"] for node in self.G.nodes}
@@ -375,38 +355,74 @@ class ProConNetwork:
         log.debug("node_data = %s", node_data)
 
     def _plot_edge_box(self, aas, groups):
-        aas2edge = defaultdict(list)
+        """计算边的相关参数
+        分为三类:
+        1. 在同一组的 same mutation group
+        2. 在所有可能变异的 mutation
+        3. 其他 other
+        4. 所有 all
+
+        """
+        # 可以在不同组的边
+        edge_in_different_group = list(permutations(aas, 2))
+        # 在同一组的边
+        edge_in_same_group = []
         for group in groups:
-            # aas2edge += list(permutations(group, 2))
-            for n1, n2 in combinations(group, 2):
-                n1 = self._aa2position(n1)
-                n2 = self._aa2position(n2)
-                aas2edge[n1].append(n2)
-                aas2edge[n2].append(n1)
-        for k, v in aas2edge.items():
-            aas2edge[k] = set(v)
+            group = [self._aa2position(i) for i in group]
+            edge_in_same_group += list(permutations(group, 2))
+        edge_in_same_group = list(set(edge_in_same_group))  # 去重
 
-        log.debug("aas2edge = %s", aas2edge)
-        edge_info = [[edge[0], edge[1], self.G.edges[edge]["weight"]] for edge in self.G.edges]
-        edge_data = pd.DataFrame(edge_info, columns=["node1", "node2", "info"])
-
-        def aux(s):
-            # return (s.node1 in aas) and (s.node2 in aas)
-            if (s.node1 in aas2edge.keys()) and (s.node2 in aas2edge[s.node1]):
-                return True
-            elif (s.node2 in aas2edge.keys()) and (s.node1 in aas2edge[s.node2]):
-                return True
-            else:
-                return False
-
-        edge_data["is_mutation"] = edge_data.apply(aux, axis=1)
-        log.debug("edge_data[edge_data.is_mutation] = %s", edge_data[edge_data.is_mutation])
-        log.debug("edge_data = %s", edge_data)
+        # 初始化 图片
         fig: plt.Figure
-        ax: plt.Axes
-        fig, ax = plt.subplots(1, 1, )
-        sns.boxplot(x=edge_data["info"], y=edge_data["is_mutation"], orient="h", ax=ax)
-        ax.set_xlabel("co-conservation")
+        axes: List[plt.Axes]
+        fig, axes = plt.subplots(2, 1, figsize=(8, 10))
+
+        # 共保守性
+        rows = []
+        columns = ["u", "v", "co-conservation", "label"]
+        for u, v, weight in self.G.edges.data("weight"):
+
+            # 所有的
+            rows.append([u, v, weight, "all"])
+            # 其他三种
+            # 先小范围
+            if (u, v) in edge_in_same_group:
+                rows.append([u, v, weight, "same mutation group"])
+            # 再大范围和其他
+            if (u, v) in edge_in_different_group:
+                rows.append([u, v, weight, "mutation"])
+            else:
+                rows.append([u, v, weight, "other"])
+        co_conservation = pd.DataFrame(rows, columns=columns)
+        log.debug("co_conservation.label.value_counts() = %s", co_conservation.label.value_counts())
+        sns.boxplot(data=co_conservation, x="co-conservation", y="label", orient="h", ax=axes[0])
+        axes[0].set_xlabel("co-conservation")
+        axes[0].set_ylabel("")
+
+        # 边的 betweenness
+        rows = []
+        columns = ["u", "v", "co-conservation", "label"]
+        for (u, v), weight in self.edge_betweenness_c.items():
+            # 所有的
+            rows.append([u, v, weight, "all"])
+            # 其他三种
+            # 先小范围
+            if (u, v) in edge_in_same_group:
+                rows.append([u, v, weight, "same mutation group"])
+            # 再大范围和其他
+            if (u, v) in edge_in_different_group:
+                rows.append([u, v, weight, "mutation"])
+            else:
+                rows.append([u, v, weight, "other"])
+        co_conservation = pd.DataFrame(rows, columns=columns)
+        log.debug("co_conservation.label.value_counts() = %s", co_conservation.label.value_counts())
+        sns.boxplot(data=co_conservation, x="co-conservation", y="label", orient="h", ax=axes[1])
+        axes[1].set_xlabel("betweenness centrality")
+        axes[1].set_ylabel("")
+
+
+        # 绘图
+        fig.tight_layout()
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "edge_boxplot.png"), dpi=500)
 
@@ -457,7 +473,7 @@ class ProConNetwork:
             # 加权平均度
             avg_w_degrees = avg_weighted_degrees[aa]
             # conservation
-            if aa  in self.type1.position.to_list():
+            if aa in self.type1.position.to_list():
                 conservation = self.type1["information"][self.type1.position == aa].to_list()[0]
                 norm_conservation = self.type1["info_norm"][self.type1.position == aa].to_list()[0]
             else:
@@ -465,8 +481,9 @@ class ProConNetwork:
                 conservation = 0
                 norm_conservation = 0
 
-            data.append({"aa": aa, "degree": degree, "weighted degree": w_degree, "average weighted degree": avg_w_degrees,
-                         "conservation": conservation, "normalized conservation": norm_conservation})
+            data.append(
+                {"aa": aa, "degree": degree, "weighted degree": w_degree, "average weighted degree": avg_w_degrees,
+                 "conservation": conservation, "normalized conservation": norm_conservation})
 
         data = pd.DataFrame(data)
         data = data.set_index("aa", drop=False).sort_index()
@@ -492,11 +509,8 @@ if __name__ == '__main__':
     groups = AnalysisMutationGroup()
     aas = groups.get_non_duplicated_aas()
     log.debug("aas = %s", aas)
-    aas = list(set(aas))
-    for aa in sorted(aas, key=lambda x: int(x[1:-1])):
-        print(aa)
 
-    # pcn.analysisG(aas, groups.get_aa_groups())
-    #
-    # end_time = time.time()
-    # log.info(f"程序运行时间: {end_time - start_time}")
+    pcn.analysisG(aas, groups.get_aa_groups())
+
+    end_time = time.time()
+    log.info(f"程序运行时间: {end_time - start_time}")
