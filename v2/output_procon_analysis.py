@@ -141,10 +141,17 @@ class ProConNetwork:
         counts = counts.to_dict()
         return counts.keys(), counts.values()
 
-    def _get_centralities(self):
+    def _get_centralities(self, is_weight=True):
+        # 是否使用带全边
+        if is_weight:
+            weight = "weight"
+            outpath = [os.path.join(self.data_dir, "cache", f"{i}_centrality.json") for i in
+                       ["degree", "betweenness", "closeness"]]
+        else:
+            weight = None
+            outpath = [os.path.join(self.data_dir, "cache", f"{i}_centrality_no_weight.json") for i in
+                       ["degree", "betweenness", "closeness"]]
         # 点度中心性 degree
-        outpath = [os.path.join(self.data_dir, "cache", f"{i}_centrality.json") for i in
-                   ["degree", "betweenness", "closeness"]]
         self.centrality_cache_dir = outpath
         if all([os.path.exists(i) for i in outpath]):
             log.debug("中心性存在缓存，直接读取")
@@ -168,12 +175,12 @@ class ProConNetwork:
                 f.write(json.dumps(dc))
             # 中介中心性 betweenness
             log.info("中介中心性 betweenness")
-            bc = betweenness_centrality(self.G, weight="weight")
+            bc = betweenness_centrality(self.G, weight=weight)
             with open(outpath[1], "w") as f:
                 f.write(json.dumps(bc))
             # 接近中心性 closeness
             log.info("接近中心性 closeness")
-            cc = closeness_centrality(self.G, distance="weight")
+            cc = closeness_centrality(self.G, distance=weight)
             with open(outpath[2], "w") as f:
                 f.write(json.dumps(cc))
         return dc, bc, cc
@@ -295,8 +302,9 @@ class ProConNetwork:
         node_data = pd.DataFrame(
             {"conservation": nodes_size, "degree centrality": self.degree_c, "closeness centrality": self.closeness_c,
              "betweenness centrality": self.betweenness_c})
-        # node_data = node_data.reset_index()  # 调整索引
         node_data["is_mutation"] = node_data.index.map(lambda x: x in aas)
+        node_data = node_data[node_data["degree centrality"] > 0]  # 除去孤立节点
+        # node_data = node_data[node_data["conservation"] > 0.3]
 
         def cal_p(data: pd.Series, bo: pd.Series):
             x = data[bo].to_list()
