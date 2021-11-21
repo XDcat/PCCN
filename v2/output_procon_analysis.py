@@ -199,6 +199,48 @@ class ProConNetwork:
         # 箱线图-三种中心性、保守性
         aas = [self._aa2position(i) for i in group]
 
+    def get_degree(self):
+        degrees = self.G
+        return degrees
+
+    def get_weighted_degree(self):
+        """获得加权度"""
+        degrees = {}
+        # 遍历节点
+        for n, nbrs in self.G.adj.items():
+            # n 节点，nbrs 邻居节点
+            wts = []
+            for nbr, eattr in nbrs.items():
+                # nbr 邻居节点，eatter 边属性
+                wt = eattr["weight"]
+                wts.append(wt)
+            if wts:
+                avg_wt = np.sum(wts)
+            else:
+                avg_wt = 0.0
+            # degrees.append(avg_wt)
+            degrees[n] = avg_wt
+        return degrees
+
+    def get_avg_weighted_degree(self):
+        """获得平均加权度"""
+        degrees = {}
+        # 遍历节点
+        for n, nbrs in self.G.adj.items():
+            # n 节点，nbrs 邻居节点
+            wts = []
+            for nbr, eattr in nbrs.items():
+                # nbr 邻居节点，eatter 边属性
+                wt = eattr["weight"]
+                wts.append(wt)
+            if wts:
+                avg_wt = np.mean(wts)
+            else:
+                avg_wt = 0.0
+            # degrees.append(avg_wt)
+            degrees[n] = avg_wt
+        return degrees
+
     def _plot_degree_distribuition(self, aas):
         # 度分布 degree
         # 使用边的权重的平均值作为度
@@ -304,6 +346,7 @@ class ProConNetwork:
              "betweenness centrality": self.betweenness_c})
         node_data["is_mutation"] = node_data.index.map(lambda x: x in aas)
         node_data = node_data[node_data["degree centrality"] > 0]  # 除去孤立节点
+
         # node_data = node_data[node_data["conservation"] > 0.3]
 
         def cal_p(data: pd.Series, bo: pd.Series):
@@ -311,6 +354,7 @@ class ProConNetwork:
             y = data[bo.apply(lambda x: not x)].to_list()
             p = mannwhitneyu(x, y).pvalue
             return p
+
         fig: plt.Figure
         axes: List[plt.Axes]
         fig, axes = plt.subplots(4, 1, figsize=(10, 15))
@@ -366,7 +410,7 @@ class ProConNetwork:
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "edge_boxplot.png"), dpi=500)
 
-    def _plot_procon_distribution(self,):
+    def _plot_procon_distribution(self, ):
         log.debug("self.type1.min() = %s", self.type1["information"].min())
         log.debug("self.type1.max() = %s", self.type1["information"].max())
         log.debug("self.type2.min() = %s", self.type2["info"].min())
@@ -399,15 +443,45 @@ class ProConNetwork:
         plt.show()
         fig.savefig(os.path.join(self.data_dir, "procon distribution.png"), dpi=500)
 
+    def _collect_mutation_info(self, aas):
+        """收集变异节点信息"""
+        weighted_degrees = self.get_weighted_degree()
+        avg_weighted_degrees = self.get_avg_weighted_degree()
+
+        data = []
+        for aa in aas:
+            # 度
+            degree = self.G.degree[aa]
+            # 加权度
+            w_degree = weighted_degrees[aa]
+            # 加权平均度
+            avg_w_degrees = avg_weighted_degrees[aa]
+            # conservation
+            if aa  in self.type1.position.to_list():
+                conservation = self.type1["information"][self.type1.position == aa].to_list()[0]
+                norm_conservation = self.type1["info_norm"][self.type1.position == aa].to_list()[0]
+            else:
+                log.debug("%s 不在列表中", aa)
+                conservation = 0
+                norm_conservation = 0
+
+            data.append({"aa": aa, "degree": degree, "weighted degree": w_degree, "average weighted degree": avg_w_degrees,
+                         "conservation": conservation, "normalized conservation": norm_conservation})
+
+        data = pd.DataFrame(data)
+        data = data.set_index("aa", drop=False).sort_index()
+        data.to_csv(os.path.join(self.data_dir, "aas_info.csv"))
+
     def analysisG(self, aas: list, groups):
         aas = [self._aa2position(aa) for aa in aas if aa]
         aas = list(set(aas))
         log.debug("aas = %s", aas)
 
+        self._collect_mutation_info(aas)  # 收集变异位点的信息
         self._plot_procon_distribution()  # 分数分布图
         self._plot_degree_distribuition(aas)  # 度分布
         self._plot_node_box(aas, )  # 箱线图：中心性 + 保守性
-        # self._plot_edge_box(aas, groups)  # 共保守性
+        self._plot_edge_box(aas, groups)  # 共保守性
 
 
 if __name__ == '__main__':
@@ -418,8 +492,11 @@ if __name__ == '__main__':
     groups = AnalysisMutationGroup()
     aas = groups.get_non_duplicated_aas()
     log.debug("aas = %s", aas)
+    aas = list(set(aas))
+    for aa in sorted(aas, key=lambda x: int(x[1:-1])):
+        print(aa)
 
-    pcn.analysisG(aas, groups.get_aa_groups())
-
-    end_time = time.time()
-    log.info(f"程序运行时间: {end_time - start_time}")
+    # pcn.analysisG(aas, groups.get_aa_groups())
+    #
+    # end_time = time.time()
+    # log.info(f"程序运行时间: {end_time - start_time}")
