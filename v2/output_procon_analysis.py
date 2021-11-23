@@ -6,6 +6,7 @@ from Bio import SeqIO
 import networkx as nx
 from networkx.algorithms.centrality import degree_centrality, betweenness_centrality, closeness_centrality, \
     edge_betweenness_centrality
+from networkx.algorithms.shortest_paths import shortest_path_length
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -327,28 +328,27 @@ class ProConNetwork:
         node_data["is_mutation"] = node_data.index.map(lambda x: x in aas)
         node_data = node_data[node_data["degree centrality"] > 0]  # 除去孤立节点
 
-        # node_data = node_data[node_data["conservation"] > 0.3]
-
-        def cal_p(data: pd.Series, bo: pd.Series):
+        def cal_p_mannwhitneyu(data: pd.Series, bo: pd.Series):
             x = data[bo].to_list()
             y = data[bo.apply(lambda x: not x)].to_list()
             p = mannwhitneyu(x, y).pvalue
             return p
 
+        # node_data = node_data[node_data["conservation"] > 0.3]
         fig: plt.Figure
         axes: List[plt.Axes]
         fig, axes = plt.subplots(4, 1, figsize=(10, 15))
         sns.boxplot(x=node_data["conservation"], y=node_data["is_mutation"], orient="h", ax=axes[0], )
-        p = cal_p(node_data["conservation"], node_data["is_mutation"])
+        p = cal_p_mannwhitneyu(node_data["conservation"], node_data["is_mutation"])
         axes[0].set_xlabel(f"conservtion (p = {p: .3f})")
         sns.boxplot(x=node_data["degree centrality"], y=node_data["is_mutation"], orient="h", ax=axes[1], )
-        p = cal_p(node_data["degree centrality"], node_data["is_mutation"])
+        p = cal_p_mannwhitneyu(node_data["degree centrality"], node_data["is_mutation"])
         axes[1].set_xlabel(f"degree centrality (p = {p: .3f})")
         sns.boxplot(x=node_data["closeness centrality"], y=node_data["is_mutation"], orient="h", ax=axes[2])
-        p = cal_p(node_data["closeness centrality"], node_data["is_mutation"])
+        p = cal_p_mannwhitneyu(node_data["closeness centrality"], node_data["is_mutation"])
         axes[2].set_xlabel(f"closeness centrality (p = {p: .3f})")
         sns.boxplot(x=node_data["betweenness centrality"], y=node_data["is_mutation"], orient="h", ax=axes[3])
-        p = cal_p(node_data["betweenness centrality"], node_data["is_mutation"])
+        p = cal_p_mannwhitneyu(node_data["betweenness centrality"], node_data["is_mutation"])
         axes[3].set_xlabel(f"betweenness centrality (p = {p: .3f})")
         plt.show()
         fig.savefig(os.path.join(self.data_dir, "boxplot.png"), dpi=500)
@@ -372,6 +372,12 @@ class ProConNetwork:
             edge_in_same_group += list(permutations(group, 2))
         edge_in_same_group = list(set(edge_in_same_group))  # 去重
 
+        def cal_p_mannwhitneyu(data: pd.Series, x: pd.Series, y: pd.Series):
+            x = data.loc[x].to_list()
+            y = data.loc[y].to_list()
+            p = mannwhitneyu(x, y).pvalue
+            return p
+
         # 初始化 图片
         fig: plt.Figure
         axes: List[plt.Axes]
@@ -383,7 +389,8 @@ class ProConNetwork:
         for u, v, weight in self.G.edges.data("weight"):
 
             # 所有的
-            rows.append([u, v, weight, "all"])
+            # rows.append([u, v, weight, "all"])
+
             # 其他三种
             # 先小范围
             if (u, v) in edge_in_same_group:
@@ -392,19 +399,26 @@ class ProConNetwork:
             if (u, v) in edge_in_different_group:
                 rows.append([u, v, weight, "mutation"])
             else:
-                rows.append([u, v, weight, "other"])
+                rows.append([u, v, weight, "no mutation"])
         co_conservation = pd.DataFrame(rows, columns=columns)
         log.debug("co_conservation.label.value_counts() = %s", co_conservation.label.value_counts())
-        sns.boxplot(data=co_conservation, x="co-conservation", y="label", orient="h", ax=axes[0])
+        sns.boxplot(data=co_conservation, x="co-conservation", y="label", orient="h", ax=axes[0], )
         axes[0].set_xlabel("co-conservation")
         axes[0].set_ylabel("")
+        log.debug(
+            "p value of co-conservation = %.4f",
+            cal_p_mannwhitneyu(
+                co_conservation["co-conservation"],
+                co_conservation["label"] == "mutation",
+                co_conservation["label"] == "no mutation")
+        )
 
         # 边的 betweenness
         rows = []
         columns = ["u", "v", "co-conservation", "label"]
         for (u, v), weight in self.edge_betweenness_c.items():
             # 所有的
-            rows.append([u, v, weight, "all"])
+            # rows.append([u, v, weight, "all"])
             # 其他三种
             # 先小范围
             if (u, v) in edge_in_same_group:
@@ -413,14 +427,20 @@ class ProConNetwork:
             if (u, v) in edge_in_different_group:
                 rows.append([u, v, weight, "mutation"])
             else:
-                rows.append([u, v, weight, "other"])
+                rows.append([u, v, weight, "no mutation"])
         co_conservation = pd.DataFrame(rows, columns=columns)
         log.debug("co_conservation.label.value_counts() = %s", co_conservation.label.value_counts())
         sns.boxplot(data=co_conservation, x="co-conservation", y="label", orient="h", ax=axes[1])
         axes[1].set_xlabel("betweenness centrality")
         axes[1].set_ylabel("")
 
-
+        log.debug(
+            "p value of co-conservation = %.4f",
+            cal_p_mannwhitneyu(
+                co_conservation["co-conservation"],
+                co_conservation["label"] == "mutation",
+                co_conservation["label"] == "no mutation")
+        )
         # 绘图
         fig.tight_layout()
         fig.show()
@@ -481,24 +501,80 @@ class ProConNetwork:
                 conservation = 0
                 norm_conservation = 0
 
+            # 中心性
+            # self.closeness_c[]
+            # self.betweenness_c[]
+            # self.closeness_c[]
+
             data.append(
                 {"aa": aa, "degree": degree, "weighted degree": w_degree, "average weighted degree": avg_w_degrees,
-                 "conservation": conservation, "normalized conservation": norm_conservation})
+                 "conservation": conservation, "normalized conservation": norm_conservation,
+                 "closeness centrality": self.closeness_c[aa],
+                 "betweenness centrality": self.betweenness_c[aa],
+                 "degree centrality": self.degree_c[aa],
+                 })
 
         data = pd.DataFrame(data)
         data = data.set_index("aa", drop=False).sort_index()
         data.to_csv(os.path.join(self.data_dir, "aas_info.csv"))
+
+
+    def calculate_average_shortest_path_length(self, aas):
+        """平均最短路径长度"""
+        # data -> aa : [变异，非变异]
+        data = {}
+        for aa in aas:
+            mutation_len = []  # 与其他变异相连的路径
+            other_len = []  # 与其他相连的路径
+            path_len: dict = shortest_path_length(self.G, source=aa)
+            for target, length in path_len.items():
+                if target in aas:
+                    mutation_len.append(length)
+                else:
+                    other_len.append(length)
+            average_mutation_len = 0 if len(mutation_len) == 0 else np.mean(mutation_len)
+            average_other_len = 0 if len(other_len) == 0 else np.mean(other_len)
+            data[aa] = {
+                "mutation": average_mutation_len,
+                "other": average_other_len
+            }
+        data = pd.DataFrame(data).T
+        log.debug("data = %s", data.head())
+        p_value = mannwhitneyu(data.iloc[:, 0], data.iloc[:, 1]).pvalue
+        data.to_csv(os.path.join(self.data_dir, "mutations' average shortest path length.csv"))
+        data.index.name = "position"
+        plt_data = data.stack().reset_index()
+        plt_data.columns = ["position", "type", "length"]
+        plt_data = plt_data.sort_values("position")  # 排序
+        log.debug("plt_data = %s", plt_data.head())
+
+        fig: plt.Figure
+        axes: List[plt.Axes]
+        fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+        sns.barplot(data=plt_data, x="position", y="length", hue="type", ax=axes[0], )
+        sns.boxplot(data=plt_data, x="type", y="length", ax=axes[1])
+        # 调整图像
+        [txt.set_rotation(90) for txt in axes[0].get_xticklabels()]  # 字体旋转
+        axes[0].legend()
+        axes[0].set_xlabel("")
+        axes[1].set_xlabel(f"p = {p_value:.3f}")
+        # fig.suptitle("average shortest path length", va="bottom")
+        fig.tight_layout()
+        # 查看并保存图片
+        fig.show()
+        fig.savefig(os.path.join(self.data_dir, "average shortest length.png"), dpi=300)
 
     def analysisG(self, aas: list, groups):
         aas = [self._aa2position(aa) for aa in aas if aa]
         aas = list(set(aas))
         log.debug("aas = %s", aas)
 
-        self._collect_mutation_info(aas)  # 收集变异位点的信息
-        self._plot_procon_distribution()  # 分数分布图
-        self._plot_degree_distribuition(aas)  # 度分布
-        self._plot_node_box(aas, )  # 箱线图：中心性 + 保守性
-        self._plot_edge_box(aas, groups)  # 共保守性
+        # self._collect_mutation_info(aas)  # 收集变异位点的信息
+        # self._plot_procon_distribution()  # 分数分布图
+        # self._plot_degree_distribuition(aas)  # 度分布
+        # self._plot_node_box(aas, )  # 箱线图：中心性 + 保守性
+        # self._plot_edge_box(aas, groups)  # 共保守性
+        self.calculate_average_shortest_path_length(aas)
 
 
 if __name__ == '__main__':
