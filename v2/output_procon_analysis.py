@@ -75,6 +75,7 @@ class ProConNetwork:
 
         # fasta 序列
         self.fasta = next(SeqIO.parse(fasta_file, "fasta")).seq
+        self.positions = [f"{i+1}{aa.upper()}" for i, aa in enumerate(self.fasta)]  # 所有可能的位点
 
         # 节点
         self.nodes = self._get_nodes(self.fasta, self.type1)
@@ -518,7 +519,6 @@ class ProConNetwork:
         data = data.set_index("aa", drop=False).sort_index()
         data.to_csv(os.path.join(self.data_dir, "aas_info.csv"))
 
-
     def calculate_average_shortest_path_length(self, aas):
         """平均最短路径长度"""
         # data -> aa : [变异，非变异]
@@ -565,16 +565,88 @@ class ProConNetwork:
         fig.savefig(os.path.join(self.data_dir, "average shortest length.png"), dpi=300)
 
     def analysisG(self, aas: list, groups):
+        """绘制相关图表"""
         aas = [self._aa2position(aa) for aa in aas if aa]
         aas = list(set(aas))
         log.debug("aas = %s", aas)
 
-        # self._collect_mutation_info(aas)  # 收集变异位点的信息
-        # self._plot_procon_distribution()  # 分数分布图
-        # self._plot_degree_distribuition(aas)  # 度分布
-        # self._plot_node_box(aas, )  # 箱线图：中心性 + 保守性
-        # self._plot_edge_box(aas, groups)  # 共保守性
+        self._collect_mutation_info(aas)  # 收集变异位点的信息
+        self._plot_procon_distribution()  # 分数分布图
+        self._plot_degree_distribuition(aas)  # 度分布
+        self._plot_node_box(aas, )  # 箱线图：中心性 + 保守性
+        self._plot_edge_box(aas, groups)  # 共保守性
         self.calculate_average_shortest_path_length(aas)
+
+    def random_sample_analysis(self, aas: list, groups, N=1000):
+        """使用随机采样的形式，分析实验组和对照组的区别
+        :param N: 采样次数
+        """
+        aas = [self._aa2position(aa) for aa in aas if aa]
+        aas = list(set(aas))
+        groups = [[self._aa2position(aa) for aa in group] for group in groups]
+        log.debug("aas = %s", aas)
+
+        # 重采样
+        group_and_sample_groups = []
+        positions = pd.Series(self.positions)
+        log.info("开始采样，采样数目为%s", N)
+        for group in groups:
+            # 采样
+            sample_groups = [positions.sample(n=len(group), random_state=i).tolist() for i in range(N)]
+            group_and_sample_groups.append([group, sample_groups])
+            log.info("采样完成")
+
+        def apply_to_group(data, func):
+            scores = []
+            for group, sample_groups in data:
+                s1 = func(group)
+                s2s = [func(g) for g in sample_groups]
+                scores.append([s1, s2s])
+            return scores
+
+        # 度
+        # weighted_degrees = self.get_weighted_degree()
+        # avg_weighted_degrees = self.get_avg_weighted_degree()
+
+        def calculate_degree(group: List[str]):
+            """计算平均度"""
+            data = []
+            for aa in group:
+                degree = self.G.degree[aa]
+                data.append(degree)
+
+            # 返回
+            return np.mean(data)
+
+        degree_scores = apply_to_group(group_and_sample_groups, calculate_degree)
+        # log.debug("degree_scores = %s", degree_scores)
+        # log.debug("degree_scores[0][1] = %s", degree_scores[0][1])
+        # for i in degree_scores:
+        #     print(type(i[1]))
+        
+        _plot_scores = []
+        for i in degree_scores:
+            _plot_scores += i[1]
+        _plot_aas = []
+        for i in range(len(group_and_sample_groups)):
+            _plot_aas += [i, ] * N
+        log.debug("len(_plot_aas) = %s", len(_plot_aas))
+        log.debug("len(_plot_scores) = %s", len(_plot_scores))
+        log.debug("len(degree_scores) = %s", len(degree_scores))
+        log.debug("group_and_sample_groups = %s",len(group_and_sample_groups))
+        assert len(_plot_aas) == len(_plot_scores)
+        # 绘图的数据
+        plot_data = pd.DataFrame(
+            np.array([_plot_scores, _plot_aas]).T,
+            columns=["degree", "position"]
+        )
+        log.debug("plot_data = %s", plot_data)
+        ax: plt.Axes
+        fig, ax = plt.subplots()
+        sns.boxplot(data=plot_data, x="position", y="degree", ax=ax)
+        _plot_normal_degree = [i[0] for i in degree_scores]
+        ax.scatter(x=list(range(len(group_and_sample_groups))), y=_plot_normal_degree)
+        plt.show()
 
 
 if __name__ == '__main__':
@@ -586,7 +658,8 @@ if __name__ == '__main__':
     aas = groups.get_non_duplicated_aas()
     log.debug("aas = %s", aas)
 
-    pcn.analysisG(aas, groups.get_aa_groups())
+    # pcn.analysisG(aas, groups.get_aa_groups())
+    pcn.random_sample_analysis(aas, groups.get_aa_groups())
 
     end_time = time.time()
     log.info(f"程序运行时间: {end_time - start_time}")
