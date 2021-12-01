@@ -35,3 +35,4 @@ How to use?
    
 6. `analysis_procon.py`找出相关的变异的保守性，并结果为 `data/procon/analysis.json`, 将excel中的数据保存为json文件，之后将可以不用访问json
 7. `output_procon_analysis`将上一步得到的结果，解析为excel、图片格式
+   > 暂时弃用，但是有一张很重要的图：同一组变异中共保守性的连线

@@ -110,7 +110,8 @@ def plot_2D(type1, type2, pst_2_x, analysis, outpath, font_size):
         y = [y1, y3, y2]
         x_smooth, y_smooth = two_degree_bc(x, y)
         y_smooth += 0.15
-        ax.plot(x_smooth, y_smooth, "C1")
+        alpha = row["rate"] / 100
+        ax.plot(x_smooth, y_smooth, "C1", alpha=alpha)
 
     # 添加坐标标签
     xtick_names = type1["position"].drop_duplicates()
@@ -317,4 +318,4 @@ if __name__ == '__main__':
     # 绘制图表
     output_picture(analysis)
     # 绘制全局图像
-    output_picture_global(fasta, analysis)
+    # output_picture_global(fasta, analysis)
