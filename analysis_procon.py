@@ -53,7 +53,7 @@ def check_aa(seq, aa):
 
 if __name__ == '__main__':
     # 加载变异
-    variation_file = "./data/总结 - 2021年9月21日.xlsx"
+    variation_file = "./data/总结 - 20211201.xlsx"
     log.info("加载变异")
     variation = pd.read_excel(variation_file, sheet_name=1, index_col=0)
     variation["Year and month first detected"] = variation["Year and month first detected"].dt.strftime('%B %d, %Y')
@@ -65,7 +65,7 @@ if __name__ == '__main__':
     fasta = next(SeqIO.parse(fasta_file, "fasta")).seq
     t_fasta = {}
     for i, row in variation.iterrows():
-        aas = row.iloc[0].split(",")
+        aas = row.loc["Spike mutations of interest"].split(",")
         aas = [i.strip() for i in aas]
         for aa in aas:
             if check_aa(fasta, aa):

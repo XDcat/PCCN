@@ -128,22 +128,6 @@ def plot_2D(type1, type2, pst_2_x, analysis, outpath, font_size):
     ax.set_ymargin(0.03)
 
     # 绘制表格
-    """
-    ax.set_xticklabels("")  # 隐藏很坐标标签
-    table_cells = type1.loc[~type1["position"].duplicated(), :]
-    table_cells = table_cells.iloc[table_cells["position"].str[:-1].astype(int).argsort()]
-    col_labels = xtick_names.to_list()
-    # table_cells = table_cells.loc[:, ["rank", "position", "information"]]
-    table_cells = table_cells.reset_index(drop=True)
-    table_cells = table_cells.T
-    log.debug("table_cells = %s", table_cells)
-    table = plt.table(cellText=table_cells.values,
-                      rowLabels=table_cells.index.to_list(),
-                      colLabels=col_labels,
-                      loc='bottom',
-                      cellLoc="center"
-                      )
-    """
     flg.show()
     flg.savefig(outpath, dpi=500)
 
@@ -331,6 +315,6 @@ if __name__ == '__main__':
     # 解析到excel
     # output_excel(analysis)
     # 绘制图表
-    # output_picture(analysis)
+    output_picture(analysis)
     # 绘制全局图像
     output_picture_global(fasta, analysis)

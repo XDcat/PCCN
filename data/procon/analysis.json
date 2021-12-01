@@ -1,176 +1,14 @@
 {
 	"1": {
-		"Spike mutations of interest": "N501Y, D614G, P681H",
-		"WHO label": "Alpha",
-		"Lineage + additional mutations": "B.1.1.7",
-		"Country first detected (community)": "United Kingdom",
-		"Year and month first detected": "September 01, 2020",
-		"Evidence for impact on transmissibility": "Yes (v) (1)",
-		"Evidence for impact on immunity": "No",
-		"Evidence for impact on severity": "Yes (v) (2, 3)",
-		"Transmission in EU/EEA": "Community",
-		"type": "Variants of Concern (VOC)",
-		"aas": [
-			"N501Y",
-			"D614G",
-			"P681H"
-		],
-		"type1": [
-			{
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			{
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			{
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681H"
-			}
-		],
-		"t1": {
-			"N501Y": {
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"P681H": {
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681H"
-			}
-		},
-		"type2": [
-			{
-				"rank": 261081,
-				"site1": "501N",
-				"site2": "614D",
-				"info": 11.533,
-				"rate": 16.11085022236566
-			}
-		],
-		"type3": []
-	},
-	"2": {
-		"Spike mutations of interest": "E484K, N501Y, D614G, P681H",
-		"WHO label": NaN,
-		"Lineage + additional mutations": "B.1.1.7+E484K",
-		"Country first detected (community)": "United Kingdom",
-		"Year and month first detected": "December 01, 2020",
-		"Evidence for impact on transmissibility": "Yes (v) (1)",
-		"Evidence for impact on immunity": "Yes (v) (4, 5)",
-		"Evidence for impact on severity": "Yes (v) (2)",
-		"Transmission in EU/EEA": "Outbreaks",
-		"type": "Variants of Concern (VOC)",
-		"aas": [
-			"E484K",
-			"N501Y",
-			"D614G",
-			"P681H"
-		],
-		"type1": [
-			{
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			{
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			{
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			{
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681H"
-			}
-		],
-		"t1": {
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"N501Y": {
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"P681H": {
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681H"
-			}
-		},
-		"type2": [
-			{
-				"rank": 261081,
-				"site1": "501N",
-				"site2": "614D",
-				"info": 11.533,
-				"rate": 16.11085022236566
-			}
-		],
-		"type3": []
-	},
-	"3": {
-		"Spike mutations of interest": "K417N, E484K, N501Y, D614G, A701V",
 		"WHO label": "Beta",
+		"Spike mutations of interest": "K417N, E484K, N501Y, D614G, A701V",
 		"Lineage + additional mutations": "B.1.351",
 		"Country first detected (community)": "South Africa",
 		"Year and month first detected": "September 01, 2020",
-		"Evidence for impact on transmissibility": "Yes (v) (6)",
-		"Evidence for impact on immunity": "Yes (v) (7, 8)",
-		"Evidence for impact on severity": "Yes (v) (3, 9)",
-		"Transmission in EU/EEA": "Community",
-		"type": "Variants of Concern (VOC)",
+		"Evidence for impact on transmissibility": "Yes (v) (1)",
+		"Evidence for impact on immunity": "Yes (v) (2, 3)",
+		"Evidence for impact on severity": "Yes (v) (4, 5)",
+		"Unnamed: 9": "Variants of Concern (VOC)",
 		"aas": [
 			"K417N",
 			"E484K",
@@ -215,43 +53,7 @@
 				"aa": "A701V"
 			}
 		],
-		"t1": {
-			"K417N": {
-				"rank": 1045,
-				"position": "417K",
-				"information": 1.426,
-				"rate": 82.08955223880598,
-				"aa": "K417N"
-			},
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"N501Y": {
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"A701V": {
-				"rank": 928,
-				"position": "701A",
-				"information": 1.608,
-				"rate": 72.89866457187746,
-				"aa": "A701V"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 242644,
@@ -298,17 +100,16 @@
 		],
 		"type3": []
 	},
-	"4": {
-		"Spike mutations of interest": "K417T, E484K, N501Y, D614G, H655Y",
+	"2": {
 		"WHO label": "Gamma",
+		"Spike mutations of interest": "K417T, E484K, N501Y, D614G, H655Y",
 		"Lineage + additional mutations": "P.1",
 		"Country first detected (community)": "Brazil",
 		"Year and month first detected": "December 01, 2020",
-		"Evidence for impact on transmissibility": "Yes (v) (10)",
-		"Evidence for impact on immunity": "Yes (v) (11)\u00a0",
-		"Evidence for impact on severity": "Yes (v) (3)",
-		"Transmission in EU/EEA": "Community",
-		"type": "Variants of Concern (VOC)",
+		"Evidence for impact on transmissibility": "Yes (v) (6)",
+		"Evidence for impact on immunity": "Yes (v) (7)\u00a0",
+		"Evidence for impact on severity": "Yes (v) (5)",
+		"Unnamed: 9": "Variants of Concern (VOC)",
 		"aas": [
 			"K417T",
 			"E484K",
@@ -353,43 +154,7 @@
 				"aa": "H655Y"
 			}
 		],
-		"t1": {
-			"K417T": {
-				"rank": 1045,
-				"position": "417K",
-				"information": 1.426,
-				"rate": 82.08955223880598,
-				"aa": "K417N"
-			},
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"N501Y": {
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"H655Y": {
-				"rank": 491,
-				"position": "655H",
-				"information": 2.07,
-				"rate": 38.57030636292223,
-				"aa": "H655Y"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 242644,
@@ -436,17 +201,16 @@
 		],
 		"type3": []
 	},
-	"5": {
-		"Spike mutations of interest": "L452R, T478K, D614G, P681R",
+	"3": {
 		"WHO label": "Delta",
+		"Spike mutations of interest": "L452R, T478K, D614G, P681R",
 		"Lineage + additional mutations": "B.1.617.2",
 		"Country first detected (community)": "India",
 		"Year and month first detected": "December 01, 2020",
-		"Evidence for impact on transmissibility": "Yes (v) (12)",
-		"Evidence for impact on immunity": "Yes (v) (13-15)",
-		"Evidence for impact on severity": "Yes (v) (14, 16)",
-		"Transmission in EU/EEA": "Dominant",
-		"type": "Variants of Concern (VOC)",
+		"Evidence for impact on transmissibility": "Yes (v) (8)",
+		"Evidence for impact on immunity": "Yes (v) (9-11)",
+		"Evidence for impact on severity": "Yes (v) (10, 12)",
+		"Unnamed: 9": "Variants of Concern (VOC)",
 		"aas": [
 			"L452R",
 			"T478K",
@@ -483,36 +247,7 @@
 				"aa": "P681R"
 			}
 		],
-		"t1": {
-			"L452R": {
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			"T478K": {
-				"rank": "",
-				"position": "478T",
-				"information": "",
-				"rate": "",
-				"aa": "T478K"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"P681R": {
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681R"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 239731,
@@ -524,21 +259,1648 @@
 		],
 		"type3": []
 	},
+	"4": {
+		"WHO label": "Omicron",
+		"Spike mutations of interest": "A67V,T95I, G142D, G339D, S371L, S373P, S375F, K417N, N440K, G446S, S477N, T478K, E484A, Q493R, G496S, Q498R, N501Y, Y505H, T547K, D614G, H655Y, N679K, P681H, N764K, D796Y, N856K, Q954H, N969K, L981F",
+		"Lineage + additional mutations": "B.1.1.529",
+		"Country first detected (community)": "South Africa and Botswana",
+		"Year and month first detected": "November 01, 2021",
+		"Evidence for impact on transmissibility": NaN,
+		"Evidence for impact on immunity": NaN,
+		"Evidence for impact on severity": NaN,
+		"Unnamed: 9": "Variants of Concern (VOC)",
+		"aas": [
+			"A67V",
+			"T95I",
+			"G142D",
+			"G339D",
+			"S371L",
+			"S373P",
+			"S375F",
+			"K417N",
+			"N440K",
+			"G446S",
+			"S477N",
+			"T478K",
+			"E484A",
+			"Q493R",
+			"G496S",
+			"Q498R",
+			"N501Y",
+			"Y505H",
+			"T547K",
+			"D614G",
+			"H655Y",
+			"N679K",
+			"P681H",
+			"N764K",
+			"D796Y",
+			"N856K",
+			"Q954H",
+			"N969K",
+			"L981F"
+		],
+		"type1": [
+			{
+				"rank": 1063,
+				"position": "67A",
+				"information": 1.399,
+				"rate": 83.50353495679497,
+				"aa": "A67V"
+			},
+			{
+				"rank": 1025,
+				"position": "95T",
+				"information": 1.471,
+				"rate": 80.5184603299293,
+				"aa": "T95I"
+			},
+			{
+				"rank": 1141,
+				"position": "142G",
+				"information": 1.048,
+				"rate": 89.63079340141398,
+				"aa": "G142D"
+			},
+			{
+				"rank": 1007,
+				"position": "339G",
+				"information": 1.494,
+				"rate": 79.1044776119403,
+				"aa": "G339D"
+			},
+			{
+				"rank": 942,
+				"position": "371S",
+				"information": 1.584,
+				"rate": 73.99842890809111,
+				"aa": "S371L"
+			},
+			{
+				"rank": 1026,
+				"position": "373S",
+				"information": 1.47,
+				"rate": 80.59701492537313,
+				"aa": "S373P"
+			},
+			{
+				"rank": 798,
+				"position": "375S",
+				"information": 1.752,
+				"rate": 62.68656716417911,
+				"aa": "S375F"
+			},
+			{
+				"rank": 1045,
+				"position": "417K",
+				"information": 1.426,
+				"rate": 82.08955223880598,
+				"aa": "K417N"
+			},
+			{
+				"rank": 1054,
+				"position": "440N",
+				"information": 1.419,
+				"rate": 82.79654359780048,
+				"aa": "N440K"
+			},
+			{
+				"rank": "",
+				"position": "446G",
+				"information": "",
+				"rate": "",
+				"aa": "G446S"
+			},
+			{
+				"rank": "",
+				"position": "477S",
+				"information": "",
+				"rate": "",
+				"aa": "S477N"
+			},
+			{
+				"rank": "",
+				"position": "478T",
+				"information": "",
+				"rate": "",
+				"aa": "T478K"
+			},
+			{
+				"rank": "",
+				"position": "484E",
+				"information": "",
+				"rate": "",
+				"aa": "E484A"
+			},
+			{
+				"rank": "",
+				"position": "493Q",
+				"information": "",
+				"rate": "",
+				"aa": "Q493R"
+			},
+			{
+				"rank": "",
+				"position": "496G",
+				"information": "",
+				"rate": "",
+				"aa": "G496S"
+			},
+			{
+				"rank": 1014,
+				"position": "498Q",
+				"information": 1.488,
+				"rate": 79.65435978004713,
+				"aa": "Q498R"
+			},
+			{
+				"rank": 1068,
+				"position": "501N",
+				"information": 1.385,
+				"rate": 83.89630793401413,
+				"aa": "N501Y"
+			},
+			{
+				"rank": 991,
+				"position": "505Y",
+				"information": 1.52,
+				"rate": 77.84760408483896,
+				"aa": "Y505H"
+			},
+			{
+				"rank": 420,
+				"position": "547T",
+				"information": 2.153,
+				"rate": 32.992930086410055,
+				"aa": "T547K"
+			},
+			{
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
+			},
+			{
+				"rank": 491,
+				"position": "655H",
+				"information": 2.07,
+				"rate": 38.57030636292223,
+				"aa": "H655Y"
+			},
+			{
+				"rank": "",
+				"position": "679N",
+				"information": "",
+				"rate": "",
+				"aa": "N679K"
+			},
+			{
+				"rank": "",
+				"position": "681P",
+				"information": "",
+				"rate": "",
+				"aa": "P681H"
+			},
+			{
+				"rank": 35,
+				"position": "764N",
+				"information": 2.996,
+				"rate": 2.7494108405341717,
+				"aa": "N764K"
+			},
+			{
+				"rank": 978,
+				"position": "796D",
+				"information": 1.544,
+				"rate": 76.82639434406913,
+				"aa": "D796Y"
+			},
+			{
+				"rank": 235,
+				"position": "856N",
+				"information": 2.562,
+				"rate": 18.460329929300865,
+				"aa": "N856K"
+			},
+			{
+				"rank": 475,
+				"position": "954Q",
+				"information": 2.089,
+				"rate": 37.3134328358209,
+				"aa": "Q954H"
+			},
+			{
+				"rank": 693,
+				"position": "969N",
+				"information": 1.859,
+				"rate": 54.43833464257659,
+				"aa": "N969K"
+			},
+			{
+				"rank": 213,
+				"position": "981L",
+				"information": 2.648,
+				"rate": 16.732128829536528,
+				"aa": "L981F"
+			}
+		],
+		"t1": {},
+		"type2": [
+			{
+				"rank": 91051,
+				"site1": "67A",
+				"site2": "95T",
+				"info": 161.323,
+				"rate": 5.618597383940676
+			},
+			{
+				"rank": 164415,
+				"site1": "67A",
+				"site2": "142G",
+				"info": 64.762,
+				"rate": 10.1457610446959
+			},
+			{
+				"rank": 70386,
+				"site1": "67A",
+				"site2": "339G",
+				"info": 184.006,
+				"rate": 4.3433965081772685
+			},
+			{
+				"rank": 43542,
+				"site1": "67A",
+				"site2": "371S",
+				"info": 215.007,
+				"rate": 2.686900388700233
+			},
+			{
+				"rank": 181764,
+				"site1": "67A",
+				"site2": "373S",
+				"info": 49.329,
+				"rate": 11.216337381188488
+			},
+			{
+				"rank": 81794,
+				"site1": "67A",
+				"site2": "375S",
+				"info": 171.514,
+				"rate": 5.047364163183751
+			},
+			{
+				"rank": 93854,
+				"site1": "67A",
+				"site2": "440N",
+				"info": 158.097,
+				"rate": 5.791565593704278
+			},
+			{
+				"rank": 107936,
+				"site1": "67A",
+				"site2": "498Q",
+				"info": 140.694,
+				"rate": 6.660541094914069
+			},
+			{
+				"rank": 176268,
+				"site1": "67A",
+				"site2": "501N",
+				"info": 53.666,
+				"rate": 10.877188868573164
+			},
+			{
+				"rank": 109045,
+				"site1": "67A",
+				"site2": "505Y",
+				"info": 139.189,
+				"rate": 6.728975538234737
+			},
+			{
+				"rank": 151857,
+				"site1": "67A",
+				"site2": "547T",
+				"info": 80.276,
+				"rate": 9.370828908337955
+			},
+			{
+				"rank": 33294,
+				"site1": "67A",
+				"site2": "614D",
+				"info": 226.772,
+				"rate": 2.054514297491745
+			},
+			{
+				"rank": 26823,
+				"site1": "67A",
+				"site2": "655H",
+				"info": 235.07,
+				"rate": 1.6552002463393125
+			},
+			{
+				"rank": 107350,
+				"site1": "67A",
+				"site2": "796D",
+				"info": 141.434,
+				"rate": 6.62438006354715
+			},
+			{
+				"rank": 78674,
+				"site1": "67A",
+				"site2": "954Q",
+				"info": 174.907,
+				"rate": 4.854834439865007
+			},
+			{
+				"rank": 86860,
+				"site1": "67A",
+				"site2": "969N",
+				"info": 165.904,
+				"rate": 5.359978130598095
+			},
+			{
+				"rank": 131481,
+				"site1": "95T",
+				"site2": "142G",
+				"info": 108.157,
+				"rate": 8.113461715279394
+			},
+			{
+				"rank": 112278,
+				"site1": "95T",
+				"site2": "339G",
+				"info": 134.786,
+				"rate": 6.928478293199319
+			},
+			{
+				"rank": 49754,
+				"site1": "95T",
+				"site2": "371S",
+				"info": 207.823,
+				"rate": 3.070232004487424
+			},
+			{
+				"rank": 196543,
+				"site1": "95T",
+				"site2": "373S",
+				"info": 39.386,
+				"rate": 12.12832352892173
+			},
+			{
+				"rank": 55848,
+				"site1": "95T",
+				"site2": "375S",
+				"info": 200.825,
+				"rate": 3.446282047405508
+			},
+			{
+				"rank": 189757,
+				"site1": "95T",
+				"site2": "417K",
+				"info": 43.71,
+				"rate": 11.70957138070346
+			},
+			{
+				"rank": 113766,
+				"site1": "95T",
+				"site2": "440N",
+				"info": 132.77,
+				"rate": 7.020300161243644
+			},
+			{
+				"rank": 112531,
+				"site1": "95T",
+				"site2": "498Q",
+				"info": 134.462,
+				"rate": 6.94409047909664
+			},
+			{
+				"rank": 186700,
+				"site1": "95T",
+				"site2": "501N",
+				"info": 45.785,
+				"rate": 11.520929276797885
+			},
+			{
+				"rank": 56939,
+				"site1": "95T",
+				"site2": "505Y",
+				"info": 199.538,
+				"rate": 3.5136057423224143
+			},
+			{
+				"rank": 30065,
+				"site1": "95T",
+				"site2": "614D",
+				"info": 230.641,
+				"rate": 1.855258375505776
+			},
+			{
+				"rank": 50003,
+				"site1": "95T",
+				"site2": "655H",
+				"info": 207.561,
+				"rate": 3.0855973574061317
+			},
+			{
+				"rank": 107847,
+				"site1": "95T",
+				"site2": "796D",
+				"info": 140.805,
+				"rate": 6.655049061139912
+			},
+			{
+				"rank": 210195,
+				"site1": "95T",
+				"site2": "856N",
+				"info": 31.428,
+				"rate": 12.97076448493054
+			},
+			{
+				"rank": 71436,
+				"site1": "95T",
+				"site2": "954Q",
+				"info": 182.797,
+				"rate": 4.408190165063384
+			},
+			{
+				"rank": 23909,
+				"site1": "95T",
+				"site2": "969N",
+				"info": 239.254,
+				"rate": 1.4753824214191786
+			},
+			{
+				"rank": 229684,
+				"site1": "142G",
+				"site2": "339G",
+				"info": 22.654,
+				"rate": 14.173396464981495
+			},
+			{
+				"rank": 153776,
+				"site1": "142G",
+				"site2": "371S",
+				"info": 77.667,
+				"rate": 9.489247029827917
+			},
+			{
+				"rank": 174255,
+				"site1": "142G",
+				"site2": "373S",
+				"info": 55.36,
+				"rate": 10.752970172085782
+			},
+			{
+				"rank": 162660,
+				"site1": "142G",
+				"site2": "375S",
+				"info": 66.606,
+				"rate": 10.037463075329104
+			},
+			{
+				"rank": 211428,
+				"site1": "142G",
+				"site2": "417K",
+				"info": 30.794,
+				"rate": 13.046850750588234
+			},
+			{
+				"rank": 195954,
+				"site1": "142G",
+				"site2": "440N",
+				"info": 39.768,
+				"rate": 12.09197737282085
+			},
+			{
+				"rank": 193696,
+				"site1": "142G",
+				"site2": "498Q",
+				"info": 41.107,
+				"rate": 11.952640156393375
+			},
+			{
+				"rank": 132749,
+				"site1": "142G",
+				"site2": "501N",
+				"info": 106.495,
+				"rate": 8.19170776949996
+			},
+			{
+				"rank": 151503,
+				"site1": "142G",
+				"site2": "505Y",
+				"info": 80.757,
+				"rate": 9.348984189730638
+			},
+			{
+				"rank": 231264,
+				"site1": "142G",
+				"site2": "547T",
+				"info": 22.034,
+				"rate": 14.270895491533938
+			},
+			{
+				"rank": 149234,
+				"site1": "142G",
+				"site2": "614D",
+				"info": 83.923,
+				"rate": 9.208968182611974
+			},
+			{
+				"rank": 145927,
+				"site1": "142G",
+				"site2": "655H",
+				"info": 88.647,
+				"rate": 9.004899017543037
+			},
+			{
+				"rank": 164969,
+				"site1": "142G",
+				"site2": "796D",
+				"info": 64.171,
+				"rate": 10.179947412233906
+			},
+			{
+				"rank": 235250,
+				"site1": "142G",
+				"site2": "856N",
+				"info": 20.569,
+				"rate": 14.516864554722565
+			},
+			{
+				"rank": 168159,
+				"site1": "142G",
+				"site2": "954Q",
+				"info": 60.985,
+				"rate": 10.37679671267839
+			},
+			{
+				"rank": 148164,
+				"site1": "142G",
+				"site2": "969N",
+				"info": 85.444,
+				"rate": 9.142940360832789
+			},
+			{
+				"rank": 125698,
+				"site1": "339G",
+				"site2": "371S",
+				"info": 115.907,
+				"rate": 7.756602936448529
+			},
+			{
+				"rank": 146180,
+				"site1": "339G",
+				"site2": "373S",
+				"info": 88.291,
+				"rate": 9.02051120344036
+			},
+			{
+				"rank": 120718,
+				"site1": "339G",
+				"site2": "375S",
+				"info": 123.027,
+				"rate": 7.449295878074381
+			},
+			{
+				"rank": 194506,
+				"site1": "339G",
+				"site2": "417K",
+				"info": 40.612,
+				"rate": 12.002623834562664
+			},
+			{
+				"rank": 103974,
+				"site1": "339G",
+				"site2": "440N",
+				"info": 145.852,
+				"rate": 6.416053029597125
+			},
+			{
+				"rank": 35149,
+				"site1": "339G",
+				"site2": "498Q",
+				"info": 224.629,
+				"rate": 2.1689830913238826
+			},
+			{
+				"rank": 205520,
+				"site1": "339G",
+				"site2": "501N",
+				"info": 33.985,
+				"rate": 12.68227844117569
+			},
+			{
+				"rank": 138740,
+				"site1": "339G",
+				"site2": "505Y",
+				"info": 98.635,
+				"rate": 8.56140186321874
+			},
+			{
+				"rank": 227219,
+				"site1": "339G",
+				"site2": "547T",
+				"info": 23.64,
+				"rate": 14.021285641910758
+			},
+			{
+				"rank": 118975,
+				"site1": "339G",
+				"site2": "614D",
+				"info": 125.473,
+				"rate": 7.34173840764343
+			},
+			{
+				"rank": 126134,
+				"site1": "339G",
+				"site2": "655H",
+				"info": 115.345,
+				"rate": 7.783507731117431
+			},
+			{
+				"rank": 161439,
+				"site1": "339G",
+				"site2": "796D",
+				"info": 67.977,
+				"rate": 9.962117308607253
+			},
+			{
+				"rank": 237008,
+				"site1": "339G",
+				"site2": "856N",
+				"info": 19.89,
+				"rate": 14.625347648823317
+			},
+			{
+				"rank": 133615,
+				"site1": "339G",
+				"site2": "954Q",
+				"info": 105.354,
+				"rate": 8.245147109369842
+			},
+			{
+				"rank": 111701,
+				"site1": "339G",
+				"site2": "969N",
+				"info": 135.557,
+				"rate": 6.892872636034282
+			},
+			{
+				"rank": 194773,
+				"site1": "371S",
+				"site2": "373S",
+				"info": 40.463,
+				"rate": 12.019099935885134
+			},
+			{
+				"rank": 26090,
+				"site1": "371S",
+				"site2": "375S",
+				"info": 236.067,
+				"rate": 1.6099681030083386
+			},
+			{
+				"rank": 240458,
+				"site1": "371S",
+				"site2": "417K",
+				"info": 18.632,
+				"rate": 14.838241092877697
+			},
+			{
+				"rank": 133671,
+				"site1": "371S",
+				"site2": "440N",
+				"info": 105.309,
+				"rate": 8.248602771070434
+			},
+			{
+				"rank": 130121,
+				"site1": "371S",
+				"site2": "498Q",
+				"info": 109.998,
+				"rate": 8.02953850255071
+			},
+			{
+				"rank": 257167,
+				"site1": "371S",
+				"site2": "501N",
+				"info": 12.808,
+				"rate": 15.869324152792084
+			},
+			{
+				"rank": 57495,
+				"site1": "371S",
+				"site2": "505Y",
+				"info": 198.894,
+				"rate": 3.5479155263497293
+			},
+			{
+				"rank": 250037,
+				"site1": "371S",
+				"site2": "547T",
+				"info": 15.237,
+				"rate": 15.42934436841303
+			},
+			{
+				"rank": 2732,
+				"site1": "371S",
+				"site2": "614D",
+				"info": 290.81,
+				"rate": 0.1685869243932074
+			},
+			{
+				"rank": 7048,
+				"site1": "371S",
+				"site2": "655H",
+				"info": 271.736,
+				"rate": 0.4349197083174692
+			},
+			{
+				"rank": 92773,
+				"site1": "371S",
+				"site2": "796D",
+				"info": 159.376,
+				"rate": 5.724858981233906
+			},
+			{
+				"rank": 263168,
+				"site1": "371S",
+				"site2": "856N",
+				"info": 10.891,
+				"rate": 16.239635328957398
+			},
+			{
+				"rank": 13378,
+				"site1": "371S",
+				"site2": "954Q",
+				"info": 256.935,
+				"rate": 0.825532896973766
+			},
+			{
+				"rank": 18644,
+				"site1": "371S",
+				"site2": "969N",
+				"info": 247.27,
+				"rate": 1.150488513318799
+			},
+			{
+				"rank": 190966,
+				"site1": "373S",
+				"site2": "375S",
+				"info": 42.889,
+				"rate": 11.784176648489474
+			},
+			{
+				"rank": 235963,
+				"site1": "373S",
+				"site2": "417K",
+				"info": 20.3,
+				"rate": 14.560862533160469
+			},
+			{
+				"rank": 189423,
+				"site1": "373S",
+				"site2": "440N",
+				"info": 43.913,
+				"rate": 11.688960826989211
+			},
+			{
+				"rank": 160660,
+				"site1": "373S",
+				"site2": "498Q",
+				"info": 68.923,
+				"rate": 9.914046586022218
+			},
+			{
+				"rank": 154641,
+				"site1": "373S",
+				"site2": "501N",
+				"info": 76.429,
+				"rate": 9.542624661453145
+			},
+			{
+				"rank": 217364,
+				"site1": "373S",
+				"site2": "505Y",
+				"info": 27.895,
+				"rate": 13.413150890851076
+			},
+			{
+				"rank": 183376,
+				"site1": "373S",
+				"site2": "614D",
+				"info": 48.169,
+				"rate": 11.31581107156984
+			},
+			{
+				"rank": 207395,
+				"site1": "373S",
+				"site2": "655H",
+				"info": 32.94,
+				"rate": 12.797981399900896
+			},
+			{
+				"rank": 137793,
+				"site1": "373S",
+				"site2": "796D",
+				"info": 99.941,
+				"rate": 8.502964155531927
+			},
+			{
+				"rank": 221867,
+				"site1": "373S",
+				"site2": "954Q",
+				"info": 25.876,
+				"rate": 13.69102311652553
+			},
+			{
+				"rank": 210341,
+				"site1": "373S",
+				"site2": "969N",
+				"info": 31.359,
+				"rate": 12.97977388864994
+			},
+			{
+				"rank": 130279,
+				"site1": "375S",
+				"site2": "440N",
+				"info": 109.791,
+				"rate": 8.039288405205955
+			},
+			{
+				"rank": 132154,
+				"site1": "375S",
+				"site2": "498Q",
+				"info": 107.23,
+				"rate": 8.15499136393116
+			},
+			{
+				"rank": 219116,
+				"site1": "375S",
+				"site2": "501N",
+				"info": 27.107,
+				"rate": 13.521263735483908
+			},
+			{
+				"rank": 74728,
+				"site1": "375S",
+				"site2": "505Y",
+				"info": 179.147,
+				"rate": 4.611333706462519
+			},
+			{
+				"rank": 259648,
+				"site1": "375S",
+				"site2": "547T",
+				"info": 12.001,
+				"rate": 16.022422307777276
+			},
+			{
+				"rank": 15900,
+				"site1": "375S",
+				"site2": "614D",
+				"info": 252.017,
+				"rate": 0.9811610899897504
+			},
+			{
+				"rank": 28105,
+				"site1": "375S",
+				"site2": "655H",
+				"info": 233.221,
+				"rate": 1.734310215985027
+			},
+			{
+				"rank": 124071,
+				"site1": "375S",
+				"site2": "796D",
+				"info": 118.217,
+				"rate": 7.656203622397377
+			},
+			{
+				"rank": 33369,
+				"site1": "375S",
+				"site2": "954Q",
+				"info": 226.684,
+				"rate": 2.059142415840753
+			},
+			{
+				"rank": 42176,
+				"site1": "375S",
+				"site2": "969N",
+				"info": 216.646,
+				"rate": 2.6026069265036296
+			},
+			{
+				"rank": 224943,
+				"site1": "417K",
+				"site2": "498Q",
+				"info": 24.603,
+				"rate": 13.88083767707952
+			},
+			{
+				"rank": 242644,
+				"site1": "417K",
+				"site2": "501N",
+				"info": 17.865,
+				"rate": 14.973135315690122
+			},
+			{
+				"rank": 206349,
+				"site1": "417K",
+				"site2": "505Y",
+				"info": 33.497,
+				"rate": 12.733434575993394
+			},
+			{
+				"rank": 228490,
+				"site1": "417K",
+				"site2": "614D",
+				"info": 23.131,
+				"rate": 14.099716820865286
+			},
+			{
+				"rank": 240685,
+				"site1": "417K",
+				"site2": "655H",
+				"info": 18.558,
+				"rate": 14.852248864414028
+			},
+			{
+				"rank": 179550,
+				"site1": "417K",
+				"site2": "856N",
+				"info": 50.983,
+				"rate": 11.079715327525763
+			},
+			{
+				"rank": 257882,
+				"site1": "417K",
+				"site2": "954Q",
+				"info": 12.571,
+				"rate": 15.913445547719292
+			},
+			{
+				"rank": 184922,
+				"site1": "417K",
+				"site2": "969N",
+				"info": 47.042,
+				"rate": 11.41121201780406
+			},
+			{
+				"rank": 100117,
+				"site1": "440N",
+				"site2": "498Q",
+				"info": 150.668,
+				"rate": 6.1780443299687935
+			},
+			{
+				"rank": 178627,
+				"site1": "440N",
+				"site2": "501N",
+				"info": 51.734,
+				"rate": 11.022758617710636
+			},
+			{
+				"rank": 119442,
+				"site1": "440N",
+				"site2": "505Y",
+				"info": 124.828,
+				"rate": 7.370556157896588
+			},
+			{
+				"rank": 199387,
+				"site1": "440N",
+				"site2": "547T",
+				"info": 37.619,
+				"rate": 12.303821776716122
+			},
+			{
+				"rank": 121348,
+				"site1": "440N",
+				"site2": "614D",
+				"info": 122.101,
+				"rate": 7.48817207220605
+			},
+			{
+				"rank": 132341,
+				"site1": "440N",
+				"site2": "655H",
+				"info": 107.006,
+				"rate": 8.166530805681354
+			},
+			{
+				"rank": 131370,
+				"site1": "440N",
+				"site2": "796D",
+				"info": 108.321,
+				"rate": 8.106612100122861
+			},
+			{
+				"rank": 134118,
+				"site1": "440N",
+				"site2": "954Q",
+				"info": 104.729,
+				"rate": 8.276186356430523
+			},
+			{
+				"rank": 136720,
+				"site1": "440N",
+				"site2": "969N",
+				"info": 101.308,
+				"rate": 8.436751209018784
+			},
+			{
+				"rank": 219681,
+				"site1": "498Q",
+				"site2": "501N",
+				"info": 26.854,
+				"rate": 13.5561288937131
+			},
+			{
+				"rank": 144028,
+				"site1": "498Q",
+				"site2": "505Y",
+				"info": 91.291,
+				"rate": 8.887715060946148
+			},
+			{
+				"rank": 126035,
+				"site1": "498Q",
+				"site2": "614D",
+				"info": 115.483,
+				"rate": 7.777398614896741
+			},
+			{
+				"rank": 131386,
+				"site1": "498Q",
+				"site2": "655H",
+				"info": 108.29,
+				"rate": 8.107599432037315
+			},
+			{
+				"rank": 170939,
+				"site1": "498Q",
+				"site2": "796D",
+				"info": 58.368,
+				"rate": 10.548345632814964
+			},
+			{
+				"rank": 146029,
+				"site1": "498Q",
+				"site2": "954Q",
+				"info": 88.493,
+				"rate": 9.011193258497688
+			},
+			{
+				"rank": 113394,
+				"site1": "498Q",
+				"site2": "969N",
+				"info": 133.261,
+				"rate": 6.997344694232563
+			},
+			{
+				"rank": 221218,
+				"site1": "501N",
+				"site2": "505Y",
+				"info": 26.157,
+				"rate": 13.650974465745444
+			},
+			{
+				"rank": 156658,
+				"site1": "501N",
+				"site2": "547T",
+				"info": 73.882,
+				"rate": 9.667090190919138
+			},
+			{
+				"rank": 261081,
+				"site1": "501N",
+				"site2": "614D",
+				"info": 11.533,
+				"rate": 16.11085022236566
+			},
+			{
+				"rank": 256848,
+				"site1": "501N",
+				"site2": "655H",
+				"info": 12.91,
+				"rate": 15.849639222747632
+			},
+			{
+				"rank": 160320,
+				"site1": "501N",
+				"site2": "796D",
+				"info": 69.308,
+				"rate": 9.893065782840049
+			},
+			{
+				"rank": 252492,
+				"site1": "501N",
+				"site2": "954Q",
+				"info": 14.373,
+				"rate": 15.580838109037234
+			},
+			{
+				"rank": 201834,
+				"site1": "501N",
+				"site2": "969N",
+				"info": 36.067,
+				"rate": 12.454821851383098
+			},
+			{
+				"rank": 39113,
+				"site1": "505Y",
+				"site2": "614D",
+				"info": 220.126,
+				"rate": 2.413594573130132
+			},
+			{
+				"rank": 55198,
+				"site1": "505Y",
+				"site2": "655H",
+				"info": 201.548,
+				"rate": 3.4061716883807693
+			},
+			{
+				"rank": 105769,
+				"site1": "505Y",
+				"site2": "796D",
+				"info": 143.546,
+				"rate": 6.526819328750057
+			},
+			{
+				"rank": 238516,
+				"site1": "505Y",
+				"site2": "856N",
+				"info": 19.331,
+				"rate": 14.718403681760709
+			},
+			{
+				"rank": 56842,
+				"site1": "505Y",
+				"site2": "954Q",
+				"info": 199.675,
+				"rate": 3.50762004259103
+			},
+			{
+				"rank": 48338,
+				"site1": "505Y",
+				"site2": "969N",
+				"info": 209.468,
+				"rate": 2.982853130058148
+			},
+			{
+				"rank": 257878,
+				"site1": "547T",
+				"site2": "614D",
+				"info": 12.572,
+				"rate": 15.91319871474068
+			},
+			{
+				"rank": 243793,
+				"site1": "547T",
+				"site2": "655H",
+				"info": 17.453,
+				"rate": 15.04403808879693
+			},
+			{
+				"rank": 223514,
+				"site1": "547T",
+				"site2": "796D",
+				"info": 25.172,
+				"rate": 13.79265659546975
+			},
+			{
+				"rank": 260339,
+				"site1": "547T",
+				"site2": "969N",
+				"info": 11.763,
+				"rate": 16.065062704832805
+			},
+			{
+				"rank": 2713,
+				"site1": "614D",
+				"site2": "655H",
+				"info": 290.947,
+				"rate": 0.167414467744792
+			},
+			{
+				"rank": 82122,
+				"site1": "614D",
+				"site2": "796D",
+				"info": 171.179,
+				"rate": 5.06760446743008
+			},
+			{
+				"rank": 262507,
+				"site1": "614D",
+				"site2": "856N",
+				"info": 11.105,
+				"rate": 16.198846179241468
+			},
+			{
+				"rank": 11247,
+				"site1": "614D",
+				"site2": "954Q",
+				"info": 261.31,
+				"rate": 0.6940326276172781
+			},
+			{
+				"rank": 18370,
+				"site1": "614D",
+				"site2": "969N",
+				"info": 247.683,
+				"rate": 1.133580454283755
+			},
+			{
+				"rank": 94548,
+				"site1": "655H",
+				"site2": "796D",
+				"info": 157.256,
+				"rate": 5.834391115493768
+			},
+			{
+				"rank": 34945,
+				"site1": "655H",
+				"site2": "954Q",
+				"info": 224.889,
+				"rate": 2.15639460941458
+			},
+			{
+				"rank": 37605,
+				"site1": "655H",
+				"site2": "969N",
+				"info": 221.851,
+				"rate": 2.3205385401927394
+			},
+			{
+				"rank": 97784,
+				"site1": "796D",
+				"site2": "954Q",
+				"info": 153.496,
+				"rate": 6.034078995192311
+			},
+			{
+				"rank": 112822,
+				"site1": "796D",
+				"site2": "969N",
+				"info": 134.035,
+				"rate": 6.962047578290792
+			},
+			{
+				"rank": 198302,
+				"site1": "856N",
+				"site2": "969N",
+				"info": 38.287,
+				"rate": 12.236868331267136
+			},
+			{
+				"rank": 21348,
+				"site1": "954Q",
+				"site2": "969N",
+				"info": 243.126,
+				"rate": 1.31734760686171
+			}
+		],
+		"type3": [
+			{
+				"rank": 400470,
+				"site1": "371S",
+				"site2": "614D",
+				"site3": "655H"
+			},
+			{
+				"rank": 400486,
+				"site1": "371S",
+				"site2": "614D",
+				"site3": "954Q"
+			},
+			{
+				"rank": 400488,
+				"site1": "371S",
+				"site2": "614D",
+				"site3": "969N"
+			},
+			{
+				"rank": 401267,
+				"site1": "371S",
+				"site2": "954Q",
+				"site3": "969N"
+			},
+			{
+				"rank": 673351,
+				"site1": "614D",
+				"site2": "954Q",
+				"site3": "969N"
+			}
+		]
+	},
+	"5": {
+		"WHO label": "Mu",
+		"Spike mutations of interest": "R346K, E484K, N501Y, D614G, P681H",
+		"Lineage + additional mutations": "B.1.621",
+		"Country first detected (community)": "Colombia",
+		"Year and month first detected": "January 01, 2021",
+		"Evidence for impact on transmissibility": "Yes (m) (13)",
+		"Evidence for impact on immunity": "Yes (m) (14)",
+		"Evidence for impact on severity": NaN,
+		"Unnamed: 9": "Variants of interest (VOI)",
+		"aas": [
+			"R346K",
+			"E484K",
+			"N501Y",
+			"D614G",
+			"P681H"
+		],
+		"type1": [
+			{
+				"rank": 1101,
+				"position": "346R",
+				"information": 1.251,
+				"rate": 86.48860958366065,
+				"aa": "R346S"
+			},
+			{
+				"rank": "",
+				"position": "484E",
+				"information": "",
+				"rate": "",
+				"aa": "E484K"
+			},
+			{
+				"rank": 1068,
+				"position": "501N",
+				"information": 1.385,
+				"rate": 83.89630793401413,
+				"aa": "N501Y"
+			},
+			{
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
+			},
+			{
+				"rank": "",
+				"position": "681P",
+				"information": "",
+				"rate": "",
+				"aa": "P681H"
+			}
+		],
+		"t1": {},
+		"type2": [
+			{
+				"rank": 219396,
+				"site1": "346R",
+				"site2": "501N",
+				"info": 26.972,
+				"rate": 13.53854204398687
+			},
+			{
+				"rank": 48577,
+				"site1": "346R",
+				"site2": "614D",
+				"info": 209.183,
+				"rate": 2.997601400530321
+			},
+			{
+				"rank": 261081,
+				"site1": "501N",
+				"site2": "614D",
+				"info": 11.533,
+				"rate": 16.11085022236566
+			}
+		],
+		"type3": []
+	},
 	"6": {
-		"Spike mutations of interest": "E484K, D614G, Q677H",
-		"WHO label": "Eta",
-		"Lineage + additional mutations": "B.1.525",
-		"Country first detected (community)": "Nigeria",
+		"WHO label": "Lambda",
+		"Spike mutations of interest": "L452Q, F490S, D614G",
+		"Lineage + additional mutations": "C.37",
+		"Country first detected (community)": "Peru",
 		"Year and month first detected": "December 01, 2020",
 		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": "Yes (m) (4)",
+		"Evidence for impact on immunity": "Yes (v) (15, 16)",
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Community",
-		"type": "Variants of interest (VOI)",
+		"Unnamed: 9": "Variants of interest (VOI)",
+		"aas": [
+			"L452Q",
+			"F490S",
+			"D614G"
+		],
+		"type1": [
+			{
+				"rank": 1087,
+				"position": "452L",
+				"information": 1.324,
+				"rate": 85.38884524744698,
+				"aa": "L452R"
+			},
+			{
+				"rank": "",
+				"position": "490F",
+				"information": "",
+				"rate": "",
+				"aa": "F490S"
+			},
+			{
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
+			}
+		],
+		"t1": {},
+		"type2": [
+			{
+				"rank": 239731,
+				"site1": "452L",
+				"site2": "614D",
+				"info": 18.896,
+				"rate": 14.79337919901464
+			}
+		],
+		"type3": []
+	},
+	"7": {
+		"WHO label": NaN,
+		"Spike mutations of interest": "L452R, T478K, D614G, P681R, A222V, Y145H",
+		"Lineage + additional mutations": "AY.4.2",
+		"Country first detected (community)": "United Kingdom",
+		"Year and month first detected": "June 01, 2021",
+		"Evidence for impact on transmissibility": "Yes (v) (17)",
+		"Evidence for impact on immunity": "No (v) (17, 18)",
+		"Evidence for impact on severity": "No (v) (17)",
+		"Unnamed: 9": "Variants of interest (VOI)",
+		"aas": [
+			"L452R",
+			"T478K",
+			"D614G",
+			"P681R",
+			"A222V",
+			"Y145H"
+		],
+		"type1": [
+			{
+				"rank": 1087,
+				"position": "452L",
+				"information": 1.324,
+				"rate": 85.38884524744698,
+				"aa": "L452R"
+			},
+			{
+				"rank": "",
+				"position": "478T",
+				"information": "",
+				"rate": "",
+				"aa": "T478K"
+			},
+			{
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
+			},
+			{
+				"rank": "",
+				"position": "681P",
+				"information": "",
+				"rate": "",
+				"aa": "P681R"
+			},
+			{
+				"rank": 1069,
+				"position": "222A",
+				"information": 1.38,
+				"rate": 83.97486252945797,
+				"aa": "A222V"
+			},
+			{
+				"rank": 1080,
+				"position": "145Y",
+				"information": 1.345,
+				"rate": 84.83896307934015,
+				"aa": "Y145H"
+			}
+		],
+		"t1": {},
+		"type2": [
+			{
+				"rank": 239731,
+				"site1": "452L",
+				"site2": "614D",
+				"info": 18.896,
+				"rate": 14.79337919901464
+			},
+			{
+				"rank": 152882,
+				"site1": "222A",
+				"site2": "452L",
+				"info": 78.866,
+				"rate": 9.434079859107737
+			},
+			{
+				"rank": 206245,
+				"site1": "145Y",
+				"site2": "452L",
+				"info": 33.56,
+				"rate": 12.727016918549436
+			},
+			{
+				"rank": 167178,
+				"site1": "222A",
+				"site2": "614D",
+				"info": 61.986,
+				"rate": 10.316260924673362
+			},
+			{
+				"rank": 58479,
+				"site1": "145Y",
+				"site2": "614D",
+				"info": 197.692,
+				"rate": 3.608636439088717
+			},
+			{
+				"rank": 155435,
+				"site1": "145Y",
+				"site2": "222A",
+				"info": 75.416,
+				"rate": 9.591621007707978
+			}
+		],
+		"type3": []
+	},
+	"8": {
+		"WHO label": NaN,
+		"Spike mutations of interest": "L452R, D614G, Q677H",
+		"Lineage + additional mutations": "C.36+L452R",
+		"Country first detected (community)": "Egypt",
+		"Year and month first detected": "December 01, 2020",
+		"Evidence for impact on transmissibility": NaN,
+		"Evidence for impact on immunity": "Yes (m) (19)",
+		"Evidence for impact on severity": NaN,
+		"Unnamed: 9": "Variants under monitoring(VUM)",
+		"aas": [
+			"L452R",
+			"D614G",
+			"Q677H"
+		],
+		"type1": [
+			{
+				"rank": 1087,
+				"position": "452L",
+				"information": 1.324,
+				"rate": 85.38884524744698,
+				"aa": "L452R"
+			},
+			{
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
+			},
+			{
+				"rank": "",
+				"position": "677Q",
+				"information": "",
+				"rate": "",
+				"aa": "Q677H"
+			}
+		],
+		"t1": {},
+		"type2": [
+			{
+				"rank": 239731,
+				"site1": "452L",
+				"site2": "614D",
+				"info": 18.896,
+				"rate": 14.79337919901464
+			}
+		],
+		"type3": []
+	},
+	"9": {
+		"WHO label": NaN,
+		"Spike mutations of interest": "E484K, D614G, P681H",
+		"Lineage + additional mutations": "B.1.1.318",
+		"Country first detected (community)": "Unclear (b)",
+		"Year and month first detected": "January 01, 2021",
+		"Evidence for impact on transmissibility": NaN,
+		"Evidence for impact on immunity": "Yes (m) (14)",
+		"Evidence for impact on severity": NaN,
+		"Unnamed: 9": "Variants under monitoring(VUM)",
 		"aas": [
 			"E484K",
 			"D614G",
-			"Q677H"
+			"P681H"
 		],
 		"type1": [
 			{
@@ -557,49 +1919,675 @@
 			},
 			{
 				"rank": "",
-				"position": "677Q",
+				"position": "681P",
 				"information": "",
 				"rate": "",
-				"aa": "Q677H"
+				"aa": "P681H"
 			}
 		],
-		"t1": {
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"D614G": {
+		"t1": {},
+		"type2": [],
+		"type3": []
+	},
+	"10": {
+		"WHO label": NaN,
+		"Spike mutations of interest": "D614G, E484K, H655Y, K417T, N501Y, P681H",
+		"Lineage + additional mutations": "P.1+P681H",
+		"Country first detected (community)": "Italy",
+		"Year and month first detected": "February 01, 2021",
+		"Evidence for impact on transmissibility": NaN,
+		"Evidence for impact on immunity": "Unclear (20, 21)",
+		"Evidence for impact on severity": NaN,
+		"Unnamed: 9": "Variants under monitoring(VUM)",
+		"aas": [
+			"D614G",
+			"E484K",
+			"H655Y",
+			"K417T",
+			"N501Y",
+			"P681H"
+		],
+		"type1": [
+			{
 				"rank": 654,
 				"position": "614D",
 				"information": 1.892,
 				"rate": 51.37470542026709,
 				"aa": "D614G"
 			},
-			"Q677H": {
+			{
+				"rank": "",
+				"position": "484E",
+				"information": "",
+				"rate": "",
+				"aa": "E484K"
+			},
+			{
+				"rank": 491,
+				"position": "655H",
+				"information": 2.07,
+				"rate": 38.57030636292223,
+				"aa": "H655Y"
+			},
+			{
+				"rank": 1045,
+				"position": "417K",
+				"information": 1.426,
+				"rate": 82.08955223880598,
+				"aa": "K417N"
+			},
+			{
+				"rank": 1068,
+				"position": "501N",
+				"information": 1.385,
+				"rate": 83.89630793401413,
+				"aa": "N501Y"
+			},
+			{
+				"rank": "",
+				"position": "681P",
+				"information": "",
+				"rate": "",
+				"aa": "P681H"
+			}
+		],
+		"t1": {},
+		"type2": [
+			{
+				"rank": 2713,
+				"site1": "614D",
+				"site2": "655H",
+				"info": 290.947,
+				"rate": 0.167414467744792
+			},
+			{
+				"rank": 228490,
+				"site1": "417K",
+				"site2": "614D",
+				"info": 23.131,
+				"rate": 14.099716820865286
+			},
+			{
+				"rank": 261081,
+				"site1": "501N",
+				"site2": "614D",
+				"info": 11.533,
+				"rate": 16.11085022236566
+			},
+			{
+				"rank": 240685,
+				"site1": "417K",
+				"site2": "655H",
+				"info": 18.558,
+				"rate": 14.852248864414028
+			},
+			{
+				"rank": 256848,
+				"site1": "501N",
+				"site2": "655H",
+				"info": 12.91,
+				"rate": 15.849639222747632
+			},
+			{
+				"rank": 242644,
+				"site1": "417K",
+				"site2": "501N",
+				"info": 17.865,
+				"rate": 14.973135315690122
+			}
+		],
+		"type3": []
+	},
+	"11": {
+		"WHO label": NaN,
+		"Spike mutations of interest": "L452R, T478K, D614G, P681R, K417N",
+		"Lineage + additional mutations": "B.1.617.2\u00a0+ K417N",
+		"Country first detected (community)": "United Kingdom",
+		"Year and month first detected": "June 01, 2021",
+		"Evidence for impact on transmissibility": NaN,
+		"Evidence for impact on immunity": NaN,
+		"Evidence for impact on severity": NaN,
+		"Unnamed: 9": "Variants under monitoring(VUM)",
+		"aas": [
+			"L452R",
+			"T478K",
+			"D614G",
+			"P681R",
+			"K417N"
+		],
+		"type1": [
+			{
+				"rank": 1087,
+				"position": "452L",
+				"information": 1.324,
+				"rate": 85.38884524744698,
+				"aa": "L452R"
+			},
+			{
+				"rank": "",
+				"position": "478T",
+				"information": "",
+				"rate": "",
+				"aa": "T478K"
+			},
+			{
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
+			},
+			{
+				"rank": "",
+				"position": "681P",
+				"information": "",
+				"rate": "",
+				"aa": "P681R"
+			},
+			{
+				"rank": 1045,
+				"position": "417K",
+				"information": 1.426,
+				"rate": 82.08955223880598,
+				"aa": "K417N"
+			}
+		],
+		"t1": {},
+		"type2": [
+			{
+				"rank": 239731,
+				"site1": "452L",
+				"site2": "614D",
+				"info": 18.896,
+				"rate": 14.79337919901464
+			},
+			{
+				"rank": 172885,
+				"site1": "417K",
+				"site2": "452L",
+				"info": 56.554,
+				"rate": 10.668429876910563
+			},
+			{
+				"rank": 228490,
+				"site1": "417K",
+				"site2": "614D",
+				"info": 23.131,
+				"rate": 14.099716820865286
+			}
+		],
+		"type3": []
+	},
+	"12": {
+		"WHO label": NaN,
+		"Spike mutations of interest": "D614G, E484K, H655Y, N501Y, N679K, Y449H",
+		"Lineage + additional mutations": "C.1.2",
+		"Country first detected (community)": "South Africa",
+		"Year and month first detected": "June 01, 2021",
+		"Evidence for impact on transmissibility": "Yes (m) (13)",
+		"Evidence for impact on immunity": "Yes (m) (14)",
+		"Evidence for impact on severity": NaN,
+		"Unnamed: 9": "Variants under monitoring(VUM)",
+		"aas": [
+			"D614G",
+			"E484K",
+			"H655Y",
+			"N501Y",
+			"N679K",
+			"Y449H"
+		],
+		"type1": [
+			{
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
+			},
+			{
+				"rank": "",
+				"position": "484E",
+				"information": "",
+				"rate": "",
+				"aa": "E484K"
+			},
+			{
+				"rank": 491,
+				"position": "655H",
+				"information": 2.07,
+				"rate": 38.57030636292223,
+				"aa": "H655Y"
+			},
+			{
+				"rank": 1068,
+				"position": "501N",
+				"information": 1.385,
+				"rate": 83.89630793401413,
+				"aa": "N501Y"
+			},
+			{
+				"rank": "",
+				"position": "679N",
+				"information": "",
+				"rate": "",
+				"aa": "N679K"
+			},
+			{
+				"rank": "",
+				"position": "449Y",
+				"information": "",
+				"rate": "",
+				"aa": "Y449H"
+			}
+		],
+		"t1": {},
+		"type2": [
+			{
+				"rank": 2713,
+				"site1": "614D",
+				"site2": "655H",
+				"info": 290.947,
+				"rate": 0.167414467744792
+			},
+			{
+				"rank": 261081,
+				"site1": "501N",
+				"site2": "614D",
+				"info": 11.533,
+				"rate": 16.11085022236566
+			},
+			{
+				"rank": 256848,
+				"site1": "501N",
+				"site2": "655H",
+				"info": 12.91,
+				"rate": 15.849639222747632
+			}
+		],
+		"type3": []
+	},
+	"13": {
+		"WHO label": NaN,
+		"Spike mutations of interest": "L452R, T478K, D614G, P681R, E484X",
+		"Lineage + additional mutations": "B.1.617.2\u00a0+ E484X (d)",
+		"Country first detected (community)": "India",
+		"Year and month first detected": "April 01, 2021",
+		"Evidence for impact on transmissibility": NaN,
+		"Evidence for impact on immunity": NaN,
+		"Evidence for impact on severity": NaN,
+		"Unnamed: 9": "Variants under monitoring(VUM)",
+		"aas": [
+			"L452R",
+			"T478K",
+			"D614G",
+			"P681R",
+			"E484X"
+		],
+		"type1": [
+			{
+				"rank": 1087,
+				"position": "452L",
+				"information": 1.324,
+				"rate": 85.38884524744698,
+				"aa": "L452R"
+			},
+			{
+				"rank": "",
+				"position": "478T",
+				"information": "",
+				"rate": "",
+				"aa": "T478K"
+			},
+			{
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
+			},
+			{
+				"rank": "",
+				"position": "681P",
+				"information": "",
+				"rate": "",
+				"aa": "P681R"
+			},
+			{
+				"rank": "",
+				"position": "484E",
+				"information": "",
+				"rate": "",
+				"aa": "E484X"
+			}
+		],
+		"t1": {},
+		"type2": [
+			{
+				"rank": 239731,
+				"site1": "452L",
+				"site2": "614D",
+				"info": 18.896,
+				"rate": 14.79337919901464
+			}
+		],
+		"type3": []
+	},
+	"14": {
+		"WHO label": NaN,
+		"Spike mutations of interest": "L452R, T478K, D614G, P681R, Q613H",
+		"Lineage + additional mutations": "B.1.617.2\u00a0+ Q613H",
+		"Country first detected (community)": "India",
+		"Year and month first detected": "April 01, 2021",
+		"Evidence for impact on transmissibility": NaN,
+		"Evidence for impact on immunity": NaN,
+		"Evidence for impact on severity": NaN,
+		"Unnamed: 9": "Variants under monitoring(VUM)",
+		"aas": [
+			"L452R",
+			"T478K",
+			"D614G",
+			"P681R",
+			"Q613H"
+		],
+		"type1": [
+			{
+				"rank": 1087,
+				"position": "452L",
+				"information": 1.324,
+				"rate": 85.38884524744698,
+				"aa": "L452R"
+			},
+			{
+				"rank": "",
+				"position": "478T",
+				"information": "",
+				"rate": "",
+				"aa": "T478K"
+			},
+			{
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
+			},
+			{
+				"rank": "",
+				"position": "681P",
+				"information": "",
+				"rate": "",
+				"aa": "P681R"
+			},
+			{
+				"rank": 708,
+				"position": "613Q",
+				"information": 1.845,
+				"rate": 55.616653574234086,
+				"aa": "Q613H"
+			}
+		],
+		"t1": {},
+		"type2": [
+			{
+				"rank": 239731,
+				"site1": "452L",
+				"site2": "614D",
+				"info": 18.896,
+				"rate": 14.79337919901464
+			},
+			{
+				"rank": 190842,
+				"site1": "452L",
+				"site2": "613Q",
+				"info": 42.97,
+				"rate": 11.776524826152448
+			},
+			{
+				"rank": 22801,
+				"site1": "613Q",
+				"site2": "614D",
+				"info": 240.932,
+				"rate": 1.4070096863431631
+			}
+		],
+		"type3": []
+	},
+	"15": {
+		"WHO label": NaN,
+		"Spike mutations of interest": "L452R, T478K, D614G, P681R, Q677H",
+		"Lineage + additional mutations": "B.1.617.2\u00a0+ Q677H",
+		"Country first detected (community)": "India",
+		"Year and month first detected": "April 01, 2021",
+		"Evidence for impact on transmissibility": NaN,
+		"Evidence for impact on immunity": NaN,
+		"Evidence for impact on severity": NaN,
+		"Unnamed: 9": "Variants under monitoring(VUM)",
+		"aas": [
+			"L452R",
+			"T478K",
+			"D614G",
+			"P681R",
+			"Q677H"
+		],
+		"type1": [
+			{
+				"rank": 1087,
+				"position": "452L",
+				"information": 1.324,
+				"rate": 85.38884524744698,
+				"aa": "L452R"
+			},
+			{
+				"rank": "",
+				"position": "478T",
+				"information": "",
+				"rate": "",
+				"aa": "T478K"
+			},
+			{
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
+			},
+			{
+				"rank": "",
+				"position": "681P",
+				"information": "",
+				"rate": "",
+				"aa": "P681R"
+			},
+			{
 				"rank": "",
 				"position": "677Q",
 				"information": "",
 				"rate": "",
 				"aa": "Q677H"
 			}
-		},
-		"type2": [],
+		],
+		"t1": {},
+		"type2": [
+			{
+				"rank": 239731,
+				"site1": "452L",
+				"site2": "614D",
+				"info": 18.896,
+				"rate": 14.79337919901464
+			}
+		],
 		"type3": []
 	},
-	"7": {
-		"Spike mutations of interest": "E484K, N501Y, D614G, P681H",
-		"WHO label": "Theta",
-		"Lineage + additional mutations": "P.3",
-		"Country first detected (community)": "The Philippines",
-		"Year and month first detected": "January 01, 2021",
-		"Evidence for impact on transmissibility": "Yes (m) (1)",
-		"Evidence for impact on immunity": "Yes (m) (4)",
+	"16": {
+		"WHO label": NaN,
+		"Spike mutations of interest": "D614G, F490R, N394S, N501Y, P681H, R346S, Y449N",
+		"Lineage + additional mutations": "B.1.640",
+		"Country first detected (community)": "The Republic of Congo",
+		"Year and month first detected": "September 01, 2021",
+		"Evidence for impact on transmissibility": NaN,
+		"Evidence for impact on immunity": NaN,
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Sporadic/Travel",
-		"type": "Variants of interest (VOI)",
+		"Unnamed: 9": "Variants under monitoring(VUM)",
+		"aas": [
+			"D614G",
+			"F490R",
+			"N394S",
+			"N501Y",
+			"P681H",
+			"R346S",
+			"Y449N"
+		],
+		"type1": [
+			{
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
+			},
+			{
+				"rank": "",
+				"position": "490F",
+				"information": "",
+				"rate": "",
+				"aa": "F490R"
+			},
+			{
+				"rank": 537,
+				"position": "394N",
+				"information": 2.024,
+				"rate": 42.18381775333857,
+				"aa": "N394S"
+			},
+			{
+				"rank": 1068,
+				"position": "501N",
+				"information": 1.385,
+				"rate": 83.89630793401413,
+				"aa": "N501Y"
+			},
+			{
+				"rank": "",
+				"position": "681P",
+				"information": "",
+				"rate": "",
+				"aa": "P681H"
+			},
+			{
+				"rank": 1101,
+				"position": "346R",
+				"information": 1.251,
+				"rate": 86.48860958366065,
+				"aa": "R346S"
+			},
+			{
+				"rank": "",
+				"position": "449Y",
+				"information": "",
+				"rate": "",
+				"aa": "Y449N"
+			}
+		],
+		"t1": {},
+		"type2": [
+			{
+				"rank": 246597,
+				"site1": "394N",
+				"site2": "614D",
+				"info": 16.475,
+				"rate": 15.217068006805183
+			},
+			{
+				"rank": 261081,
+				"site1": "501N",
+				"site2": "614D",
+				"info": 11.533,
+				"rate": 16.11085022236566
+			},
+			{
+				"rank": 48577,
+				"site1": "346R",
+				"site2": "614D",
+				"info": 209.183,
+				"rate": 2.997601400530321
+			},
+			{
+				"rank": 252991,
+				"site1": "346R",
+				"site2": "394N",
+				"info": 14.202,
+				"rate": 15.611630523119302
+			},
+			{
+				"rank": 219396,
+				"site1": "346R",
+				"site2": "501N",
+				"info": 26.972,
+				"rate": 13.53854204398687
+			}
+		],
+		"type3": []
+	},
+	"17": {
+		"WHO label": "Alpha",
+		"Spike mutations of interest": "N501Y, D614G, P681H",
+		"Lineage + additional mutations": "B.1.1.7",
+		"Country first detected (community)": "United Kingdom",
+		"Year and month first detected": "September 01, 2020",
+		"Evidence for impact on transmissibility": "Yes (v) (13)",
+		"Evidence for impact on immunity": "No",
+		"Evidence for impact on severity": "Yes (v) (5, 22)",
+		"Unnamed: 9": "De-escalated variants",
+		"aas": [
+			"N501Y",
+			"D614G",
+			"P681H"
+		],
+		"type1": [
+			{
+				"rank": 1068,
+				"position": "501N",
+				"information": 1.385,
+				"rate": 83.89630793401413,
+				"aa": "N501Y"
+			},
+			{
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
+			},
+			{
+				"rank": "",
+				"position": "681P",
+				"information": "",
+				"rate": "",
+				"aa": "P681H"
+			}
+		],
+		"t1": {},
+		"type2": [
+			{
+				"rank": 261081,
+				"site1": "501N",
+				"site2": "614D",
+				"info": 11.533,
+				"rate": 16.11085022236566
+			}
+		],
+		"type3": []
+	},
+	"18": {
+		"WHO label": NaN,
+		"Spike mutations of interest": "E484K, N501Y, D614G, P681H",
+		"Lineage + additional mutations": "B.1.1.7+E484K",
+		"Country first detected (community)": "United Kingdom",
+		"Year and month first detected": "December 01, 2020",
+		"Evidence for impact on transmissibility": "Yes (v) (13)",
+		"Evidence for impact on immunity": "Yes (v) (14, 23)",
+		"Evidence for impact on severity": "Yes (v) (22)",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"E484K",
 			"N501Y",
@@ -636,36 +2624,7 @@
 				"aa": "P681H"
 			}
 		],
-		"t1": {
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"N501Y": {
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"P681H": {
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681H"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 261081,
@@ -677,17 +2636,230 @@
 		],
 		"type3": []
 	},
-	"8": {
-		"Spike mutations of interest": "L452R, E484Q, D614G, P681R",
+	"19": {
+		"WHO label": "Epsilon",
+		"Spike mutations of interest": "L452R, D614G",
+		"Lineage + additional mutations": "B.1.427/B.1.429",
+		"Country first detected (community)": "USA",
+		"Year and month first detected": "September 01, 2020",
+		"Evidence for impact on transmissibility": "Unclear (19)",
+		"Evidence for impact on immunity": "Yes (v) (19)",
+		"Evidence for impact on severity": NaN,
+		"Unnamed: 9": "De-escalated variants",
+		"aas": [
+			"L452R",
+			"D614G"
+		],
+		"type1": [
+			{
+				"rank": 1087,
+				"position": "452L",
+				"information": 1.324,
+				"rate": 85.38884524744698,
+				"aa": "L452R"
+			},
+			{
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
+			}
+		],
+		"t1": {},
+		"type2": [
+			{
+				"rank": 239731,
+				"site1": "452L",
+				"site2": "614D",
+				"info": 18.896,
+				"rate": 14.79337919901464
+			}
+		],
+		"type3": []
+	},
+	"20": {
+		"WHO label": NaN,
+		"Spike mutations of interest": "V483A, D614G, H655Y, G669S",
+		"Lineage + additional mutations": "B.1.616(c)",
+		"Country first detected (community)": "France",
+		"Year and month first detected": "February 01, 2021",
+		"Evidence for impact on transmissibility": "Detection (c) (24)",
+		"Evidence for impact on immunity": NaN,
+		"Evidence for impact on severity": NaN,
+		"Unnamed: 9": "De-escalated variants",
+		"aas": [
+			"V483A",
+			"D614G",
+			"H655Y",
+			"G669S"
+		],
+		"type1": [
+			{
+				"rank": "",
+				"position": "483V",
+				"information": "",
+				"rate": "",
+				"aa": "V483A"
+			},
+			{
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
+			},
+			{
+				"rank": 491,
+				"position": "655H",
+				"information": 2.07,
+				"rate": 38.57030636292223,
+				"aa": "H655Y"
+			},
+			{
+				"rank": 248,
+				"position": "669G",
+				"information": 2.526,
+				"rate": 19.4815396700707,
+				"aa": "G669S"
+			}
+		],
+		"t1": {},
+		"type2": [
+			{
+				"rank": 2713,
+				"site1": "614D",
+				"site2": "655H",
+				"info": 290.947,
+				"rate": 0.167414467744792
+			},
+			{
+				"rank": 190732,
+				"site1": "614D",
+				"site2": "669G",
+				"info": 43.051,
+				"rate": 11.769736919240568
+			},
+			{
+				"rank": 200785,
+				"site1": "655H",
+				"site2": "669G",
+				"info": 36.732,
+				"rate": 12.390089902741636
+			}
+		],
+		"type3": []
+	},
+	"21": {
+		"WHO label": "Eta",
+		"Spike mutations of interest": "E484K, D614G, Q677H",
+		"Lineage + additional mutations": "B.1.525",
+		"Country first detected (community)": "Nigeria",
+		"Year and month first detected": "December 01, 2020",
+		"Evidence for impact on transmissibility": NaN,
+		"Evidence for impact on immunity": "Yes (m) (14, 26)",
+		"Evidence for impact on severity": NaN,
+		"Unnamed: 9": "De-escalated variants",
+		"aas": [
+			"E484K",
+			"D614G",
+			"Q677H"
+		],
+		"type1": [
+			{
+				"rank": "",
+				"position": "484E",
+				"information": "",
+				"rate": "",
+				"aa": "E484K"
+			},
+			{
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
+			},
+			{
+				"rank": "",
+				"position": "677Q",
+				"information": "",
+				"rate": "",
+				"aa": "Q677H"
+			}
+		],
+		"t1": {},
+		"type2": [],
+		"type3": []
+	},
+	"22": {
+		"WHO label": "Theta",
+		"Spike mutations of interest": "E484K, N501Y, D614G, P681H",
+		"Lineage + additional mutations": "P.3",
+		"Country first detected (community)": "The Philippines",
+		"Year and month first detected": "January 01, 2021",
+		"Evidence for impact on transmissibility": "Yes (m) (13)",
+		"Evidence for impact on immunity": "Yes (m) (14)",
+		"Evidence for impact on severity": NaN,
+		"Unnamed: 9": "De-escalated variants",
+		"aas": [
+			"E484K",
+			"N501Y",
+			"D614G",
+			"P681H"
+		],
+		"type1": [
+			{
+				"rank": "",
+				"position": "484E",
+				"information": "",
+				"rate": "",
+				"aa": "E484K"
+			},
+			{
+				"rank": 1068,
+				"position": "501N",
+				"information": 1.385,
+				"rate": 83.89630793401413,
+				"aa": "N501Y"
+			},
+			{
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
+			},
+			{
+				"rank": "",
+				"position": "681P",
+				"information": "",
+				"rate": "",
+				"aa": "P681H"
+			}
+		],
+		"t1": {},
+		"type2": [
+			{
+				"rank": 261081,
+				"site1": "501N",
+				"site2": "614D",
+				"info": 11.533,
+				"rate": 16.11085022236566
+			}
+		],
+		"type3": []
+	},
+	"23": {
 		"WHO label": "Kappa",
+		"Spike mutations of interest": "L452R, E484Q, D614G, P681R",
 		"Lineage + additional mutations": "B.1.617.1",
 		"Country first detected (community)": "India",
 		"Year and month first detected": "December 01, 2020",
-		"Evidence for impact on transmissibility": "Yes (v) (17)",
-		"Evidence for impact on immunity": "Yes (v) (18-21)",
+		"Evidence for impact on transmissibility": "Yes (v) (27)",
+		"Evidence for impact on immunity": "Yes (v) (28-31)",
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Outbreaks",
-		"type": "Variants of interest (VOI)",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"L452R",
 			"E484Q",
@@ -724,36 +2896,7 @@
 				"aa": "P681R"
 			}
 		],
-		"t1": {
-			"L452R": {
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			"E484Q": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484Q"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"P681R": {
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681R"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 239731,
@@ -765,17 +2908,16 @@
 		],
 		"type3": []
 	},
-	"9": {
-		"Spike mutations of interest": "S477N, E484K, D614G, P681H",
+	"24": {
 		"WHO label": NaN,
+		"Spike mutations of interest": "S477N, E484K, D614G, P681H",
 		"Lineage + additional mutations": "B.1.620",
 		"Country first detected (community)": "Unclear (b)",
 		"Year and month first detected": "February 01, 2021",
 		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": "Yes (m) (4, 22)",
+		"Evidence for impact on immunity": "Yes (m) (14, 32)",
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Outbreaks",
-		"type": "Variants of interest (VOI)",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"S477N",
 			"E484K",
@@ -812,240 +2954,20 @@
 				"aa": "P681H"
 			}
 		],
-		"t1": {
-			"S477N": {
-				"rank": "",
-				"position": "477S",
-				"information": "",
-				"rate": "",
-				"aa": "S477N"
-			},
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"P681H": {
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681H"
-			}
-		},
+		"t1": {},
 		"type2": [],
 		"type3": []
 	},
-	"10": {
-		"Spike mutations of interest": "R346K, E484K, N501Y, D614G, P681H",
+	"25": {
 		"WHO label": NaN,
-		"Lineage + additional mutations": "B.1.621",
-		"Country first detected (community)": "Colombia",
-		"Year and month first detected": "January 01, 2021",
-		"Evidence for impact on transmissibility": "Yes (m) (1)",
-		"Evidence for impact on immunity": "Yes (m) (4)",
-		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Sporadic/Travel",
-		"type": "Variants of interest (VOI)",
-		"aas": [
-			"R346K",
-			"E484K",
-			"N501Y",
-			"D614G",
-			"P681H"
-		],
-		"type1": [
-			{
-				"rank": 1101,
-				"position": "346R",
-				"information": 1.251,
-				"rate": 86.48860958366065,
-				"aa": "R346K"
-			},
-			{
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			{
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			{
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			{
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681H"
-			}
-		],
-		"t1": {
-			"R346K": {
-				"rank": 1101,
-				"position": "346R",
-				"information": 1.251,
-				"rate": 86.48860958366065,
-				"aa": "R346K"
-			},
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"N501Y": {
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"P681H": {
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681H"
-			}
-		},
-		"type2": [
-			{
-				"rank": 219396,
-				"site1": "346R",
-				"site2": "501N",
-				"info": 26.972,
-				"rate": 13.53854204398687
-			},
-			{
-				"rank": 48577,
-				"site1": "346R",
-				"site2": "614D",
-				"info": 209.183,
-				"rate": 2.997601400530321
-			},
-			{
-				"rank": 261081,
-				"site1": "501N",
-				"site2": "614D",
-				"info": 11.533,
-				"rate": 16.11085022236566
-			}
-		],
-		"type3": []
-	},
-	"11": {
-		"Spike mutations of interest": "L452Q, F490S, D614G",
-		"WHO label": "Lambda",
-		"Lineage + additional mutations": "C.37",
-		"Country first detected (community)": "Peru",
-		"Year and month first detected": "December 01, 2020",
-		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": "Yes (23, 24)",
-		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants of interest (VOI)",
-		"aas": [
-			"L452Q",
-			"F490S",
-			"D614G"
-		],
-		"type1": [
-			{
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			{
-				"rank": "",
-				"position": "490F",
-				"information": "",
-				"rate": "",
-				"aa": "F490S"
-			},
-			{
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			}
-		],
-		"t1": {
-			"L452Q": {
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			"F490S": {
-				"rank": "",
-				"position": "490F",
-				"information": "",
-				"rate": "",
-				"aa": "F490S"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			}
-		},
-		"type2": [
-			{
-				"rank": 239731,
-				"site1": "452L",
-				"site2": "614D",
-				"info": 18.896,
-				"rate": 14.79337919901464
-			}
-		],
-		"type3": []
-	},
-	"12": {
 		"Spike mutations of interest": "L452R, E484Q, D614G, P681R",
-		"WHO label": NaN,
 		"Lineage + additional mutations": "B.1.617.3",
 		"Country first detected (community)": "India",
 		"Year and month first detected": "February 01, 2021",
 		"Evidence for impact on transmissibility": "Yes (m) [1]",
-		"Evidence for impact on immunity": "Yes (m) (4, 25)",
+		"Evidence for impact on immunity": "Yes (m) (14, 19)",
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Not detected",
-		"type": "Variants under monitoring",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"L452R",
 			"E484Q",
@@ -1082,36 +3004,7 @@
 				"aa": "P681R"
 			}
 		],
-		"t1": {
-			"L452R": {
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			"E484Q": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484Q"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"P681R": {
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681R"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 239731,
@@ -1123,17 +3016,16 @@
 		],
 		"type3": []
 	},
-	"13": {
-		"Spike mutations of interest": "Q414K, N450K, D614G",
+	"26": {
 		"WHO label": NaN,
+		"Spike mutations of interest": "Q414K, N450K, D614G",
 		"Lineage + additional mutations": "B.1.214.2",
 		"Country first detected (community)": "Unclear2",
 		"Year and month first detected": "December 01, 2020",
 		"Evidence for impact on transmissibility": NaN,
 		"Evidence for impact on immunity": NaN,
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"Q414K",
 			"N450K",
@@ -1162,29 +3054,7 @@
 				"aa": "D614G"
 			}
 		],
-		"t1": {
-			"Q414K": {
-				"rank": 1017,
-				"position": "414Q",
-				"information": 1.482,
-				"rate": 79.89002356637863,
-				"aa": "Q414K"
-			},
-			"N450K": {
-				"rank": 679,
-				"position": "450N",
-				"information": 1.871,
-				"rate": 53.33857030636292,
-				"aa": "N450K"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 236062,
@@ -1210,17 +3080,16 @@
 		],
 		"type3": []
 	},
-	"14": {
-		"Spike mutations of interest": "V367F, E484K, Q613H",
+	"27": {
 		"WHO label": NaN,
+		"Spike mutations of interest": "V367F, E484K, Q613H",
 		"Lineage + additional mutations": "A.23.1+E484K",
 		"Country first detected (community)": "United Kingdom",
 		"Year and month first detected": "December 01, 2020",
 		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": "Yes (m) (4)",
+		"Evidence for impact on immunity": "Yes (m) (14)",
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"V367F",
 			"E484K",
@@ -1249,29 +3118,7 @@
 				"aa": "Q613H"
 			}
 		],
-		"t1": {
-			"V367F": {
-				"rank": 766,
-				"position": "367V",
-				"information": 1.789,
-				"rate": 60.17282010997644,
-				"aa": "V367F"
-			},
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"Q613H": {
-				"rank": 708,
-				"position": "613Q",
-				"information": 1.845,
-				"rate": 55.616653574234086,
-				"aa": "Q613H"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 17523,
@@ -1283,17 +3130,16 @@
 		],
 		"type3": []
 	},
-	"15": {
-		"Spike mutations of interest": "L452R, N501Y, A653V, H655Y",
+	"28": {
 		"WHO label": NaN,
+		"Spike mutations of interest": "L452R, N501Y, A653V, H655Y",
 		"Lineage + additional mutations": "A.27",
 		"Country first detected (community)": "Unclear (b)",
 		"Year and month first detected": "December 01, 2020",
-		"Evidence for impact on transmissibility": "Yes (m) (1)",
-		"Evidence for impact on immunity": "Yes (m) (25)",
+		"Evidence for impact on transmissibility": "Yes (m) (13)",
+		"Evidence for impact on immunity": "Yes (m) (19)",
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"L452R",
 			"N501Y",
@@ -1330,36 +3176,7 @@
 				"aa": "H655Y"
 			}
 		],
-		"t1": {
-			"L452R": {
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			"N501Y": {
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			"A653V": {
-				"rank": 273,
-				"position": "653A",
-				"information": 2.425,
-				"rate": 21.445404556166537,
-				"aa": "A653V"
-			},
-			"H655Y": {
-				"rank": 491,
-				"position": "655H",
-				"information": 2.07,
-				"rate": 38.57030636292223,
-				"aa": "H655Y"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 114044,
@@ -1399,17 +3216,16 @@
 		],
 		"type3": []
 	},
-	"16": {
-		"Spike mutations of interest": "E484K, N501T, H655Y",
+	"29": {
 		"WHO label": NaN,
+		"Spike mutations of interest": "E484K, N501T, H655Y",
 		"Lineage + additional mutations": "A.28",
 		"Country first detected (community)": "Unclear (b)",
 		"Year and month first detected": "December 01, 2020",
 		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": "Yes (m) (4)",
+		"Evidence for impact on immunity": "Yes (m) (14)",
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"E484K",
 			"N501T",
@@ -1438,29 +3254,7 @@
 				"aa": "H655Y"
 			}
 		],
-		"t1": {
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"N501T": {
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			"H655Y": {
-				"rank": 491,
-				"position": "655H",
-				"information": 2.07,
-				"rate": 38.57030636292223,
-				"aa": "H655Y"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 256848,
@@ -1472,17 +3266,16 @@
 		],
 		"type3": []
 	},
-	"17": {
-		"Spike mutations of interest": "L452R, D614G",
+	"30": {
 		"WHO label": NaN,
+		"Spike mutations of interest": "L452R, D614G",
 		"Lineage + additional mutations": "C.16",
 		"Country first detected (community)": "Unclear (b)",
 		"Year and month first detected": "October 01, 2020",
 		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": "Yes (m) (4)",
+		"Evidence for impact on immunity": "Yes (m) (14)",
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"L452R",
 			"D614G"
@@ -1503,22 +3296,7 @@
 				"aa": "D614G"
 			}
 		],
-		"t1": {
-			"L452R": {
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 239731,
@@ -1530,17 +3308,16 @@
 		],
 		"type3": []
 	},
-	"18": {
-		"Spike mutations of interest": "P384L, K417N, E484K, N501Y, D614G, A701V",
+	"31": {
 		"WHO label": NaN,
+		"Spike mutations of interest": "P384L, K417N, E484K, N501Y, D614G, A701V",
 		"Lineage + additional mutations": "B.1.351+P384L",
 		"Country first detected (community)": "South Africa",
 		"Year and month first detected": "December 01, 2020",
-		"Evidence for impact on transmissibility": "Yes (v) (6)",
-		"Evidence for impact on immunity": "Yes (v) (7, 8)",
-		"Evidence for impact on severity": "Unclear (9)",
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
+		"Evidence for impact on transmissibility": "Yes (v) (1)",
+		"Evidence for impact on immunity": "Yes (v) (2, 3)",
+		"Evidence for impact on severity": "Unclear (4)",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"P384L",
 			"K417N",
@@ -1593,50 +3370,7 @@
 				"aa": "A701V"
 			}
 		],
-		"t1": {
-			"P384L": {
-				"rank": 348,
-				"position": "384P",
-				"information": 2.278,
-				"rate": 27.336999214454043,
-				"aa": "P384L"
-			},
-			"K417N": {
-				"rank": 1045,
-				"position": "417K",
-				"information": 1.426,
-				"rate": 82.08955223880598,
-				"aa": "K417N"
-			},
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"N501Y": {
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"A701V": {
-				"rank": 928,
-				"position": "701A",
-				"information": 1.608,
-				"rate": 72.89866457187746,
-				"aa": "A701V"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 185431,
@@ -1697,17 +3431,16 @@
 		],
 		"type3": []
 	},
-	"19": {
-		"Spike mutations of interest": "K417N, E484K, N501Y, E516Q, D614G, A701V",
+	"32": {
 		"WHO label": NaN,
+		"Spike mutations of interest": "K417N, E484K, N501Y, E516Q, D614G, A701V",
 		"Lineage + additional mutations": "B.1.351+E516Q",
 		"Country first detected (community)": "Unclear (b)",
 		"Year and month first detected": "January 01, 2021",
-		"Evidence for impact on transmissibility": "Yes (v) (6)",
-		"Evidence for impact on immunity": "Yes (v) (7, 8)",
-		"Evidence for impact on severity": "Unclear (9)",
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
+		"Evidence for impact on transmissibility": "Yes (v) (1)",
+		"Evidence for impact on immunity": "Yes (v) (2, 3)",
+		"Evidence for impact on severity": "Unclear (4)",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"K417N",
 			"E484K",
@@ -1760,50 +3493,7 @@
 				"aa": "A701V"
 			}
 		],
-		"t1": {
-			"K417N": {
-				"rank": 1045,
-				"position": "417K",
-				"information": 1.426,
-				"rate": 82.08955223880598,
-				"aa": "K417N"
-			},
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"N501Y": {
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			"E516Q": {
-				"rank": 792,
-				"position": "516E",
-				"information": 1.76,
-				"rate": 62.2152395915161,
-				"aa": "E516Q"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"A701V": {
-				"rank": 928,
-				"position": "701A",
-				"information": 1.608,
-				"rate": 72.89866457187746,
-				"aa": "A701V"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 242644,
@@ -1878,17 +3568,16 @@
 		],
 		"type3": []
 	},
-	"20": {
-		"Spike mutations of interest": "L452R, N501Y, D614G, P681H",
+	"33": {
 		"WHO label": NaN,
+		"Spike mutations of interest": "L452R, N501Y, D614G, P681H",
 		"Lineage + additional mutations": "B.1.1.7+L452R",
 		"Country first detected (community)": "United Kingdom",
 		"Year and month first detected": "January 01, 2021",
-		"Evidence for impact on transmissibility": "Yes (v) (1)",
-		"Evidence for impact on immunity": "Yes (m) (25)",
-		"Evidence for impact on severity": "Yes (v) (2)",
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
+		"Evidence for impact on transmissibility": "Yes (v) (13)",
+		"Evidence for impact on immunity": "Yes (m) (19)",
+		"Evidence for impact on severity": "Yes (v) (22)",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"L452R",
 			"N501Y",
@@ -1925,36 +3614,7 @@
 				"aa": "P681H"
 			}
 		],
-		"t1": {
-			"L452R": {
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			"N501Y": {
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"P681H": {
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681H"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 114044,
@@ -1980,17 +3640,16 @@
 		],
 		"type3": []
 	},
-	"21": {
-		"Spike mutations of interest": "S494P, N501Y, D614G, P681H",
+	"34": {
 		"WHO label": NaN,
+		"Spike mutations of interest": "S494P, N501Y, D614G, P681H",
 		"Lineage + additional mutations": "B.1.1.7+S494P",
 		"Country first detected (community)": "United Kingdom",
 		"Year and month first detected": "January 01, 2021",
-		"Evidence for impact on transmissibility": "Yes (v) (1)",
-		"Evidence for impact on immunity": "Yes (m) (26)",
-		"Evidence for impact on severity": "Yes (v) (2)",
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
+		"Evidence for impact on transmissibility": "Yes (v) (13)",
+		"Evidence for impact on immunity": "Yes (m) (33)",
+		"Evidence for impact on severity": "Yes (v) (22)",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"S494P",
 			"N501Y",
@@ -2027,36 +3686,7 @@
 				"aa": "P681H"
 			}
 		],
-		"t1": {
-			"S494P": {
-				"rank": "",
-				"position": "494S",
-				"information": "",
-				"rate": "",
-				"aa": "S494P"
-			},
-			"N501Y": {
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"P681H": {
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681H"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 261081,
@@ -2068,155 +3698,16 @@
 		],
 		"type3": []
 	},
-	"22": {
-		"Spike mutations of interest": "L452R, D614G, Q677H",
-		"WHO label": NaN,
-		"Lineage + additional mutations": "C.36+L452R",
-		"Country first detected (community)": "Egypt",
-		"Year and month first detected": "December 01, 2020",
-		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": "Yes (m) (25)",
-		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
-		"aas": [
-			"L452R",
-			"D614G",
-			"Q677H"
-		],
-		"type1": [
-			{
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			{
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			{
-				"rank": "",
-				"position": "677Q",
-				"information": "",
-				"rate": "",
-				"aa": "Q677H"
-			}
-		],
-		"t1": {
-			"L452R": {
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"Q677H": {
-				"rank": "",
-				"position": "677Q",
-				"information": "",
-				"rate": "",
-				"aa": "Q677H"
-			}
-		},
-		"type2": [
-			{
-				"rank": 239731,
-				"site1": "452L",
-				"site2": "614D",
-				"info": 18.896,
-				"rate": 14.79337919901464
-			}
-		],
-		"type3": []
-	},
-	"23": {
-		"Spike mutations of interest": "E484K, D614G, N679K",
-		"WHO label": NaN,
-		"Lineage + additional mutations": "AT.1",
-		"Country first detected (community)": "Russia",
-		"Year and month first detected": "January 01, 2021",
-		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": "Yes (m) (4)",
-		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
-		"aas": [
-			"E484K",
-			"D614G",
-			"N679K"
-		],
-		"type1": [
-			{
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			{
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			{
-				"rank": "",
-				"position": "679N",
-				"information": "",
-				"rate": "",
-				"aa": "N679K"
-			}
-		],
-		"t1": {
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"N679K": {
-				"rank": "",
-				"position": "679N",
-				"information": "",
-				"rate": "",
-				"aa": "N679K"
-			}
-		},
-		"type2": [],
-		"type3": []
-	},
-	"24": {
-		"Spike mutations of interest": "\u00a0E484K, D614G, A701V",
+	"35": {
 		"WHO label": "Iota",
-		"Lineage + additional mutations": "B.1.526\u00a0(d)",
+		"Spike mutations of interest": "\u00a0E484K, D614G, A701V",
+		"Lineage + additional mutations": "B.1.526",
 		"Country first detected (community)": "USA",
 		"Year and month first detected": "December 01, 2020",
 		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": "Yes (m) (4)",
+		"Evidence for impact on immunity": "Yes (m) (14)",
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"E484K",
 			"D614G",
@@ -2245,29 +3736,7 @@
 				"aa": "A701V"
 			}
 		],
-		"t1": {
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"A701V": {
-				"rank": 928,
-				"position": "701A",
-				"information": 1.608,
-				"rate": 72.89866457187746,
-				"aa": "A701V"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 28218,
@@ -2279,17 +3748,16 @@
 		],
 		"type3": []
 	},
-	"25": {
-		"Spike mutations of interest": "L452R, D614G",
+	"36": {
 		"WHO label": NaN,
-		"Lineage + additional mutations": "B.1.526.1\u00a0(d)",
+		"Spike mutations of interest": "L452R, D614G",
+		"Lineage + additional mutations": "B.1.526.1",
 		"Country first detected (community)": "USA",
 		"Year and month first detected": "October 01, 2020",
 		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": "Yes (m) (25)",
+		"Evidence for impact on immunity": "Yes (m) (19)",
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"L452R",
 			"D614G"
@@ -2310,22 +3778,7 @@
 				"aa": "D614G"
 			}
 		],
-		"t1": {
-			"L452R": {
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 239731,
@@ -2337,17 +3790,16 @@
 		],
 		"type3": []
 	},
-	"26": {
-		"Spike mutations of interest": "S477N, D614G",
+	"37": {
 		"WHO label": NaN,
-		"Lineage + additional mutations": "B.1.526.2\u00a0(d)",
+		"Spike mutations of interest": "S477N, D614G",
+		"Lineage + additional mutations": "B.1.526.2",
 		"Country first detected (community)": "USA",
 		"Year and month first detected": "December 01, 2020",
 		"Evidence for impact on transmissibility": NaN,
 		"Evidence for impact on immunity": NaN,
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"S477N",
 			"D614G"
@@ -2368,101 +3820,20 @@
 				"aa": "D614G"
 			}
 		],
-		"t1": {
-			"S477N": {
-				"rank": "",
-				"position": "477S",
-				"information": "",
-				"rate": "",
-				"aa": "S477N"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			}
-		},
+		"t1": {},
 		"type2": [],
 		"type3": []
 	},
-	"27": {
-		"Spike mutations of interest": "E484K, D614G, P681H",
-		"WHO label": NaN,
-		"Lineage + additional mutations": "B.1.1.318",
-		"Country first detected (community)": "Unclear (b)",
-		"Year and month first detected": "January 01, 2021",
-		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": "Yes (m) (4)",
-		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
-		"aas": [
-			"E484K",
-			"D614G",
-			"P681H"
-		],
-		"type1": [
-			{
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			{
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			{
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681H"
-			}
-		],
-		"t1": {
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"P681H": {
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681H"
-			}
-		},
-		"type2": [],
-		"type3": []
-	},
-	"28": {
-		"Spike mutations of interest": "E484K, D614G",
+	"38": {
 		"WHO label": "Zeta",
+		"Spike mutations of interest": "E484K, D614G",
 		"Lineage + additional mutations": "P.2",
 		"Country first detected (community)": "Brazil",
 		"Year and month first detected": "January 01, 2021",
 		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": "Yes (m) (4)",
+		"Evidence for impact on immunity": "Yes (m) (14)",
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"E484K",
 			"D614G"
@@ -2483,36 +3854,20 @@
 				"aa": "D614G"
 			}
 		],
-		"t1": {
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			}
-		},
+		"t1": {},
 		"type2": [],
 		"type3": []
 	},
-	"29": {
-		"Spike mutations of interest": "T478K, D614G",
+	"39": {
 		"WHO label": NaN,
+		"Spike mutations of interest": "T478K, D614G",
 		"Lineage + additional mutations": "B.1.1.519",
 		"Country first detected (community)": "Mexico",
 		"Year and month first detected": "November 01, 2020",
 		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": "Yes (m) (25)",
+		"Evidence for impact on immunity": "Yes (m) (19)",
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"T478K",
 			"D614G"
@@ -2533,36 +3888,20 @@
 				"aa": "D614G"
 			}
 		],
-		"t1": {
-			"T478K": {
-				"rank": "",
-				"position": "478T",
-				"information": "",
-				"rate": "",
-				"aa": "T478K"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			}
-		},
+		"t1": {},
 		"type2": [],
 		"type3": []
 	},
-	"30": {
-		"Spike mutations of interest": "N439K, E484K, D614G, P681H",
+	"40": {
 		"WHO label": NaN,
+		"Spike mutations of interest": "N439K, E484K, D614G, P681H",
 		"Lineage + additional mutations": "AV.1",
 		"Country first detected (community)": "United Kingdom",
 		"Year and month first detected": "March 01, 2021",
 		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": "Yes (m) (4)",
+		"Evidence for impact on immunity": "Yes (m) (14)",
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
 			"N439K",
 			"E484K",
@@ -2599,36 +3938,7 @@
 				"aa": "P681H"
 			}
 		],
-		"t1": {
-			"N439K": {
-				"rank": 995,
-				"position": "439N",
-				"information": 1.516,
-				"rate": 78.1618224666143,
-				"aa": "N439K"
-			},
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"P681H": {
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681H"
-			}
-		},
+		"t1": {},
 		"type2": [
 			{
 				"rank": 60223,
@@ -2640,303 +3950,22 @@
 		],
 		"type3": []
 	},
-	"31": {
-		"Spike mutations of interest": "D614G, E484K, H655Y, K417T, N501Y, P681H",
+	"41": {
 		"WHO label": NaN,
-		"Lineage + additional mutations": "P.1+P681H",
-		"Country first detected (community)": "Italy",
-		"Year and month first detected": "February 01, 2021",
+		"Spike mutations of interest": "E484K, D614G, N679K",
+		"Lineage + additional mutations": "AT.1",
+		"Country first detected (community)": "Russia",
+		"Year and month first detected": "January 01, 2021",
 		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": "Unclear (27, 28)",
+		"Evidence for impact on immunity": "Yes (m) (14)",
 		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
+		"Unnamed: 9": "De-escalated variants",
 		"aas": [
-			"D614G",
 			"E484K",
-			"H655Y",
-			"K417T",
-			"N501Y",
-			"P681H"
-		],
-		"type1": [
-			{
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			{
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			{
-				"rank": 491,
-				"position": "655H",
-				"information": 2.07,
-				"rate": 38.57030636292223,
-				"aa": "H655Y"
-			},
-			{
-				"rank": 1045,
-				"position": "417K",
-				"information": 1.426,
-				"rate": 82.08955223880598,
-				"aa": "K417N"
-			},
-			{
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			{
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681H"
-			}
-		],
-		"t1": {
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"H655Y": {
-				"rank": 491,
-				"position": "655H",
-				"information": 2.07,
-				"rate": 38.57030636292223,
-				"aa": "H655Y"
-			},
-			"K417T": {
-				"rank": 1045,
-				"position": "417K",
-				"information": 1.426,
-				"rate": 82.08955223880598,
-				"aa": "K417N"
-			},
-			"N501Y": {
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			"P681H": {
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681H"
-			}
-		},
-		"type2": [
-			{
-				"rank": 2713,
-				"site1": "614D",
-				"site2": "655H",
-				"info": 290.947,
-				"rate": 0.167414467744792
-			},
-			{
-				"rank": 228490,
-				"site1": "417K",
-				"site2": "614D",
-				"info": 23.131,
-				"rate": 14.099716820865286
-			},
-			{
-				"rank": 261081,
-				"site1": "501N",
-				"site2": "614D",
-				"info": 11.533,
-				"rate": 16.11085022236566
-			},
-			{
-				"rank": 240685,
-				"site1": "417K",
-				"site2": "655H",
-				"info": 18.558,
-				"rate": 14.852248864414028
-			},
-			{
-				"rank": 256848,
-				"site1": "501N",
-				"site2": "655H",
-				"info": 12.91,
-				"rate": 15.849639222747632
-			},
-			{
-				"rank": 242644,
-				"site1": "417K",
-				"site2": "501N",
-				"info": 17.865,
-				"rate": 14.973135315690122
-			}
-		],
-		"type3": []
-	},
-	"32": {
-		"Spike mutations of interest": "L452R, T478K, D614G, P681R, K417N",
-		"WHO label": NaN,
-		"Lineage + additional mutations": "B.1.617.2\u00a0+ K417N",
-		"Country first detected (community)": "United Kingdom",
-		"Year and month first detected": "June 01, 2021",
-		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": NaN,
-		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
-		"aas": [
-			"L452R",
-			"T478K",
 			"D614G",
-			"P681R",
-			"K417N"
+			"N679K"
 		],
 		"type1": [
-			{
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			{
-				"rank": "",
-				"position": "478T",
-				"information": "",
-				"rate": "",
-				"aa": "T478K"
-			},
-			{
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			{
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681R"
-			},
-			{
-				"rank": 1045,
-				"position": "417K",
-				"information": 1.426,
-				"rate": 82.08955223880598,
-				"aa": "K417N"
-			}
-		],
-		"t1": {
-			"L452R": {
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			"T478K": {
-				"rank": "",
-				"position": "478T",
-				"information": "",
-				"rate": "",
-				"aa": "T478K"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"P681R": {
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681R"
-			},
-			"K417N": {
-				"rank": 1045,
-				"position": "417K",
-				"information": 1.426,
-				"rate": 82.08955223880598,
-				"aa": "K417N"
-			}
-		},
-		"type2": [
-			{
-				"rank": 239731,
-				"site1": "452L",
-				"site2": "614D",
-				"info": 18.896,
-				"rate": 14.79337919901464
-			},
-			{
-				"rank": 172885,
-				"site1": "417K",
-				"site2": "452L",
-				"info": 56.554,
-				"rate": 10.668429876910563
-			},
-			{
-				"rank": 228490,
-				"site1": "417K",
-				"site2": "614D",
-				"info": 23.131,
-				"rate": 14.099716820865286
-			}
-		],
-		"type3": []
-	},
-	"33": {
-		"Spike mutations of interest": "D614G, E484K, H655Y, N501Y, N679K, Y449H",
-		"WHO label": NaN,
-		"Lineage + additional mutations": "C.1.2",
-		"Country first detected (community)": "South Africa",
-		"Year and month first detected": "June 01, 2021",
-		"Evidence for impact on transmissibility": "Yes (m) (1)",
-		"Evidence for impact on immunity": "Yes (m) (4)",
-		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
-		"aas": [
-			"D614G",
-			"E484K",
-			"H655Y",
-			"N501Y",
-			"N679K",
-			"Y449H"
-		],
-		"type1": [
-			{
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
 			{
 				"rank": "",
 				"position": "484E",
@@ -2945,18 +3974,11 @@
 				"aa": "E484K"
 			},
 			{
-				"rank": 491,
-				"position": "655H",
-				"information": 2.07,
-				"rate": 38.57030636292223,
-				"aa": "H655Y"
-			},
-			{
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
+				"rank": 654,
+				"position": "614D",
+				"information": 1.892,
+				"rate": 51.37470542026709,
+				"aa": "D614G"
 			},
 			{
 				"rank": "",
@@ -2964,302 +3986,10 @@
 				"information": "",
 				"rate": "",
 				"aa": "N679K"
-			},
-			{
-				"rank": "",
-				"position": "449Y",
-				"information": "",
-				"rate": "",
-				"aa": "Y449H"
 			}
 		],
-		"t1": {
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"E484K": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484K"
-			},
-			"H655Y": {
-				"rank": 491,
-				"position": "655H",
-				"information": 2.07,
-				"rate": 38.57030636292223,
-				"aa": "H655Y"
-			},
-			"N501Y": {
-				"rank": 1068,
-				"position": "501N",
-				"information": 1.385,
-				"rate": 83.89630793401413,
-				"aa": "N501Y"
-			},
-			"N679K": {
-				"rank": "",
-				"position": "679N",
-				"information": "",
-				"rate": "",
-				"aa": "N679K"
-			},
-			"Y449H": {
-				"rank": "",
-				"position": "449Y",
-				"information": "",
-				"rate": "",
-				"aa": "Y449H"
-			}
-		},
-		"type2": [
-			{
-				"rank": 2713,
-				"site1": "614D",
-				"site2": "655H",
-				"info": 290.947,
-				"rate": 0.167414467744792
-			},
-			{
-				"rank": 261081,
-				"site1": "501N",
-				"site2": "614D",
-				"info": 11.533,
-				"rate": 16.11085022236566
-			},
-			{
-				"rank": 256848,
-				"site1": "501N",
-				"site2": "655H",
-				"info": 12.91,
-				"rate": 15.849639222747632
-			}
-		],
-		"type3": []
-	},
-	"34": {
-		"Spike mutations of interest": "L452R, T478K, D614G, P681R, E484Q",
-		"WHO label": NaN,
-		"Lineage + additional mutations": "B.1.617.2\u00a0+ E484Q",
-		"Country first detected (community)": "India",
-		"Year and month first detected": "April 01, 2021",
-		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": NaN,
-		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
-		"aas": [
-			"L452R",
-			"T478K",
-			"D614G",
-			"P681R",
-			"E484Q"
-		],
-		"type1": [
-			{
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			{
-				"rank": "",
-				"position": "478T",
-				"information": "",
-				"rate": "",
-				"aa": "T478K"
-			},
-			{
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			{
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681R"
-			},
-			{
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484Q"
-			}
-		],
-		"t1": {
-			"L452R": {
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			"T478K": {
-				"rank": "",
-				"position": "478T",
-				"information": "",
-				"rate": "",
-				"aa": "T478K"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"P681R": {
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681R"
-			},
-			"E484Q": {
-				"rank": "",
-				"position": "484E",
-				"information": "",
-				"rate": "",
-				"aa": "E484Q"
-			}
-		},
-		"type2": [
-			{
-				"rank": 239731,
-				"site1": "452L",
-				"site2": "614D",
-				"info": 18.896,
-				"rate": 14.79337919901464
-			}
-		],
-		"type3": []
-	},
-	"35": {
-		"Spike mutations of interest": "L452R, T478K, D614G, P681R, Q613H",
-		"WHO label": NaN,
-		"Lineage + additional mutations": "B.1.617.2\u00a0+ Q613H",
-		"Country first detected (community)": "India",
-		"Year and month first detected": "April 01, 2021",
-		"Evidence for impact on transmissibility": NaN,
-		"Evidence for impact on immunity": NaN,
-		"Evidence for impact on severity": NaN,
-		"Transmission in EU/EEA": "Detected (a)",
-		"type": "Variants under monitoring",
-		"aas": [
-			"L452R",
-			"T478K",
-			"D614G",
-			"P681R",
-			"Q613H"
-		],
-		"type1": [
-			{
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			{
-				"rank": "",
-				"position": "478T",
-				"information": "",
-				"rate": "",
-				"aa": "T478K"
-			},
-			{
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			{
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681R"
-			},
-			{
-				"rank": 708,
-				"position": "613Q",
-				"information": 1.845,
-				"rate": 55.616653574234086,
-				"aa": "Q613H"
-			}
-		],
-		"t1": {
-			"L452R": {
-				"rank": 1087,
-				"position": "452L",
-				"information": 1.324,
-				"rate": 85.38884524744698,
-				"aa": "L452R"
-			},
-			"T478K": {
-				"rank": "",
-				"position": "478T",
-				"information": "",
-				"rate": "",
-				"aa": "T478K"
-			},
-			"D614G": {
-				"rank": 654,
-				"position": "614D",
-				"information": 1.892,
-				"rate": 51.37470542026709,
-				"aa": "D614G"
-			},
-			"P681R": {
-				"rank": "",
-				"position": "681P",
-				"information": "",
-				"rate": "",
-				"aa": "P681R"
-			},
-			"Q613H": {
-				"rank": 708,
-				"position": "613Q",
-				"information": 1.845,
-				"rate": 55.616653574234086,
-				"aa": "Q613H"
-			}
-		},
-		"type2": [
-			{
-				"rank": 239731,
-				"site1": "452L",
-				"site2": "614D",
-				"info": 18.896,
-				"rate": 14.79337919901464
-			},
-			{
-				"rank": 190842,
-				"site1": "452L",
-				"site2": "613Q",
-				"info": 42.97,
-				"rate": 11.776524826152448
-			},
-			{
-				"rank": 22801,
-				"site1": "613Q",
-				"site2": "614D",
-				"info": 240.932,
-				"rate": 1.4070096863431631
-			}
-		],
+		"t1": {},
+		"type2": [],
 		"type3": []
 	}
 }
