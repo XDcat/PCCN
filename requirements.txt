@@ -1,0 +1,12 @@
+biopython==1.79
+graphviz==0.17
+matplotlib
+networkx
+numpy
+pandas
+pyecharts==1.9.0
+PyYAML==5.4.1
+requests
+scikit-learn==1.0.1
+scipy
+seaborn
