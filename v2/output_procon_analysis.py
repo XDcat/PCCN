@@ -646,7 +646,10 @@ class ProConNetwork:
         sns.boxplot(data=plot_data, x="position", y="degree", ax=ax)
         _plot_normal_degree = [i[0] for i in degree_scores]
         ax.scatter(x=list(range(len(group_and_sample_groups))), y=_plot_normal_degree)
-        plt.show()
+        [txt.set_rotation(90) for txt in ax.get_xticklabels()]
+        fig.tight_layout()
+        fig.show()
+        fig.savefig(os.path.join(self.data_dir, "resample degree.png"), dpi=300)
 
 
 if __name__ == '__main__':
