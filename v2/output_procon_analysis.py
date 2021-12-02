@@ -34,13 +34,26 @@ sns.set()
 
 
 class AnalysisMutationGroup:
-    def __init__(self, analysis="../data/procon/analysis.json"):
+    def __init__(self, analysis="../data/procon/analysis.json", seed=0):
         # 关注的变异组的相关数据
         with open(analysis) as f:
             self.analysis: dict = json.load(f)
 
+        self.seed = seed
+        # 变异组
         self.aa_groups = self.get_aa_groups()
+        # 不重复变异以及对应位点
         self.non_duplicated_aas = self.get_non_duplicated_aas()
+        self.non_duplicated_positions = self.get_non_duplicated_positions()
+
+    @staticmethod
+    def aa2position(aa: str):
+        if aa[0] in AA and aa[-1] in aa and aa[1:-1].isdigit():
+            return aa[1:-1] + aa[0]
+        elif aa[:-1].isdigit() and aa[-1] in aa:
+            return aa
+        else:
+            raise RuntimeError(f"无法转化aa={aa}")
 
     def get_aa_groups(self):
         aas = []
@@ -55,45 +68,75 @@ class AnalysisMutationGroup:
         aas = list(set(aas))
         return aas
 
+    def get_non_duplicated_positions(self):
+        aas = self.get_non_duplicated_aas()
+        positions = [self.aa2position(aa) for aa in aas]
+        positions = list(set(positions))
+        return positions
+
 
 class ProConNetwork:
     def __init__(self,
+                 analysis_mutation_groups: AnalysisMutationGroup,
                  data_dir="../data/procon",
                  parse1="../data/procon/type1_parse.csv",
                  parse2="../data/procon/type2_parse.csv",
                  fasta_file="../data/YP_009724390.1.txt",
+                 threshold=100,  # 共保守性的阈值
                  ):
-        self.data_dir = data_dir
+        self.analysis_mutation_group = analysis_mutation_groups
 
         log.info("构造图...")
         # procon 计算的所有的结果
         self.type1 = pd.read_csv(parse1)  # 单点
         self.type2 = pd.read_csv(parse2)  # 成对
-        # 归一化: 单点
-        self.type1["info_norm"] = self._normalize_info(self.type1["information"].values)
-        self.type2["info_norm"] = self._normalize_info(self.type2["info"].values)
+        # 归一化保守性分数
+        self.type1_mms, self.type1["info_norm"] = self._normalize_info(self.type1["information"].values)
+        self.type2_mms, self.type2["info_norm"] = self._normalize_info(self.type2["info"].values)
+        # 网络阈值
+        if threshold > 1:
+            self.threshold = threshold
+        else:
+            # 按比例划取阈值
+            count_type2 = int(threshold * len(self.type2))
+            threshold_score = self.type2["info"].sort_values(ascending=False)[count_type2]
+            self.threshold = threshold_score
+        log.debug("self.threshold = %s", self.threshold)
 
-        # fasta 序列
+        # 输出文件路径
+        self.data_dir = os.path.join(data_dir, f"threshold_{threshold}")
+        if not os.path.exists(self.data_dir):
+            os.mkdir(self.data_dir)
+        log.debug("self.data_dir = %s", self.data_dir)
+
+        # fasta 序列，以及位点
         self.fasta = next(SeqIO.parse(fasta_file, "fasta")).seq
-        self.positions = [f"{i+1}{aa.upper()}" for i, aa in enumerate(self.fasta)]  # 所有可能的位点
+        self.positions = [f"{i + 1}{aa.upper()}" for i, aa in enumerate(self.fasta)]  # 所有可能的位点
 
-        # 节点
-        self.nodes = self._get_nodes(self.fasta, self.type1)
-        # 边
-        self.links = self._get_links(self.type2)
-        # 构成图
-        self.G = self._get_G(self.links, self.nodes)
-        log.debug(self.G.edges["734T", "937S"])
-        log.debug(self.G.edges["937S", "734T"])
-        # 中心性
+        # 构建网络
+        nodes = self._get_nodes(self.type1)  # 节点
+        links = self._get_links(self.type2[self.type2["info"] >= self.threshold])  # 边
+        self.G = self._get_G(links, nodes)  # 构成图
+        # 添加相邻位点的最低共保守性
+        self.G = self._add_neighbour_links(self.G)
+
+        log.debug(f"不同数据的数目:\n\ttype1 {len(self.type1)}\n\tnode {self.G.number_of_nodes()}\n\t"
+                  f"type2 {len(self.type2)}\n\tedge {self.G.number_of_edges()}\n\t"
+                  f"neighbour edge {self.G.number_of_edges() - len(links)}")
+
+        # 计算中心性
         log.info("确定中心性...")
         self.degree_c, self.betweenness_c, self.closeness_c, self.edge_betweenness_c = self._get_centralities()
 
     @staticmethod
     def _normalize_info(info: np.ndarray):
+        """
+        归一化数据到 0 和 1 之间
+        :return: 归一器 和 当前数据归一结果
+        """
         info = info.reshape(-1, 1)
         mms = preprocessing.MinMaxScaler().fit(info)
-        return mms.transform(info)
+        return mms, mms.transform(info)
 
     @staticmethod
     def _aa2position(aa: str):
@@ -104,8 +147,8 @@ class ProConNetwork:
         else:
             raise RuntimeError(f"无法转化aa={aa}")
 
-    def _get_nodes(self, fasta, type1):
-        nodes = ["{}{}".format(i + 1, j) for i, j in enumerate(fasta)]
+    def _get_nodes(self, type1):
+        nodes = self.positions
         nodes = pd.DataFrame({"position": nodes})
         nodes = pd.merge(nodes, type1, how="left", left_on="position", right_on="position")
         nodes = nodes.loc[:, ["position", "info_norm"]]
@@ -117,6 +160,23 @@ class ProConNetwork:
         links = type2.loc[:, ["site1", "site2", "info_norm"]]
         links.columns = ["source", "target", "weight"]
         return links
+
+    def _add_neighbour_links(self, G):
+        neighbour_links = []
+        for i in range(len(self.positions) - 1):
+            node1 = self.positions[i]
+            node2 = self.positions[i + 1]
+            if not G.has_edge(node1, node2):
+                neighbour_links.append([node1, node2, self.threshold])
+
+        neighbour_links = pd.DataFrame(neighbour_links, columns=["source", "target", "weight"])
+        neighbour_links["weight"] = self.type2_mms.transform(neighbour_links["weight"].values.reshape(-1, 1), )
+        log.debug("neighbour_links = %s", neighbour_links)
+
+        # 添加节点
+        for i, row in neighbour_links.iterrows():
+            G.add_edge(row["source"], row["target"], weight=row["weight"])
+        return G
 
     def _get_G(self, links, nodes):
         # 绘制关系图
@@ -156,6 +216,9 @@ class ProConNetwork:
             weight = None
             outpath = [os.path.join(self.data_dir, "cache", f"{i}_centrality_no_weight.json") for i in
                        file_names]
+        for path in outpath:
+            if not os.path.exists(os.path.dirname(path)):
+                os.mkdir(os.path.dirname(path))
         # 点度中心性 degree
         self.centrality_cache_dir = outpath
 
@@ -623,7 +686,7 @@ class ProConNetwork:
         # log.debug("degree_scores[0][1] = %s", degree_scores[0][1])
         # for i in degree_scores:
         #     print(type(i[1]))
-        
+
         _plot_scores = []
         for i in degree_scores:
             _plot_scores += i[1]
@@ -633,7 +696,7 @@ class ProConNetwork:
         log.debug("len(_plot_aas) = %s", len(_plot_aas))
         log.debug("len(_plot_scores) = %s", len(_plot_scores))
         log.debug("len(degree_scores) = %s", len(degree_scores))
-        log.debug("group_and_sample_groups = %s",len(group_and_sample_groups))
+        log.debug("group_and_sample_groups = %s", len(group_and_sample_groups))
         assert len(_plot_aas) == len(_plot_scores)
         # 绘图的数据
         plot_data = pd.DataFrame(
@@ -655,14 +718,12 @@ class ProConNetwork:
 if __name__ == '__main__':
     start_time = time.time()
     # 保守性网络
-    pcn = ProConNetwork()
     # 需要关注的变异
-    groups = AnalysisMutationGroup()
-    aas = groups.get_non_duplicated_aas()
-    log.debug("aas = %s", aas)
+    mutation_groups = AnalysisMutationGroup()
+    pcn = ProConNetwork(mutation_groups)
 
     # pcn.analysisG(aas, groups.get_aa_groups())
-    pcn.random_sample_analysis(aas, groups.get_aa_groups())
+    # pcn.random_sample_analysis(aas, groups.get_aa_groups())
 
     end_time = time.time()
     log.info(f"程序运行时间: {end_time - start_time}")
