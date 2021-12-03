@@ -51,7 +51,7 @@ class AnalysisMutationGroup:
         # 不重复变异以及对应位点
         self.non_duplicated_aas = self.get_non_duplicated_aas()
         self.non_duplicated_aas_positions = self.get_non_duplicated_aas_position()
-        self.non_duplicated_aas_sample = self.resample_aas(self.non_duplicated_aas)
+        self.non_duplicated_aas_sample = self.resample_aas(self.non_duplicated_aas_positions)
 
     @staticmethod
     def aa2position(aa: str):
@@ -90,7 +90,7 @@ class AnalysisMutationGroup:
         # 重采样
         positions = pd.Series(self.positions)
         log.debug("开始采样，采样数目为%s", N)
-        sample_aas = [positions.sample(n=len(aas), random_state=self.seed).tolist() for _ in range(N)]
+        sample_aas = [positions.sample(n=len(aas), random_state=self.seed + i).tolist() for i in range(N)]
         return sample_aas
 
     def resample_groups(self, groups, N=1000):
@@ -100,11 +100,12 @@ class AnalysisMutationGroup:
         sample_groups = []
         positions = pd.Series(self.positions)
         log.debug("开始采样，采样数目为%s", N)
-        for group in groups:
+        for i, group in enumerate(groups):
             # 采样
-            one_sample= [positions.sample(n=len(group), random_state=self.seed).tolist() for _ in range(N)]
+            one_sample = [positions.sample(n=len(group), random_state=self.seed + j + i * 1000).tolist() for j in
+                          range(N)]
             sample_groups.append(one_sample)
-            log.info("采样完成")
+            log.info(f"采样完成{i}, {group}")
         return sample_groups
 
 
@@ -366,57 +367,66 @@ class ProConNetwork:
             degrees[n] = avg_wt
         return degrees
 
-    def _plot_degree_distribuition(self, aas):
-        # 度分布 degree
-        # 使用边的权重的平均值作为度
-        degrees = {}
-        # 遍历节点
-        for n, nbrs in self.G.adj.items():
-            # n 节点，nbrs 邻居节点
-            wts = []
-            for nbr, eattr in nbrs.items():
-                # nbr 邻居节点，eatter 边属性
-                wt = eattr["weight"]
-                wts.append(wt)
-            if wts:
-                avg_wt = np.mean(wts)
-            else:
-                avg_wt = 0.0
-            # degrees.append(avg_wt)
-            degrees[n] = avg_wt
-        degrees: pd.Series = pd.Series(degrees)
-        log.debug("degrees = %s", degrees)
-        log.debug("max(degrees) = %s", max(degrees))
-        log.debug("min(degrees) = %s", min(degrees))
-        log.debug("np.mean(degrees) = %s", np.mean(degrees))
-        # log.debug("pd.qcut(degrees) = %s", pd.cut(degrees, np.arange(0, 0.7, 0.01), right=False))
-        cut_split = np.arange(0, 0.7, 0.1)
-        degrees_distribution: pd.Series = pd.cut(degrees.values, cut_split, right=False)
-        degrees_distribution = degrees_distribution.value_counts()
-        degrees_distribution = degrees_distribution / len(degrees)
-        log.debug("sum(degrees_distribution) = %s", sum(degrees_distribution))
+    def apply_to_aas(self, aas, aas_sample, func):
+        aas_score = func(aas)
+        aas_sample_score = [func(a_sample) for a_sample in aas_sample]
+        return aas_score, aas_sample_score
+
+    def _plot_degree_distribuition(self, ):
+        """
+        度分布 degree
+        使用边的权重的平均值作为度
+        """
+        aas = self.analysis_mutation_group.non_duplicated_aas_positions
+        aas_sample = self.analysis_mutation_group.non_duplicated_aas_sample
+
+        def calculate_avg_weighted_degree(aas):
+            """计算一组位点的平均度"""
+            result = []
+            for aa in aas:
+                # 计算单个位点的加权平均度
+                weighted_degrees = []
+                for nbr, datadict in self.G.adj[aa].items():
+                    weighted_degrees.append(datadict.get("weight", 0))
+
+                if weighted_degrees:
+                    avg_weighted_degree = np.mean(weighted_degrees)
+                else:
+                    avg_weighted_degree = 0
+                result.append(avg_weighted_degree)
+            return result
+
+        avg_weighted_degrees_result = self.apply_to_aas(aas, aas_sample, calculate_avg_weighted_degree)
+        # log.debug("avg_weighted_degrees_result[0] = %s", avg_weighted_degrees_result[0])
+        # log.debug("avg_weighted_degrees_result[0][1] = %s", avg_weighted_degrees_result[1][1])
+        aas_degrees = pd.Series(avg_weighted_degrees_result[0])
+        sample_degrees = pd.Series(np.array(avg_weighted_degrees_result[1]).reshape(-1))
+        log.debug("aas_degrees.shape = %s", aas_degrees.shape)
+        log.debug("sample_degrees.shape = %s", sample_degrees.shape)
+
+        cut_split = np.arange(0.2, 0.8, 0.1).tolist()
+        aas_degrees_cut = pd.cut(aas_degrees, cut_split).value_counts().sort_index() / len(aas_degrees)
+        sample_degrees_cut = pd.cut(sample_degrees, cut_split).value_counts().sort_index() / len(sample_degrees)
+        log.debug("aas_degrees_cut = %s", aas_degrees_cut)
+        log.debug("sample_degrees_cut = %s", sample_degrees_cut)
         # 绘图
         fig: plt.Figure
         axes: List[plt.Axes]
         fig, axes = plt.subplots(1, 2, figsize=(15, 7.5))
-        degrees_distribution.plot.bar(ax=axes[0])
-        axes[0].set_title("degree distribution")
-        axes[0].set_xticklabels(degrees_distribution.index, rotation=0)
+        aas_degrees_cut.plot.bar(ax=axes[0])
+        axes[0].set_title("degree distribution of mutations")
+        axes[0].set_xticklabels(aas_degrees_cut.index, rotation=0)
 
-        # 变异的分布
-        aas_degrees = degrees[aas].sort_index()
-        aas_degrees.to_csv(os.path.join(self.data_dir, "aas_degree_distribution.csv"))
-        aas_degrees_distribution = pd.cut(aas_degrees.values, cut_split, right=False).value_counts() / len(degrees)
-        log.debug("aas_degrees_distribution = %s", aas_degrees_distribution)
-        aas_degrees_distribution.plot.bar(ax=axes[1])
-        axes[1].set_title("degree distribution of mutations")
-        axes[1].set_xticklabels(aas_degrees_distribution.index, rotation=0)
-        # log.debug("aas_degrees.sort_values() = %s", aas_degrees.sort_values())
+        sample_degrees_cut.plot.bar(ax=axes[1])
+        axes[1].set_title("degree distribution")
+        axes[1].set_xticklabels(sample_degrees_cut.index, rotation=0)
 
         fig.show()
         fig.savefig(os.path.join(self.data_dir, f"度分布.png"), dpi=300)
+        # TODO: 绘制箱线图
 
-    def _plot_node_box(self, aas):
+    def _plot_node_box(self, ):
+        aas = self.analysis_mutation_group.non_duplicated_aas_positions
         nodes_size = {node: self.G.nodes[node]["size"] for node in self.G.nodes}
         node_data = pd.DataFrame(
             {"conservation": nodes_size, "degree centrality": self.degree_c, "closeness centrality": self.closeness_c,
@@ -543,27 +553,24 @@ class ProConNetwork:
         fig.savefig(os.path.join(self.data_dir, "edge_boxplot.png"), dpi=500)
 
     def _plot_procon_distribution(self, ):
+        """绘制保守性分数的分布图"""
         log.debug("self.type1.min() = %s", self.type1["information"].min())
         log.debug("self.type1.max() = %s", self.type1["information"].max())
         log.debug("self.type2.min() = %s", self.type2["info"].min())
         log.debug("self.type2.max() = %s", self.type2["info"].max())
         type1_info = self.type1["info_norm"]
-        type2_info = self.type2["info_norm"]
+        type2_info = self.type2["info_norm"][self.type2["info"] > self.threshold]
 
         cut_list = np.arange(0, 1.1, 0.1).tolist()
         log.debug("cut_list = %s", cut_list)
         type1_info_count = pd.cut(type1_info, cut_list, ).value_counts().sort_index() / len(type1_info)
         type2_info_count = pd.cut(type2_info, cut_list, ).value_counts().sort_index() / len(type2_info)
-        type1_info_count.plot.bar()
-        type2_info_count.plot.bar()
         plot_data = pd.DataFrame([
             type1_info_count.to_list() + type2_info_count.to_list(),
             ["conservation"] * len(type1_info_count) + ["co-conservation"] * len(type2_info_count),
             type1_info_count.index.to_list() + type2_info_count.index.to_list(),
             # ])
         ], index=["proportion", "type", "score"]).T
-        # fig: plt.Figure = plt.figure()
-        # ax: plt.Axes = fig.add_subplot()
         fig = sns.catplot(
             kind="bar",
             x="type",
@@ -575,8 +582,9 @@ class ProConNetwork:
         plt.show()
         fig.savefig(os.path.join(self.data_dir, "procon distribution.png"), dpi=500)
 
-    def _collect_mutation_info(self, aas):
+    def _collect_mutation_info(self, ):
         """收集变异节点信息"""
+        aas = self.analysis_mutation_group.non_duplicated_aas_positions
         weighted_degrees = self.get_weighted_degree()
         avg_weighted_degrees = self.get_avg_weighted_degree()
 
@@ -659,18 +667,14 @@ class ProConNetwork:
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "average shortest length.png"), dpi=300)
 
-    def analysisG(self, aas: list, groups):
+    def analysisG(self, ):
         """绘制相关图表"""
-        aas = [self._aa2position(aa) for aa in aas if aa]
-        aas = list(set(aas))
-        log.debug("aas = %s", aas)
-
-        self._collect_mutation_info(aas)  # 收集变异位点的信息
+        self._collect_mutation_info()  # 收集变异位点的消息，生成表格
         self._plot_procon_distribution()  # 分数分布图
-        self._plot_degree_distribuition(aas)  # 度分布
-        self._plot_node_box(aas, )  # 箱线图：中心性 + 保守性
-        self._plot_edge_box(aas, groups)  # 共保守性
-        self.calculate_average_shortest_path_length(aas)
+        self._plot_degree_distribuition()  # 度分布
+        self._plot_node_box()  # 箱线图：中心性 + 保守性
+        # self._plot_edge_box(aas, groups)  # 共保守性
+        # self.calculate_average_shortest_path_length(aas)
 
     def random_sample_analysis(self, aas: list, groups, N=1000):
         """使用随机采样的形式，分析实验组和对照组的区别
@@ -754,7 +758,7 @@ if __name__ == '__main__':
     mutation_groups = AnalysisMutationGroup()
     pcn = ProConNetwork(mutation_groups)
 
-    # pcn.analysisG(aas, groups.get_aa_groups())
+    pcn.analysisG()
     # pcn.random_sample_analysis(aas, groups.get_aa_groups())
 
     end_time = time.time()
