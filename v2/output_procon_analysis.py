@@ -468,7 +468,7 @@ class ProConNetwork:
         plt.show()
         fig.savefig(os.path.join(self.data_dir, "boxplot.png"), dpi=500)
 
-    def _plot_edge_box(self, aas, groups):
+    def _plot_edge_box(self, ):
         """计算边的相关参数
         分为三类:
         1. 在同一组的 same mutation group
@@ -632,48 +632,39 @@ class ProConNetwork:
         data = data.set_index("aa", drop=False).sort_index()
         data.to_csv(os.path.join(self.data_dir, "aas_info.csv"))
 
-    def calculate_average_shortest_path_length(self, aas):
+    def calculate_average_shortest_path_length(self, ):
         """平均最短路径长度"""
         # data -> aa : [变异，非变异]
         data = {}
+        aas = self.analysis_mutation_group.non_duplicated_aas_positions
+        aas_sample = self.analysis_mutation_group.non_duplicated_aas_sample
+        aas_scores = []
+        sample_scores = []
         for aa in aas:
-            mutation_len = []  # 与其他变异相连的路径
-            other_len = []  # 与其他相连的路径
-            path_len: dict = shortest_path_length(self.G, source=aa)
-            for target, length in path_len.items():
-                if target in aas:
-                    mutation_len.append(length)
-                else:
-                    other_len.append(length)
-            average_mutation_len = 0 if len(mutation_len) == 0 else np.mean(mutation_len)
-            average_other_len = 0 if len(other_len) == 0 else np.mean(other_len)
-            data[aa] = {
-                "mutation": average_mutation_len,
-                "other": average_other_len
-            }
-        data = pd.DataFrame(data).T
-        log.debug("data = %s", data.head())
-        p_value = mannwhitneyu(data.iloc[:, 0], data.iloc[:, 1]).pvalue
-        data.to_csv(os.path.join(self.data_dir, "mutations' average shortest path length.csv"))
-        data.index.name = "position"
-        plt_data = data.stack().reset_index()
-        plt_data.columns = ["position", "type", "length"]
-        plt_data = plt_data.sort_values("position")  # 排序
-        log.debug("plt_data = %s", plt_data.head())
+            # 构造数据
+            path_len = shortest_path_length(self.G, source=aa)
+            path_len = pd.Series(path_len)
+            # 在变异中
+            aas_scores.append(path_len[aas].mean())
+            # 在采样中
+            sample_scores.append([path_len[a_sample].mean() for a_sample in aas_sample])
 
+        plot_data = pd.DataFrame(sample_scores, index=aas, )
+        plot_data = plot_data.stack().reset_index()
+        plot_data.columns = ["aa", "group", "length"]
         fig: plt.Figure
-        axes: List[plt.Axes]
-        fig, axes = plt.subplots(1, 2, figsize=(10, 5))
-        sns.barplot(data=plt_data, x="position", y="length", hue="type", ax=axes[0], )
-        sns.boxplot(data=plt_data, x="type", y="length", ax=axes[1])
-        # 调整图像
-        [txt.set_rotation(90) for txt in axes[0].get_xticklabels()]  # 字体旋转
-        axes[0].legend()
-        axes[0].set_xlabel("")
-        axes[1].set_xlabel(f"p = {p_value:.3f}")
-        # fig.suptitle("average shortest path length", va="bottom")
-        fig.tight_layout()
+        # axes: List[plt.Axes]
+        ax: plt.Axes
+        fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         # 查看并保存图片
+        order_index = np.argsort(aas_scores)
+        sns.boxplot(data=plot_data, x="aa", y="length", ax=ax, order=np.array(aas)[order_index])
+        ax.scatter(x=range(len(aas)), y=np.array(aas_scores)[order_index])
+        ax.set_ylabel("average shortest path length")
+        ax.set_xlabel("")
+        [txt.set_rotation(90) for txt in ax.get_xticklabels()]
+
+        fig.tight_layout()
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "average shortest length.png"), dpi=300)
 
@@ -683,8 +674,8 @@ class ProConNetwork:
         # self._plot_procon_distribution()  # 分数分布图
         # self._plot_degree_distribuition()  # 度分布
         # self._plot_node_box()  # 箱线图：中心性 + 保守性
-        self._plot_edge_box()  # 共保守性
-        # self.calculate_average_shortest_path_length(aas)
+        self._plot_edge_box()  # 共保守性  TODO: 使用采样的方式
+        self.calculate_average_shortest_path_length()
 
     def random_sample_analysis(self, aas: list, groups, N=1000):
         """使用随机采样的形式，分析实验组和对照组的区别
