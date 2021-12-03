@@ -34,17 +34,24 @@ sns.set()
 
 
 class AnalysisMutationGroup:
-    def __init__(self, analysis="../data/procon/analysis.json", seed=0):
+    def __init__(self, analysis="../data/procon/analysis.json", seed=0, fasta_file="../data/YP_009724390.1.txt", ):
         # 关注的变异组的相关数据
         with open(analysis) as f:
             self.analysis: dict = json.load(f)
 
         self.seed = seed
-        # 变异组
+        # 氨基酸序列以及所有位点
+        self.fasta = next(SeqIO.parse(fasta_file, "fasta")).seq
+        self.positions = [f"{i + 1}{aa.upper()}" for i, aa in enumerate(self.fasta)]  # 所有可能的位点
+        # 变异组以及对应位点
         self.aa_groups = self.get_aa_groups()
+        self.aa_groups_position = self.get_aa_groups_position()
+        self.aa_groups_sample = self.resample_groups(self.aa_groups)
+
         # 不重复变异以及对应位点
         self.non_duplicated_aas = self.get_non_duplicated_aas()
-        self.non_duplicated_positions = self.get_non_duplicated_positions()
+        self.non_duplicated_aas_positions = self.get_non_duplicated_aas_position()
+        self.non_duplicated_aas_sample = self.resample_aas(self.non_duplicated_aas)
 
     @staticmethod
     def aa2position(aa: str):
@@ -61,6 +68,11 @@ class AnalysisMutationGroup:
             aas.append(row["aas"])
         return aas
 
+    def get_aa_groups_position(self):
+        groups = self.get_aa_groups()
+        groups = [[self.aa2position(aa) for aa in group] for group in groups]
+        return groups
+
     def get_non_duplicated_aas(self):
         aas = []
         for i, row in self.analysis.items():
@@ -68,11 +80,32 @@ class AnalysisMutationGroup:
         aas = list(set(aas))
         return aas
 
-    def get_non_duplicated_positions(self):
+    def get_non_duplicated_aas_position(self):
         aas = self.get_non_duplicated_aas()
         positions = [self.aa2position(aa) for aa in aas]
         positions = list(set(positions))
         return positions
+
+    def resample_aas(self, aas, N=1000):
+        # 重采样
+        positions = pd.Series(self.positions)
+        log.debug("开始采样，采样数目为%s", N)
+        sample_aas = [positions.sample(n=len(aas), random_state=self.seed).tolist() for _ in range(N)]
+        return sample_aas
+
+    def resample_groups(self, groups, N=1000):
+        groups = self.aa_groups
+
+        # 重采样
+        sample_groups = []
+        positions = pd.Series(self.positions)
+        log.debug("开始采样，采样数目为%s", N)
+        for group in groups:
+            # 采样
+            one_sample= [positions.sample(n=len(group), random_state=self.seed).tolist() for _ in range(N)]
+            sample_groups.append(one_sample)
+            log.info("采样完成")
+        return sample_groups
 
 
 class ProConNetwork:
@@ -81,7 +114,6 @@ class ProConNetwork:
                  data_dir="../data/procon",
                  parse1="../data/procon/type1_parse.csv",
                  parse2="../data/procon/type2_parse.csv",
-                 fasta_file="../data/YP_009724390.1.txt",
                  threshold=100,  # 共保守性的阈值
                  ):
         self.analysis_mutation_group = analysis_mutation_groups
@@ -110,8 +142,8 @@ class ProConNetwork:
         log.debug("self.data_dir = %s", self.data_dir)
 
         # fasta 序列，以及位点
-        self.fasta = next(SeqIO.parse(fasta_file, "fasta")).seq
-        self.positions = [f"{i + 1}{aa.upper()}" for i, aa in enumerate(self.fasta)]  # 所有可能的位点
+        self.fasta = self.analysis_mutation_group.fasta
+        self.positions = self.analysis_mutation_group.positions
 
         # 构建网络
         nodes = self._get_nodes(self.type1)  # 节点
