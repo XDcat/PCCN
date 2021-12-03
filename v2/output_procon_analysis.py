@@ -427,12 +427,22 @@ class ProConNetwork:
 
     def _plot_node_box(self, ):
         aas = self.analysis_mutation_group.non_duplicated_aas_positions
+        aas_sample = self.analysis_mutation_group.non_duplicated_aas_sample
+        aas_sample = np.array(aas_sample).reshape(-1).tolist()  # 扁平化
+        plot_data = pd.DataFrame(
+            {"position": aas + aas_sample, "is_mutation": [True] * len(aas) + [False] * len(aas_sample)})
+
         nodes_size = {node: self.G.nodes[node]["size"] for node in self.G.nodes}
         node_data = pd.DataFrame(
             {"conservation": nodes_size, "degree centrality": self.degree_c, "closeness centrality": self.closeness_c,
              "betweenness centrality": self.betweenness_c})
-        node_data["is_mutation"] = node_data.index.map(lambda x: x in aas)
-        node_data = node_data[node_data["degree centrality"] > 0]  # 除去孤立节点
+
+        # node_data = node_data[]
+        plot_data["conservation"] = node_data.loc[plot_data["position"], "conservation"].values
+        plot_data["degree centrality"] = node_data.loc[plot_data["position"], "degree centrality"].values
+        plot_data["closeness centrality"] = node_data.loc[plot_data["position"], "closeness centrality"].values
+        plot_data["betweenness centrality"] = node_data.loc[plot_data["position"], "betweenness centrality"].values
+        log.debug("plot_data = %s", plot_data)
 
         def cal_p_mannwhitneyu(data: pd.Series, bo: pd.Series):
             x = data[bo].to_list()
@@ -440,25 +450,23 @@ class ProConNetwork:
             p = mannwhitneyu(x, y).pvalue
             return p
 
-        # node_data = node_data[node_data["conservation"] > 0.3]
         fig: plt.Figure
         axes: List[plt.Axes]
         fig, axes = plt.subplots(4, 1, figsize=(10, 15))
-        sns.boxplot(x=node_data["conservation"], y=node_data["is_mutation"], orient="h", ax=axes[0], )
-        p = cal_p_mannwhitneyu(node_data["conservation"], node_data["is_mutation"])
+        sns.boxplot(x=plot_data["conservation"], y=plot_data["is_mutation"], orient="h", ax=axes[0], )
+        p = cal_p_mannwhitneyu(plot_data["conservation"], plot_data["is_mutation"])
         axes[0].set_xlabel(f"conservtion (p = {p: .3f})")
-        sns.boxplot(x=node_data["degree centrality"], y=node_data["is_mutation"], orient="h", ax=axes[1], )
-        p = cal_p_mannwhitneyu(node_data["degree centrality"], node_data["is_mutation"])
+        sns.boxplot(x=plot_data["degree centrality"], y=plot_data["is_mutation"], orient="h", ax=axes[1], )
+        p = cal_p_mannwhitneyu(plot_data["degree centrality"], plot_data["is_mutation"])
         axes[1].set_xlabel(f"degree centrality (p = {p: .3f})")
-        sns.boxplot(x=node_data["closeness centrality"], y=node_data["is_mutation"], orient="h", ax=axes[2])
-        p = cal_p_mannwhitneyu(node_data["closeness centrality"], node_data["is_mutation"])
+        sns.boxplot(x=plot_data["closeness centrality"], y=plot_data["is_mutation"], orient="h", ax=axes[2])
+        p = cal_p_mannwhitneyu(plot_data["closeness centrality"], plot_data["is_mutation"])
         axes[2].set_xlabel(f"closeness centrality (p = {p: .3f})")
-        sns.boxplot(x=node_data["betweenness centrality"], y=node_data["is_mutation"], orient="h", ax=axes[3])
-        p = cal_p_mannwhitneyu(node_data["betweenness centrality"], node_data["is_mutation"])
+        sns.boxplot(x=plot_data["betweenness centrality"], y=plot_data["is_mutation"], orient="h", ax=axes[3])
+        p = cal_p_mannwhitneyu(plot_data["betweenness centrality"], plot_data["is_mutation"])
         axes[3].set_xlabel(f"betweenness centrality (p = {p: .3f})")
         plt.show()
         fig.savefig(os.path.join(self.data_dir, "boxplot.png"), dpi=500)
-        log.debug("node_data = %s", node_data)
 
     def _plot_edge_box(self, aas, groups):
         """计算边的相关参数
@@ -469,6 +477,8 @@ class ProConNetwork:
         4. 所有 all
 
         """
+        aas = self.analysis_mutation_group.non_duplicated_aas_positions
+        groups = self.analysis_mutation_group.aa_groups_position
         # 可以在不同组的边
         edge_in_different_group = list(permutations(aas, 2))
         # 在同一组的边
@@ -669,11 +679,11 @@ class ProConNetwork:
 
     def analysisG(self, ):
         """绘制相关图表"""
-        self._collect_mutation_info()  # 收集变异位点的消息，生成表格
-        self._plot_procon_distribution()  # 分数分布图
-        self._plot_degree_distribuition()  # 度分布
-        self._plot_node_box()  # 箱线图：中心性 + 保守性
-        # self._plot_edge_box(aas, groups)  # 共保守性
+        # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
+        # self._plot_procon_distribution()  # 分数分布图
+        # self._plot_degree_distribuition()  # 度分布
+        # self._plot_node_box()  # 箱线图：中心性 + 保守性
+        self._plot_edge_box()  # 共保守性
         # self.calculate_average_shortest_path_length(aas)
 
     def random_sample_analysis(self, aas: list, groups, N=1000):
