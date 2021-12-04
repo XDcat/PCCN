@@ -670,10 +670,11 @@ class ProConNetwork:
 
     def analysisG(self, ):
         """绘制相关图表"""
-        # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
-        # self._plot_procon_distribution()  # 分数分布图
-        # self._plot_degree_distribuition()  # 度分布
-        # self._plot_node_box()  # 箱线图：中心性 + 保守性
+        # self._plot_origin_distribution()  # 绘制保守性的分布情况
+        self._collect_mutation_info()  # 收集变异位点的消息，生成表格
+        self._plot_procon_distribution()  # 分数分布图
+        self._plot_degree_distribuition()  # 度分布
+        self._plot_node_box()  # 箱线图：中心性 + 保守性
         self._plot_edge_box()  # 共保守性  TODO: 使用采样的方式
         self.calculate_average_shortest_path_length()
 
@@ -751,16 +752,32 @@ class ProConNetwork:
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "resample degree.png"), dpi=300)
 
+    def _plot_origin_distribution(self):
+        type2 = self.type2["info"]
+        type2_count = pd.cut(type2, np.arange(max(type2))).value_counts().sort_index()
+        type2_count.index = np.arange(max(type2))[:len(type2_count)]
+
+        # plt.plot(x=type2_count.index, y=type2_count.values)
+        ax: plt.Axes
+        fig, ax = plt.subplots(figsize=(10, 5))
+        type2_count.plot(ax=ax)
+        # ax.set_xtick(np.arange(max(type2)))
+        fig.tight_layout()
+        plt.show()
+        fig.savefig(os.path.join(self.data_dir, "共保守性分布情况.png"), dpi=300)
+
 
 if __name__ == '__main__':
     start_time = time.time()
     # 保守性网络
     # 需要关注的变异
     mutation_groups = AnalysisMutationGroup()
-    pcn = ProConNetwork(mutation_groups)
+    thresholds = [50, 100, 150, 200, 250, 300]
+    for t in thresholds:
+        pcn = ProConNetwork(mutation_groups, threshold=t)
 
-    pcn.analysisG()
-    # pcn.random_sample_analysis(aas, groups.get_aa_groups())
+        pcn.analysisG()
+        # pcn.random_sample_analysis(aas, groups.get_aa_groups())
 
-    end_time = time.time()
-    log.info(f"程序运行时间: {end_time - start_time}")
+        end_time = time.time()
+        log.info(f"程序运行时间: {end_time - start_time}")
