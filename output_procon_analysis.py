@@ -22,7 +22,7 @@ import logconfig
 
 import matplotlib.pyplot as plt
 
-logconfig.setup_logging()
+# logconfig.setup_logging()
 log = logging.getLogger("cov2")
 
 
@@ -112,6 +112,7 @@ def plot_2D(type1, type2, pst_2_x, analysis, outpath, font_size):
         y_smooth += 0.15
         alpha = row["rate"] / 100
         ax.plot(x_smooth, y_smooth, "C1", alpha=alpha)
+        # ax.plot(x_smooth, y_smooth, )
 
     # 添加坐标标签
     xtick_names = type1["position"].drop_duplicates()
@@ -129,8 +130,9 @@ def plot_2D(type1, type2, pst_2_x, analysis, outpath, font_size):
     ax.set_ymargin(0.03)
 
     # 绘制表格
+    flg.tight_layout()
     flg.show()
-    flg.savefig(outpath, dpi=500)
+    flg.savefig(outpath, dpi=200)
 
 
 def plot_graph(nodes, links, name, layout="circular"):

@@ -1,5 +1,9 @@
 import json
 import math
+
+from pyecharts import options as opts
+from pyecharts.charts import Graph
+import networkx
 import seaborn as sns
 import time
 from Bio import SeqIO
@@ -107,6 +111,14 @@ class AnalysisMutationGroup:
             sample_groups.append(one_sample)
             log.info(f"采样完成{i}, {group}")
         return sample_groups
+
+    def display_seq_and_aa(self):
+        aas = self.non_duplicated_aas
+        aas = sorted(aas, key=lambda x: int(x[1:-1]))
+        log.info(f"fasta:\n"
+                 f"{self.fasta}\n" + "aas:\n" + "\n".join(aas)
+                 )
+        log.debug("len(self.positions) = %s", len(self.positions))
 
 
 class ProConNetwork:
@@ -403,8 +415,12 @@ class ProConNetwork:
         sample_degrees = pd.Series(np.array(avg_weighted_degrees_result[1]).reshape(-1))
         log.debug("aas_degrees.shape = %s", aas_degrees.shape)
         log.debug("sample_degrees.shape = %s", sample_degrees.shape)
+        log.debug("min(aas_degrees) = %s", min(aas_degrees))
+        log.debug("max(aas_degrees) = %s", max(aas_degrees))
+        log.debug("min(sample_degrees) = %s", min(sample_degrees))
+        log.debug("max(sample_degrees) = %s", max(sample_degrees))
 
-        cut_split = np.arange(0.2, 0.8, 0.1).tolist()
+        cut_split = np.arange(0.2, 0.73, 0.1).tolist()
         aas_degrees_cut = pd.cut(aas_degrees, cut_split).value_counts().sort_index() / len(aas_degrees)
         sample_degrees_cut = pd.cut(sample_degrees, cut_split).value_counts().sort_index() / len(sample_degrees)
         log.debug("aas_degrees_cut = %s", aas_degrees_cut)
@@ -528,6 +544,13 @@ class ProConNetwork:
                 co_conservation["label"] == "mutation",
                 co_conservation["label"] == "no mutation")
         )
+        log.debug(
+            "p value of co-conservation = %.4f",
+            cal_p_mannwhitneyu(
+                co_conservation["co-conservation"],
+                co_conservation["label"] == "same mutation group",
+                co_conservation["label"] == "no mutation")
+        )
 
         # 边的 betweenness
         rows = []
@@ -555,6 +578,13 @@ class ProConNetwork:
             cal_p_mannwhitneyu(
                 co_conservation["co-conservation"],
                 co_conservation["label"] == "mutation",
+                co_conservation["label"] == "no mutation")
+        )
+        log.debug(
+            "p value of co-conservation = %.4f",
+            cal_p_mannwhitneyu(
+                co_conservation["co-conservation"],
+                co_conservation["label"] == "same mutation group",
                 co_conservation["label"] == "no mutation")
         )
         # 绘图
@@ -670,13 +700,14 @@ class ProConNetwork:
 
     def analysisG(self, ):
         """绘制相关图表"""
-        # self._plot_origin_distribution()  # 绘制保守性的分布情况
-        self._collect_mutation_info()  # 收集变异位点的消息，生成表格
-        self._plot_procon_distribution()  # 分数分布图
-        self._plot_degree_distribuition()  # 度分布
-        self._plot_node_box()  # 箱线图：中心性 + 保守性
+        # self._plot_origin_distribution()  # 绘制所有节点的保守性的分布情况
+        # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
+        # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
+        # self._plot_procon_distribution()  # 分数分布图
+        # self._plot_degree_distribuition()  # 度分布
+        # self._plot_node_box()  # 箱线图：中心性 + 保守性
         self._plot_edge_box()  # 共保守性  TODO: 使用采样的方式
-        self.calculate_average_shortest_path_length()
+        # self.calculate_average_shortest_path_length()
 
     def random_sample_analysis(self, aas: list, groups, N=1000):
         """使用随机采样的形式，分析实验组和对照组的区别
@@ -766,18 +797,85 @@ class ProConNetwork:
         plt.show()
         fig.savefig(os.path.join(self.data_dir, "共保守性分布情况.png"), dpi=300)
 
+    def _plot_mutations_relationship(self):
+        groups = self.analysis_mutation_group.aa_groups
+        aas = [self.analysis_mutation_group.aa2position(aa) for group in groups for aa in group]
+        # # 节点
+        # unique_aas = np.unique(aas)
+        # 节点和权重: 权重统计出现的次数
+        aas_count = pd.value_counts(aas)
+        # 边: 判断是否具有共保守性
+        edges = []
+        for n1, n2 in combinations(aas_count.index, 2):
+            if self.G.has_edge(n1, n2):
+                edges.append([n1, n2, self.G.edges[n1, n2]["weight"]])
+        # # 导出数据，让其他软件绘图
+        # nodes = pd.DataFrame({"ID": aas_count.index, "weight": aas_count.values})
+        # nodes.index.name = "rank"
+        # links = pd.DataFrame(links, columns=["Source", "Target", "weight"])
+        # links.index.name = "rank"
+        #
+        # nodes.to_csv(os.path.join(self.data_dir, "mutation relationship.gepi.node.csv"))
+        # links.to_csv(os.path.join(self.data_dir, "mutation relationship.gepi.link.csv"))
+
+        # # 使用networkx
+        # log.debug("aas_count = %s", aas_count.shape)
+        # log.debug("links = %s", len(links))
+        # G = nx.Graph()
+        # for node, weight in aas_count.items():
+        #     G.add_node(node, weight=weight)
+        # for n1, n2, weight in links:
+        #     G.add_edge(n1, n2, weight=weight)
+        # fig = plt.figure(figsize=(20, 20), )
+        # nx.draw_circular(G, )
+        # nx.draw_networkx_labels(G, nx.drawing.circular_layout(G, scale=1.05), font_size=3, font_color="g", )
+        # fig.tight_layout()
+        # fig.show()
+        # fig.savefig(os.path.join(self.data_dir, "mutation count relationships.png"), dpi=300)
+
+        # 使用 echart 绘图
+        nodes = pd.DataFrame({"name": aas_count.index, "symbolSize": aas_count.values})
+        nodes = nodes.to_dict("records")
+        links = pd.DataFrame(edges, columns=["source", "target", "weight"])
+        links.to_csv(os.path.join(self.data_dir, "test_links.csv"))
+        links = links.to_dict("records")
+        count_node_in_links = defaultdict(int)
+        for link in links:
+            source = link["source"]
+            target = link["target"]
+            count_node_in_links[source] += 1
+            count_node_in_links[target] += 1
+        log.debug("pd.Series(count_node_in_links) = %s", pd.Series(count_node_in_links).sort_values())
+
+        c = (
+            Graph(init_opts=opts.InitOpts(width="100%", height="1000px"))
+                .add("", nodes, links, repulsion=8000, layout="circular", )
+                .set_global_opts(
+                title_opts=opts.TitleOpts(title="count"),
+                toolbox_opts=opts.ToolboxOpts(
+                    feature=opts.ToolBoxFeatureOpts(
+                        save_as_image=opts.ToolBoxFeatureSaveAsImageOpts(pixel_ratio=3, background_color="white"))), )
+                .render(os.path.join(self.data_dir, "mutation relationship.html"))
+        )
+
 
 if __name__ == '__main__':
     start_time = time.time()
     # 保守性网络
     # 需要关注的变异
     mutation_groups = AnalysisMutationGroup()
-    thresholds = [50, 100, 150, 200, 250, 300]
-    for t in thresholds:
-        pcn = ProConNetwork(mutation_groups, threshold=t)
+    mutation_groups.display_seq_and_aa()
+    pcn = ProConNetwork(mutation_groups, threshold=100)
+    pcn.analysisG()
+    end_time = time.time()
+    log.info(f"程序运行时间: {end_time - start_time}")
 
-        pcn.analysisG()
-        # pcn.random_sample_analysis(aas, groups.get_aa_groups())
-
-        end_time = time.time()
-        log.info(f"程序运行时间: {end_time - start_time}")
+    # thresholds = [50, 100, 150, 200, 250, 300]
+    # for t in thresholds:
+    #     pcn = ProConNetwork(mutation_groups, threshold=t)
+    #
+    #     pcn.analysisG()
+    #     # pcn.random_sample_analysis(aas, groups.get_aa_groups())
+    #
+    #     end_time = time.time()
+    #     log.info(f"程序运行时间: {end_time - start_time}")
