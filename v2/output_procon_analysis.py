@@ -420,7 +420,15 @@ class ProConNetwork:
         log.debug("min(sample_degrees) = %s", min(sample_degrees))
         log.debug("max(sample_degrees) = %s", max(sample_degrees))
 
-        cut_split = np.arange(0.2, 0.73, 0.1).tolist()
+        # 寻找最值
+        min_value = min(min(aas_degrees), min(sample_degrees))
+        max_value = max(max(aas_degrees), max(sample_degrees))
+        # 进行归一化
+        min_value = math.floor(min_value*10) / 10
+        max_value = math.ceil(max_value*10) / 10 + 0.03
+        cut_split = np.arange(min_value, max_value, 0.1).tolist()
+        log.debug("cut_split = %s", cut_split)
+
         aas_degrees_cut = pd.cut(aas_degrees, cut_split).value_counts().sort_index() / len(aas_degrees)
         sample_degrees_cut = pd.cut(sample_degrees, cut_split).value_counts().sort_index() / len(sample_degrees)
         log.debug("aas_degrees_cut = %s", aas_degrees_cut)
@@ -704,9 +712,9 @@ class ProConNetwork:
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
         # self._plot_procon_distribution()  # 分数分布图
-        # self._plot_degree_distribuition()  # 度分布
+        self._plot_degree_distribuition()  # 度分布
         # self._plot_node_box()  # 箱线图：中心性 + 保守性
-        self._plot_edge_box()  # 共保守性  TODO: 使用采样的方式
+        # self._plot_edge_box()  # 共保守性  TODO: 使用采样的方式
         # self.calculate_average_shortest_path_length()
 
     def random_sample_analysis(self, aas: list, groups, N=1000):
@@ -864,18 +872,18 @@ if __name__ == '__main__':
     # 保守性网络
     # 需要关注的变异
     mutation_groups = AnalysisMutationGroup()
-    mutation_groups.display_seq_and_aa()
-    pcn = ProConNetwork(mutation_groups, threshold=100)
-    pcn.analysisG()
-    end_time = time.time()
-    log.info(f"程序运行时间: {end_time - start_time}")
+    # mutation_groups.display_seq_and_aa()
+    # pcn = ProConNetwork(mutation_groups, threshold=100)
+    # pcn.analysisG()
+    # end_time = time.time()
+    # log.info(f"程序运行时间: {end_time - start_time}")
 
-    # thresholds = [50, 100, 150, 200, 250, 300]
-    # for t in thresholds:
-    #     pcn = ProConNetwork(mutation_groups, threshold=t)
-    #
-    #     pcn.analysisG()
-    #     # pcn.random_sample_analysis(aas, groups.get_aa_groups())
-    #
-    #     end_time = time.time()
-    #     log.info(f"程序运行时间: {end_time - start_time}")
+    thresholds = [50, 100, 150, 200, 250, 300]
+    for t in thresholds:
+        pcn = ProConNetwork(mutation_groups, threshold=t)
+
+        pcn.analysisG()
+        # pcn.random_sample_analysis(aas, groups.get_aa_groups())
+
+        end_time = time.time()
+        log.info(f"程序运行时间: {end_time - start_time}")
