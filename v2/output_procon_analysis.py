@@ -48,7 +48,7 @@ class AnalysisMutationGroup:
         self.fasta = next(SeqIO.parse(fasta_file, "fasta")).seq
         self.positions = [f"{i + 1}{aa.upper()}" for i, aa in enumerate(self.fasta)]  # 所有可能的位点
         # 变异组以及对应位点
-        self.aa_groups = self.get_aa_groups()
+        self.aa_groups, self.aa_groups_info = self.get_aa_groups()
         self.aa_groups_position = self.get_aa_groups_position()
         self.aa_groups_sample = self.resample_groups(self.aa_groups)
 
@@ -67,13 +67,27 @@ class AnalysisMutationGroup:
             raise RuntimeError(f"无法转化aa={aa}")
 
     def get_aa_groups(self):
-        aas = []
+        aas = []  # 变异
+        names = []  # 名称
+        categroies = []  # 类别
         for i, row in self.analysis.items():
             aas.append(row["aas"])
-        return aas
+            categroies.append(row["Unnamed: 9"])
+            if type(row["WHO label"]) == str:
+                # name = "{} ({})".format(row["Lineage + additional mutations"], row["WHO label"])
+                name = "{}".format(row["WHO label"])
+            else:
+                name = "{}".format(row["Lineage + additional mutations"])
+            names.append(name)
+
+        info = pd.DataFrame({"name": names, "category": categroies})
+        # 为类别设置颜色
+        color_map = dict(zip(np.unique(categroies), ["#EDD2F3", "#FFFCDC", "#84DFFF", "#516BEB"]))
+        info["color"]  = info["category"].map(color_map)
+        return aas, info
 
     def get_aa_groups_position(self):
-        groups = self.get_aa_groups()
+        groups, _ = self.get_aa_groups()
         groups = [[self.aa2position(aa) for aa in group] for group in groups]
         return groups
 
@@ -691,6 +705,8 @@ class ProConNetwork:
         plot_data = plot_data.stack().reset_index()
         plot_data.columns = ["aa", "group", "length"]
         fig: plt.Figure
+
+        # 根据平均最短路径，绘制箱线图并与单值进行比较
         # axes: List[plt.Axes]
         ax: plt.Axes
         fig, ax = plt.subplots(1, 1, figsize=(10, 5))
@@ -706,16 +722,78 @@ class ProConNetwork:
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "average shortest length.png"), dpi=300)
 
+        # 热力图  => 效果很不好，考虑删除
+        # 判断变异位点的平均最短路径是否高于上四分位线，如果是则为1否则为0
+        # 热力图中，以毒株为x，以变异为y
+        # 如果变异在毒株中且值为1则绿，否则无色
+        # 判断是否大于分位数
+        is_bigger = {}
+        for i in range(len(aas)):
+            aa = aas[i]
+            score = aas_scores[i]
+            s_scores = sample_scores[i]
+            percentile_75 = np.percentile(s_scores, 75)
+            is_bigger[aa] = score >= percentile_75
+        log.debug("is_bigger = %s", is_bigger)
+        # 拿到热力图数据
+        heatmap_data = []
+        aa_groups = self.analysis_mutation_group.aa_groups_position
+        aa_groups_names = self.analysis_mutation_group.aa_groups_info["name"]
+        for group in aa_groups:
+            row = []
+            for aa, flag in is_bigger.items():
+                if aa in group:
+                    if flag:
+                        row.append(1)
+                    else:
+                        row.append(0)
+                else:
+                    row.append(0)
+            heatmap_data.append(row)
+        heatmap_data = pd.DataFrame(heatmap_data, index=aa_groups_names, columns=aas)
+        log.debug("heatmap_data = %s", heatmap_data)
+        # 绘图
+        fig = plt.figure(figsize=(10, 15))
+        ax = fig.subplots()
+        sns.heatmap(heatmap_data, ax=ax)
+        fig.tight_layout()
+        fig.show()
+
+        # 柱状图
+        # 毒株中高于四分位线位点的变异占据的比例
+        is_bigger_position = set([k for k, v in is_bigger.items() if v])
+        is_bigger_ratio = []
+        for group in aa_groups:
+            is_bigger_in_group = set(group) & is_bigger_position
+            is_bigger_ratio.append(
+                len(is_bigger_in_group) / len(group)
+            )
+        log.debug("is_bigger_ratio = %s", is_bigger_ratio)
+        barplot_data = pd.DataFrame({"y": is_bigger_ratio, })
+        barplot_data = pd.concat([barplot_data, self.analysis_mutation_group.aa_groups_info], axis=1)
+        log.debug("barplot_data = %s", barplot_data)
+        # 绘图
+        fig = plt.figure(figsize=(15, 10))
+        ax = fig.subplots()
+        sns.barplot(data=barplot_data, x="name", y="y", hue="category")
+        [txt.set_rotation(90) for txt in ax.get_xticklabels()]
+        fig.tight_layout()
+        fig.show()
+        fig.savefig(os.path.join(self.data_dir, "平均最短路径长度 较大值占据毒株比例.png"), dpi=300)
+
+
+
+
     def analysisG(self, ):
         """绘制相关图表"""
         # self._plot_origin_distribution()  # 绘制所有节点的保守性的分布情况
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
         # self._plot_procon_distribution()  # 分数分布图
-        self._plot_degree_distribuition()  # 度分布
+        # self._plot_degree_distribuition()  # 度分布
         # self._plot_node_box()  # 箱线图：中心性 + 保守性
         # self._plot_edge_box()  # 共保守性  TODO: 使用采样的方式
-        # self.calculate_average_shortest_path_length()
+        self.calculate_average_shortest_path_length()
 
     def random_sample_analysis(self, aas: list, groups, N=1000):
         """使用随机采样的形式，分析实验组和对照组的区别
@@ -873,17 +951,17 @@ if __name__ == '__main__':
     # 需要关注的变异
     mutation_groups = AnalysisMutationGroup()
     # mutation_groups.display_seq_and_aa()
-    # pcn = ProConNetwork(mutation_groups, threshold=100)
-    # pcn.analysisG()
-    # end_time = time.time()
-    # log.info(f"程序运行时间: {end_time - start_time}")
+    pcn = ProConNetwork(mutation_groups, threshold=100)
+    pcn.analysisG()
+    end_time = time.time()
+    log.info(f"程序运行时间: {end_time - start_time}")
 
-    thresholds = [50, 100, 150, 200, 250, 300]
-    for t in thresholds:
-        pcn = ProConNetwork(mutation_groups, threshold=t)
-
-        pcn.analysisG()
-        # pcn.random_sample_analysis(aas, groups.get_aa_groups())
-
-        end_time = time.time()
-        log.info(f"程序运行时间: {end_time - start_time}")
+    # thresholds = [50, 100, 150, 200, 250, 300]
+    # for t in thresholds:
+    #     pcn = ProConNetwork(mutation_groups, threshold=t)
+    #
+    #     pcn.analysisG()
+    #     # pcn.random_sample_analysis(aas, groups.get_aa_groups())
+    #
+    #     end_time = time.time()
+    #     log.info(f"程序运行时间: {end_time - start_time}")
