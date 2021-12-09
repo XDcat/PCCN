@@ -50,7 +50,8 @@ class AnalysisMutationGroup:
         # 变异组以及对应位点
         self.aa_groups, self.aa_groups_info = self.get_aa_groups()
         self.aa_groups_position = self.get_aa_groups_position()
-        self.aa_groups_sample = self.resample_groups(self.aa_groups)
+        # 根据变异的数目采样: 直接使用 group sample 中的数据
+        self.group_count_sample = self.resample_groups()
 
         # 不重复变异以及对应位点
         self.non_duplicated_aas = self.get_non_duplicated_aas()
@@ -83,7 +84,7 @@ class AnalysisMutationGroup:
         info = pd.DataFrame({"name": names, "category": categroies})
         # 为类别设置颜色
         color_map = dict(zip(np.unique(categroies), ["#EDD2F3", "#FFFCDC", "#84DFFF", "#516BEB"]))
-        info["color"]  = info["category"].map(color_map)
+        info["color"] = info["category"].map(color_map)
         return aas, info
 
     def get_aa_groups_position(self):
@@ -111,19 +112,20 @@ class AnalysisMutationGroup:
         sample_aas = [positions.sample(n=len(aas), random_state=self.seed + i).tolist() for i in range(N)]
         return sample_aas
 
-    def resample_groups(self, groups, N=1000):
+    def resample_groups(self, N=1000):
         groups = self.aa_groups
+        positions = pd.Series(self.positions)
 
         # 重采样
-        sample_groups = []
-        positions = pd.Series(self.positions)
+        sample_groups = {}
+        group_counts = np.unique([len(group) for group in groups])
         log.debug("开始采样，采样数目为%s", N)
-        for i, group in enumerate(groups):
+        for count in group_counts:
             # 采样
-            one_sample = [positions.sample(n=len(group), random_state=self.seed + j + i * 1000).tolist() for j in
+            one_sample = [positions.sample(n=count, random_state=self.seed + j + count * 1000).tolist() for j in
                           range(N)]
-            sample_groups.append(one_sample)
-            log.info(f"采样完成{i}, {group}")
+            sample_groups[count] = one_sample
+            log.info(f"采样完成 group len =  {count}")
         return sample_groups
 
     def display_seq_and_aa(self):
@@ -438,8 +440,8 @@ class ProConNetwork:
         min_value = min(min(aas_degrees), min(sample_degrees))
         max_value = max(max(aas_degrees), max(sample_degrees))
         # 进行归一化
-        min_value = math.floor(min_value*10) / 10
-        max_value = math.ceil(max_value*10) / 10 + 0.03
+        min_value = math.floor(min_value * 10) / 10
+        max_value = math.ceil(max_value * 10) / 10 + 0.03
         cut_split = np.arange(min_value, max_value, 0.1).tolist()
         log.debug("cut_split = %s", cut_split)
 
@@ -781,9 +783,6 @@ class ProConNetwork:
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "平均最短路径长度 较大值占据毒株比例.png"), dpi=300)
 
-
-
-
     def analysisG(self, ):
         """绘制相关图表"""
         # self._plot_origin_distribution()  # 绘制所有节点的保守性的分布情况
@@ -791,9 +790,12 @@ class ProConNetwork:
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
         # self._plot_procon_distribution()  # 分数分布图
         # self._plot_degree_distribuition()  # 度分布
-        # self._plot_node_box()  # 箱线图：中心性 + 保守性
+        self._plot_node_box()  # 箱线图：中心性 + 保守性
         # self._plot_edge_box()  # 共保守性  TODO: 使用采样的方式
-        self.calculate_average_shortest_path_length()
+        # self.calculate_average_shortest_path_length()
+
+        # 以组为单位的图
+        self._group_plot_centtrality()
 
     def random_sample_analysis(self, aas: list, groups, N=1000):
         """使用随机采样的形式，分析实验组和对照组的区别
@@ -943,6 +945,35 @@ class ProConNetwork:
                         save_as_image=opts.ToolBoxFeatureSaveAsImageOpts(pixel_ratio=3, background_color="white"))), )
                 .render(os.path.join(self.data_dir, "mutation relationship.html"))
         )
+
+    def _group_plot_centtrality(self):
+        groups = self.analysis_mutation_group.aa_groups_position
+        group_count_sample = self.analysis_mutation_group.group_count_sample
+
+        def calculate_group_and_sample_score(grp, grp_sample, func):
+            grp_scores = [func(i) for i in grp]
+            grp_mean_score = np.mean(grp_scores)
+            grp_sample_scores = {}
+            for count, sample_group in grp_sample:
+                sample_scores = [[func(aa) for aa in group] for group in grp_sample]
+                sample_mean_score = np.mean(sample_scores, axis=1)
+                sample_mean_score = sorted(sample_mean_score)  #排序
+                grp_sample_scores[count] = sample_mean_score
+
+            fig: plt.Figure = plt.figure()
+            ax: plt.Axes = fig.subplots()
+            ax.plot(x=range(1, len(sample_mean_score) + 1), y=sample_mean_score)
+            ax.plot(x=range(1, len(sample_mean_score) + 1), y=sample_mean_score)
+
+
+        def calculate_degree_centrality(aa):
+            return self.degree_c[aa]
+
+        def calculate_closeness_centrality(aa):
+            return self.closeness_c[aa]
+
+        def calculate_betweenness_centrality(aa):
+            return self.betweenness_c[aa]
 
 
 if __name__ == '__main__':
