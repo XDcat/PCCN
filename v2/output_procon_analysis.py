@@ -189,6 +189,10 @@ class ProConNetwork:
         log.info("确定中心性...")
         self.degree_c, self.betweenness_c, self.closeness_c, self.edge_betweenness_c = self._get_centralities()
 
+        # page ranke
+        log.info("page rank ...")
+        self.page_rank = nx.pagerank(self.G)
+
     @staticmethod
     def _normalize_info(info: np.ndarray):
         """
@@ -436,7 +440,6 @@ class ProConNetwork:
         log.debug("min(sample_degrees) = %s", min(sample_degrees))
         log.debug("max(sample_degrees) = %s", max(sample_degrees))
 
-
         # 寻找最值
         min_value = min(min(aas_degrees), min(sample_degrees))
         max_value = max(max(aas_degrees), max(sample_degrees))
@@ -450,6 +453,10 @@ class ProConNetwork:
         aas_degrees.sort_values().reset_index(drop=True).plot()
         plt.show()
         sample_degrees.sort_values().reset_index(drop=True).plot()
+        plt.show()
+        plt.loglog(aas_degrees.sort_values().values)
+        plt.show()
+        plt.loglog(sample_degrees.sort_values().values)
         plt.show()
 
         # 柱状图
@@ -797,13 +804,13 @@ class ProConNetwork:
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
         # self._plot_procon_distribution()  # 分数分布图
-        self._plot_degree_distribuition()  # 度分布
+        # self._plot_degree_distribuition()  # 度分布
         # self._plot_node_box()  # 箱线图：中心性 + 保守性
         # self._plot_edge_box()  # 共保守性  TODO: 使用采样的方式
         # self.calculate_average_shortest_path_length()
 
         # 以组为单位的图
-        # self._group_plot_centtrality()
+        self._group_plot_centtrality()
 
     def random_sample_analysis(self, aas: list, groups, N=1000):
         """使用随机采样的形式，分析实验组和对照组的区别
@@ -986,19 +993,27 @@ class ProConNetwork:
                 fig: plt.Figure = plt.figure(figsize=(20, 20))
                 axes: List[plt.Axes] = fig.subplots(3, 3, )
                 axes = [j for i in axes for j in i]
+                ax_all_in_one = axes[7]
                 for i, N in enumerate(grp_sample_scores.keys()):
                     ax: plt.Axes = axes[i]
                     sample_mean_score = grp_sample_scores[N]
                     ax.plot(range(1, len(sample_mean_score) + 1), sample_mean_score)
-                    for index, row in grp_info[grp_info["length"] == N].sort_values("score", ascending=False).iterrows():
-                        ax.plot(range(1, len(sample_mean_score) + 1), [row["score"]] * len(sample_mean_score), label=row["name"])
+                    ax_all_in_one.plot(range(1, len(sample_mean_score) + 1), sample_mean_score)
+                    for index, row in grp_info[grp_info["length"] == N].sort_values("score",
+                                                                                    ascending=False).iterrows():
+                        ax.plot(range(1, len(sample_mean_score) + 1), [row["score"]] * len(sample_mean_score),
+                                label=row["name"])
+                        ax_all_in_one.plot(range(1, len(sample_mean_score) + 1),
+                                           [row["score"]] * len(sample_mean_score),
+                                           label=row["name"])
                         # ax.loglog(range(1, len(sample_mean_score) + 1), [row["score"]] * len(sample_mean_score))
                         # ax.text(x=0, y=row["score"], s=row["name"])
 
-                    ax.set_title(f"N = {N}", )
+                    ax.set_title(f"N = {N}", y=-0.1)
                     ax.legend()
+                ax_all_in_one.set_title(f"all", y=-0.1)
 
-
+            fig.suptitle(fig_name, )
             fig.tight_layout()
             fig.show()
             fig.savefig(os.path.join(self.data_dir, f"group {fig_name}.png"), dpi=300)
@@ -1012,11 +1027,33 @@ class ProConNetwork:
         def calculate_closeness_centrality(grp):
             return [self.closeness_c[aa] for aa in grp]
 
+        def calculate_avg_weighted_degree(grp):
+            """计算一组位点的平均度"""
+            result = []
+            for aa in grp:
+                # 计算单个位点的加权平均度
+                weighted_degrees = []
+                for nbr, datadict in self.G.adj[aa].items():
+                    weighted_degrees.append(datadict.get("weight", 0))
+
+                if weighted_degrees:
+                    avg_weighted_degree = np.mean(weighted_degrees)
+                else:
+                    avg_weighted_degree = 0
+                result.append(avg_weighted_degree)
+            return result
+
+        def calculate_page_rank(grp):
+            return [self.page_rank[aa] for aa in grp]
+
         calculate_group_and_sample_score(groups, group_count_sample, calculate_degree_centrality, "degree centrality")
         calculate_group_and_sample_score(groups, group_count_sample, calculate_betweenness_centrality,
                                          "betweenness centrality")
         calculate_group_and_sample_score(groups, group_count_sample, calculate_closeness_centrality,
                                          "closeness centrality")
+        calculate_group_and_sample_score(groups, group_count_sample, calculate_avg_weighted_degree,
+                                         "average weighted degree")
+        calculate_group_and_sample_score(groups, group_count_sample, calculate_page_rank, "page rank")
 
 
 if __name__ == '__main__':
