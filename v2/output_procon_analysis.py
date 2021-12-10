@@ -436,6 +436,7 @@ class ProConNetwork:
         log.debug("min(sample_degrees) = %s", min(sample_degrees))
         log.debug("max(sample_degrees) = %s", max(sample_degrees))
 
+
         # 寻找最值
         min_value = min(min(aas_degrees), min(sample_degrees))
         max_value = max(max(aas_degrees), max(sample_degrees))
@@ -445,6 +446,13 @@ class ProConNetwork:
         cut_split = np.arange(min_value, max_value, 0.1).tolist()
         log.debug("cut_split = %s", cut_split)
 
+        # 折线图
+        aas_degrees.sort_values().reset_index(drop=True).plot()
+        plt.show()
+        sample_degrees.sort_values().reset_index(drop=True).plot()
+        plt.show()
+
+        # 柱状图
         aas_degrees_cut = pd.cut(aas_degrees, cut_split).value_counts().sort_index() / len(aas_degrees)
         sample_degrees_cut = pd.cut(sample_degrees, cut_split).value_counts().sort_index() / len(sample_degrees)
         log.debug("aas_degrees_cut = %s", aas_degrees_cut)
@@ -789,13 +797,13 @@ class ProConNetwork:
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
         # self._plot_procon_distribution()  # 分数分布图
-        # self._plot_degree_distribuition()  # 度分布
+        self._plot_degree_distribuition()  # 度分布
         # self._plot_node_box()  # 箱线图：中心性 + 保守性
         # self._plot_edge_box()  # 共保守性  TODO: 使用采样的方式
         # self.calculate_average_shortest_path_length()
 
         # 以组为单位的图
-        self._group_plot_centtrality()
+        # self._group_plot_centtrality()
 
     def random_sample_analysis(self, aas: list, groups, N=1000):
         """使用随机采样的形式，分析实验组和对照组的区别
@@ -982,7 +990,7 @@ class ProConNetwork:
                     ax: plt.Axes = axes[i]
                     sample_mean_score = grp_sample_scores[N]
                     ax.plot(range(1, len(sample_mean_score) + 1), sample_mean_score)
-                    for index, row in grp_info[grp_info["length"] == N].iterrows():
+                    for index, row in grp_info[grp_info["length"] == N].sort_values("score", ascending=False).iterrows():
                         ax.plot(range(1, len(sample_mean_score) + 1), [row["score"]] * len(sample_mean_score), label=row["name"])
                         # ax.loglog(range(1, len(sample_mean_score) + 1), [row["score"]] * len(sample_mean_score))
                         # ax.text(x=0, y=row["score"], s=row["name"])
