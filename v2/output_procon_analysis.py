@@ -551,8 +551,7 @@ class ProConNetwork:
 
         # 初始化 图片
         fig: plt.Figure
-        axes: List[plt.Axes]
-        fig, axes = plt.subplots(2, 1, figsize=(8, 10))
+        fig, ax = plt.subplots(1, 1, )
 
         # 共保守性
         rows = []
@@ -572,60 +571,21 @@ class ProConNetwork:
             else:
                 rows.append([u, v, weight, "no mutation"])
         co_conservation = pd.DataFrame(rows, columns=columns)
+        co_conservation = co_conservation[co_conservation["label"] != "same mutation group"]
         log.debug("co_conservation.label.value_counts() = %s", co_conservation.label.value_counts())
-        sns.boxplot(data=co_conservation, x="co-conservation", y="label", orient="h", ax=axes[0], )
-        axes[0].set_xlabel("co-conservation")
-        axes[0].set_ylabel("")
-        log.debug(
-            "p value of co-conservation = %.4f",
-            cal_p_mannwhitneyu(
-                co_conservation["co-conservation"],
-                co_conservation["label"] == "mutation",
-                co_conservation["label"] == "no mutation")
-        )
-        log.debug(
-            "p value of co-conservation = %.4f",
-            cal_p_mannwhitneyu(
-                co_conservation["co-conservation"],
-                co_conservation["label"] == "same mutation group",
-                co_conservation["label"] == "no mutation")
-        )
-
-        # 边的 betweenness
-        rows = []
-        columns = ["u", "v", "co-conservation", "label"]
-        for (u, v), weight in self.edge_betweenness_c.items():
-            # 所有的
-            # rows.append([u, v, weight, "all"])
-            # 其他三种
-            # 先小范围
-            if (u, v) in edge_in_same_group:
-                rows.append([u, v, weight, "same mutation group"])
-            # 再大范围和其他
-            if (u, v) in edge_in_different_group:
-                rows.append([u, v, weight, "mutation"])
-            else:
-                rows.append([u, v, weight, "no mutation"])
-        co_conservation = pd.DataFrame(rows, columns=columns)
-        log.debug("co_conservation.label.value_counts() = %s", co_conservation.label.value_counts())
-        sns.boxplot(data=co_conservation, x="co-conservation", y="label", orient="h", ax=axes[1])
-        axes[1].set_xlabel("betweenness centrality")
-        axes[1].set_ylabel("")
-
-        log.debug(
-            "p value of co-conservation = %.4f",
-            cal_p_mannwhitneyu(
-                co_conservation["co-conservation"],
-                co_conservation["label"] == "mutation",
-                co_conservation["label"] == "no mutation")
-        )
-        log.debug(
-            "p value of co-conservation = %.4f",
-            cal_p_mannwhitneyu(
-                co_conservation["co-conservation"],
-                co_conservation["label"] == "same mutation group",
-                co_conservation["label"] == "no mutation")
-        )
+        sns.boxplot(data=co_conservation, x="co-conservation", y="label", orient="h", ax=ax)
+        p_value = cal_p_mannwhitneyu(
+            co_conservation["co-conservation"],
+            co_conservation["label"] == "mutation",
+            co_conservation["label"] == "no mutation")
+        log.debug("p_value = %s", p_value)
+        # p_value = cal_p_mannwhitneyu(
+        #     co_conservation["co-conservation"],
+        #     co_conservation["label"] == "same mutation group",
+        #     co_conservation["label"] == "no mutation")
+        log.debug("p_value = %s", p_value)
+        ax.set_xlabel(f"co-conservation (p = {p_value:.3f})")
+        ax.set_ylabel("")
         # 绘图
         fig.tight_layout()
         fig.show()
@@ -806,11 +766,11 @@ class ProConNetwork:
         # self._plot_procon_distribution()  # 分数分布图
         # self._plot_degree_distribuition()  # 度分布
         # self._plot_node_box()  # 箱线图：中心性 + 保守性
-        # self._plot_edge_box()  # 共保守性  TODO: 使用采样的方式
+        self._plot_edge_box()  # 共保守性  TODO: 使用采样的方式
         # self.calculate_average_shortest_path_length()
 
         # 以组为单位的图
-        self._group_plot_centtrality()
+        # self._group_plot_centtrality()
 
     def random_sample_analysis(self, aas: list, groups, N=1000):
         """使用随机采样的形式，分析实验组和对照组的区别
