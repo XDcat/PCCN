@@ -766,11 +766,11 @@ class ProConNetwork:
         # self._plot_procon_distribution()  # 分数分布图
         # self._plot_degree_distribuition()  # 度分布
         # self._plot_node_box()  # 箱线图：中心性 + 保守性
-        self._plot_edge_box()  # 共保守性  TODO: 使用采样的方式
+        # self._plot_edge_box()  # 共保守性  TODO: 使用采样的方式
         # self.calculate_average_shortest_path_length()
 
         # 以组为单位的图
-        # self._group_plot_centtrality()
+        self._group_plot_centtrality()
 
     def random_sample_analysis(self, aas: list, groups, N=1000):
         """使用随机采样的形式，分析实验组和对照组的区别
@@ -953,7 +953,7 @@ class ProConNetwork:
                 fig: plt.Figure = plt.figure(figsize=(20, 20))
                 axes: List[plt.Axes] = fig.subplots(3, 3, )
                 axes = [j for i in axes for j in i]
-                ax_all_in_one = axes[7]
+                ax_all_in_one = axes[7]  # 重叠子图
                 for i, N in enumerate(grp_sample_scores.keys()):
                     ax: plt.Axes = axes[i]
                     sample_mean_score = grp_sample_scores[N]
@@ -972,6 +972,17 @@ class ProConNetwork:
                     ax.set_title(f"N = {N}", y=-0.1)
                     ax.legend()
                 ax_all_in_one.set_title(f"all", y=-0.1)
+                # 箱线图
+                _s1 = grp_mean_score  # 每一组的分数
+                _s2 = np.array(list(grp_sample_scores.values())).reshape(-1).tolist()  # 采样的分数
+                _plot_data = pd.DataFrame(
+                    {"score": _s1 + _s2, "label": ["mutation"] * len(_s1) + ["sample"] * len(_s2)},
+                )
+                sns.boxplot(data=_plot_data, x="label", y="score", ax=axes[-1])
+                p_value = mannwhitneyu(_s1, _s2).pvalue
+                axes[-1].set_title(f"p = {p_value:.3f}", y=-0.1)
+                axes[-1].set_xlabel("")
+
 
             fig.suptitle(fig_name, )
             fig.tight_layout()
@@ -1005,6 +1016,8 @@ class ProConNetwork:
 
         def calculate_page_rank(grp):
             return [self.page_rank[aa] for aa in grp]
+        def calculate_conservation(grp):
+            return [self.G.nodes[aa]["size"] for aa in grp]
 
         calculate_group_and_sample_score(groups, group_count_sample, calculate_degree_centrality, "degree centrality")
         calculate_group_and_sample_score(groups, group_count_sample, calculate_betweenness_centrality,
@@ -1014,6 +1027,7 @@ class ProConNetwork:
         calculate_group_and_sample_score(groups, group_count_sample, calculate_avg_weighted_degree,
                                          "average weighted degree")
         calculate_group_and_sample_score(groups, group_count_sample, calculate_page_rank, "page rank")
+        calculate_group_and_sample_score(groups, group_count_sample, calculate_conservation, "conservation")
 
 
 if __name__ == '__main__':
