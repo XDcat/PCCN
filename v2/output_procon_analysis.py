@@ -131,9 +131,10 @@ class AnalysisMutationGroup:
     def display_seq_and_aa(self):
         aas = self.non_duplicated_aas
         aas = sorted(aas, key=lambda x: int(x[1:-1]))
-        log.info(f"fasta:\n"
-                 f"{self.fasta}\n" + "aas:\n" + "\n".join(aas)
-                 )
+        log.info(f"fasta({len(self.fasta)}): {self.fasta}")
+        # log.info(f"fasta:\n"
+        #          f"{self.fasta}\n" + "aas:\n" + "\n".join(aas)
+        #          )
         log.debug("len(self.positions) = %s", len(self.positions))
 
 
@@ -966,7 +967,7 @@ class ProConNetwork:
         groups_names = self.analysis_mutation_group.aa_groups_info["name"]
         group_count_sample = self.analysis_mutation_group.group_count_sample
 
-        def calculate_group_and_sample_score(grp, grp_sample, func, fig_name, is_all_in_one=False):
+        def calculate_group_and_sample_score(grp, grp_sample, func, fig_name, kind="distribution"):
             grp_scores = [func(i) for i in grp]
             grp_mean_score = [np.mean(i) for i in grp_scores]
             grp_sample_scores = {}
@@ -981,15 +982,24 @@ class ProConNetwork:
             grp_info["length"] = [len(g) for g in grp]
             log.debug("np.unique(grp_info.length) = %s", np.unique(grp_info.length))
             # 绘制图表
-            if is_all_in_one:
-                fig: plt.Figure = plt.figure()
-                ax: plt.Axes = fig.subplots()
-                for N in grp_sample_scores.keys():
+            if kind == "distribution":
+                """绘制采样分数的分布图，并将毒株标注在图中"""
+                fig: plt.Figure = plt.figure(figsize=(20, 20))
+                axes: List[plt.Axes] = fig.subplots(3, 3, )
+                axes = [j for i in axes for j in i]
+                ax_all_in_one = axes[7]
+                for i, N in enumerate(grp_sample_scores.keys()):
+                    # 绘制分布图
+                    ax: plt.Axes = axes[i]
                     sample_mean_score = grp_sample_scores[N]
-                    ax.plot(range(1, len(sample_mean_score) + 1), sample_mean_score)
-                    for index, row in grp_info[grp_info["length"] == N].iterrows():
-                        ax.plot(range(1, len(sample_mean_score) + 1), [row["score"]] * len(sample_mean_score))
-            else:
+                    sns.distplot(sample_mean_score, ax=ax)
+                    sns.distplot(sample_mean_score, ax=ax_all_in_one)
+                fig.suptitle(fig_name, )
+                fig.tight_layout()
+                fig.show()
+                fig.savefig(os.path.join(self.data_dir, f"group distribution {fig_name}.png"), dpi=300)
+            elif kind == "score_sorted":
+                """ 直接绘制排序后的分数（废弃，只做备份）"""
                 fig: plt.Figure = plt.figure(figsize=(20, 20))
                 axes: List[plt.Axes] = fig.subplots(3, 3, )
                 axes = [j for i in axes for j in i]
@@ -1013,10 +1023,10 @@ class ProConNetwork:
                     ax.legend()
                 ax_all_in_one.set_title(f"all", y=-0.1)
 
-            fig.suptitle(fig_name, )
-            fig.tight_layout()
-            fig.show()
-            fig.savefig(os.path.join(self.data_dir, f"group {fig_name}.png"), dpi=300)
+                fig.suptitle(fig_name, )
+                fig.tight_layout()
+                fig.show()
+                fig.savefig(os.path.join(self.data_dir, f"group {fig_name}.png"), dpi=300)
 
         def calculate_degree_centrality(grp):
             return [self.degree_c[aa] for aa in grp]
