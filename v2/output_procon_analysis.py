@@ -552,8 +552,7 @@ class ProConNetwork:
 
         # 初始化 图片
         fig: plt.Figure
-        axes: List[plt.Axes]
-        fig, axes = plt.subplots(2, 1, figsize=(8, 10))
+        fig, ax = plt.subplots(1, 1, )
 
         # 共保守性
         rows = []
@@ -573,60 +572,21 @@ class ProConNetwork:
             else:
                 rows.append([u, v, weight, "no mutation"])
         co_conservation = pd.DataFrame(rows, columns=columns)
+        co_conservation = co_conservation[co_conservation["label"] != "same mutation group"]
         log.debug("co_conservation.label.value_counts() = %s", co_conservation.label.value_counts())
-        sns.boxplot(data=co_conservation, x="co-conservation", y="label", orient="h", ax=axes[0], )
-        axes[0].set_xlabel("co-conservation")
-        axes[0].set_ylabel("")
-        log.debug(
-            "p value of co-conservation = %.4f",
-            cal_p_mannwhitneyu(
-                co_conservation["co-conservation"],
-                co_conservation["label"] == "mutation",
-                co_conservation["label"] == "no mutation")
-        )
-        log.debug(
-            "p value of co-conservation = %.4f",
-            cal_p_mannwhitneyu(
-                co_conservation["co-conservation"],
-                co_conservation["label"] == "same mutation group",
-                co_conservation["label"] == "no mutation")
-        )
-
-        # 边的 betweenness
-        rows = []
-        columns = ["u", "v", "co-conservation", "label"]
-        for (u, v), weight in self.edge_betweenness_c.items():
-            # 所有的
-            # rows.append([u, v, weight, "all"])
-            # 其他三种
-            # 先小范围
-            if (u, v) in edge_in_same_group:
-                rows.append([u, v, weight, "same mutation group"])
-            # 再大范围和其他
-            if (u, v) in edge_in_different_group:
-                rows.append([u, v, weight, "mutation"])
-            else:
-                rows.append([u, v, weight, "no mutation"])
-        co_conservation = pd.DataFrame(rows, columns=columns)
-        log.debug("co_conservation.label.value_counts() = %s", co_conservation.label.value_counts())
-        sns.boxplot(data=co_conservation, x="co-conservation", y="label", orient="h", ax=axes[1])
-        axes[1].set_xlabel("betweenness centrality")
-        axes[1].set_ylabel("")
-
-        log.debug(
-            "p value of co-conservation = %.4f",
-            cal_p_mannwhitneyu(
-                co_conservation["co-conservation"],
-                co_conservation["label"] == "mutation",
-                co_conservation["label"] == "no mutation")
-        )
-        log.debug(
-            "p value of co-conservation = %.4f",
-            cal_p_mannwhitneyu(
-                co_conservation["co-conservation"],
-                co_conservation["label"] == "same mutation group",
-                co_conservation["label"] == "no mutation")
-        )
+        sns.boxplot(data=co_conservation, x="co-conservation", y="label", orient="h", ax=ax)
+        p_value = cal_p_mannwhitneyu(
+            co_conservation["co-conservation"],
+            co_conservation["label"] == "mutation",
+            co_conservation["label"] == "no mutation")
+        log.debug("p_value = %s", p_value)
+        # p_value = cal_p_mannwhitneyu(
+        #     co_conservation["co-conservation"],
+        #     co_conservation["label"] == "same mutation group",
+        #     co_conservation["label"] == "no mutation")
+        log.debug("p_value = %s", p_value)
+        ax.set_xlabel(f"co-conservation (p = {p_value:.3f})")
+        ax.set_ylabel("")
         # 绘图
         fig.tight_layout()
         fig.show()
@@ -1003,7 +963,7 @@ class ProConNetwork:
                 fig: plt.Figure = plt.figure(figsize=(20, 20))
                 axes: List[plt.Axes] = fig.subplots(3, 3, )
                 axes = [j for i in axes for j in i]
-                ax_all_in_one = axes[7]
+                ax_all_in_one = axes[7]  # 重叠子图
                 for i, N in enumerate(grp_sample_scores.keys()):
                     ax: plt.Axes = axes[i]
                     sample_mean_score = grp_sample_scores[N]
@@ -1022,6 +982,17 @@ class ProConNetwork:
                     ax.set_title(f"N = {N}", y=-0.1)
                     ax.legend()
                 ax_all_in_one.set_title(f"all", y=-0.1)
+                # 箱线图
+                _s1 = grp_mean_score  # 每一组的分数
+                _s2 = np.array(list(grp_sample_scores.values())).reshape(-1).tolist()  # 采样的分数
+                _plot_data = pd.DataFrame(
+                    {"score": _s1 + _s2, "label": ["mutation"] * len(_s1) + ["sample"] * len(_s2)},
+                )
+                sns.boxplot(data=_plot_data, x="label", y="score", ax=axes[-1])
+                p_value = mannwhitneyu(_s1, _s2).pvalue
+                axes[-1].set_title(f"p = {p_value:.3f}", y=-0.1)
+                axes[-1].set_xlabel("")
+
 
                 fig.suptitle(fig_name, )
                 fig.tight_layout()
@@ -1055,6 +1026,8 @@ class ProConNetwork:
 
         def calculate_page_rank(grp):
             return [self.page_rank[aa] for aa in grp]
+        def calculate_conservation(grp):
+            return [self.G.nodes[aa]["size"] for aa in grp]
 
         calculate_group_and_sample_score(groups, group_count_sample, calculate_degree_centrality, "degree centrality")
         calculate_group_and_sample_score(groups, group_count_sample, calculate_betweenness_centrality,
@@ -1064,6 +1037,7 @@ class ProConNetwork:
         calculate_group_and_sample_score(groups, group_count_sample, calculate_avg_weighted_degree,
                                          "average weighted degree")
         calculate_group_and_sample_score(groups, group_count_sample, calculate_page_rank, "page rank")
+        calculate_group_and_sample_score(groups, group_count_sample, calculate_conservation, "conservation")
 
 
 if __name__ == '__main__':
