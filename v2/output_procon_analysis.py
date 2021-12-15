@@ -83,8 +83,7 @@ class AnalysisMutationGroup:
 
         info = pd.DataFrame({"name": names, "category": categroies})
         # 为类别设置颜色
-        color_map = dict(zip(np.unique(categroies), ["#EDD2F3", "#FFFCDC", "#84DFFF", "#516BEB"]))
-        info["color"] = info["category"].map(color_map)
+        info["color"] = sns.hls_palette(n_colors=len(info), )
         return aas, info
 
     def get_aa_groups_position(self):
@@ -132,10 +131,12 @@ class AnalysisMutationGroup:
         aas = self.non_duplicated_aas
         aas = sorted(aas, key=lambda x: int(x[1:-1]))
         log.info(f"fasta({len(self.fasta)}): {self.fasta}")
-        # log.info(f"fasta:\n"
-        #          f"{self.fasta}\n" + "aas:\n" + "\n".join(aas)
-        #          )
+        log.info(f"fasta:\n"
+                 f"{self.fasta}\n" + "aas:\n" + "\n".join(aas)
+                 )
         log.debug("len(self.positions) = %s", len(self.positions))
+
+
 
 
 class ProConNetwork:
@@ -925,6 +926,7 @@ class ProConNetwork:
     def _group_plot_centtrality(self):
         groups = self.analysis_mutation_group.aa_groups_position
         groups_names = self.analysis_mutation_group.aa_groups_info["name"]
+        groups_colors = self.analysis_mutation_group.aa_groups_info["color"]
         group_count_sample = self.analysis_mutation_group.group_count_sample
 
         def calculate_group_and_sample_score(grp, grp_sample, func, fig_name, kind="distribution"):
@@ -938,7 +940,7 @@ class ProConNetwork:
                 grp_sample_scores[count] = sample_mean_score
 
             # log.debug("grp_sample_scores = %s", grp_sample_scores)
-            grp_info = pd.DataFrame({"name": groups_names, "score": grp_mean_score})
+            grp_info = pd.DataFrame({"name": groups_names, "score": grp_mean_score, "color": groups_colors})
             grp_info["length"] = [len(g) for g in grp]
             log.debug("np.unique(grp_info.length) = %s", np.unique(grp_info.length))
             # 绘制图表
@@ -946,14 +948,39 @@ class ProConNetwork:
                 """绘制采样分数的分布图，并将毒株标注在图中"""
                 fig: plt.Figure = plt.figure(figsize=(20, 20))
                 axes: List[plt.Axes] = fig.subplots(3, 3, )
+                colors = sns.color_palette(n_colors=len(grp_sample_scores))
                 axes = [j for i in axes for j in i]
                 ax_all_in_one = axes[7]
                 for i, N in enumerate(grp_sample_scores.keys()):
                     # 绘制分布图
+                    color = colors[i]
                     ax: plt.Axes = axes[i]
                     sample_mean_score = grp_sample_scores[N]
-                    sns.distplot(sample_mean_score, ax=ax)
-                    sns.distplot(sample_mean_score, ax=ax_all_in_one)
+                    sns.distplot(sample_mean_score, ax=ax, color=color)
+                    sns.distplot(sample_mean_score, ax=ax_all_in_one, color=color)
+                    for index, row in grp_info[grp_info["length"] == N].sort_values("score",
+                                                                                    ascending=False).iterrows():
+                        _x = [row["score"]] * len(sample_mean_score)
+                        _y = range(1, len(sample_mean_score) + 1)
+                        ax.axvline(row["score"], ls="-", label=row["name"], color=row["color"])
+                        ax_all_in_one.axvline(row["score"], ls="-", label=row["name"], color=row["color"])
+                    ax.set_title(f"N = {N}", y=-0.1)
+                    ax.legend()
+                ax_all_in_one.set_title(f"all", y=-0.1)
+                # ax_all_in_one.legend()
+
+                # 箱线图
+                _s1 = grp_mean_score  # 每一组的分数
+                _s2 = np.array(list(grp_sample_scores.values())).reshape(-1).tolist()  # 采样的分数
+                _plot_data = pd.DataFrame(
+                    {"score": _s1 + _s2, "label": ["mutation"] * len(_s1) + ["sample"] * len(_s2)},
+                )
+                sns.boxplot(data=_plot_data, x="label", y="score", ax=axes[-1])
+                p_value = mannwhitneyu(_s1, _s2).pvalue
+                axes[-1].set_title(f"p = {p_value:.3f}", y=-0.1)
+                axes[-1].set_xlabel("")
+
+                # 输出结果
                 fig.suptitle(fig_name, )
                 fig.tight_layout()
                 fig.show()
@@ -964,9 +991,11 @@ class ProConNetwork:
                 axes: List[plt.Axes] = fig.subplots(3, 3, )
                 axes = [j for i in axes for j in i]
                 ax_all_in_one = axes[7]  # 重叠子图
+                # _s2 = []
                 for i, N in enumerate(grp_sample_scores.keys()):
                     ax: plt.Axes = axes[i]
                     sample_mean_score = grp_sample_scores[N]
+                    # _s2 += grp_info[grp_info["length"] == N].shape[0] * np.array(sample_mean_score).reshape(-1).tolist()
                     ax.plot(range(1, len(sample_mean_score) + 1), sample_mean_score)
                     ax_all_in_one.plot(range(1, len(sample_mean_score) + 1), sample_mean_score)
                     for index, row in grp_info[grp_info["length"] == N].sort_values("score",
@@ -992,7 +1021,6 @@ class ProConNetwork:
                 p_value = mannwhitneyu(_s1, _s2).pvalue
                 axes[-1].set_title(f"p = {p_value:.3f}", y=-0.1)
                 axes[-1].set_xlabel("")
-
 
                 fig.suptitle(fig_name, )
                 fig.tight_layout()
@@ -1026,6 +1054,7 @@ class ProConNetwork:
 
         def calculate_page_rank(grp):
             return [self.page_rank[aa] for aa in grp]
+
         def calculate_conservation(grp):
             return [self.G.nodes[aa]["size"] for aa in grp]
 
@@ -1045,11 +1074,11 @@ if __name__ == '__main__':
     # 保守性网络
     # 需要关注的变异
     mutation_groups = AnalysisMutationGroup()
-    # mutation_groups.display_seq_and_aa()
-    pcn = ProConNetwork(mutation_groups, threshold=100)
-    pcn.analysisG()
-    end_time = time.time()
-    log.info(f"程序运行时间: {end_time - start_time}")
+    mutation_groups.display_seq_and_aa()
+    # pcn = ProConNetwork(mutation_groups, threshold=100)
+    # pcn.analysisG()
+    # end_time = time.time()
+    # log.info(f"程序运行时间: {end_time - start_time}")
 
     # thresholds = [50, 100, 150, 200, 250, 300]
     # for t in thresholds:
