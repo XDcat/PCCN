@@ -137,8 +137,6 @@ class AnalysisMutationGroup:
         log.debug("len(self.positions) = %s", len(self.positions))
 
 
-
-
 class ProConNetwork:
     def __init__(self,
                  analysis_mutation_groups: AnalysisMutationGroup,
@@ -772,7 +770,7 @@ class ProConNetwork:
         # self.calculate_average_shortest_path_length()
 
         # 以组为单位的图
-        self._group_plot_centtrality()
+        self._group_plot_with_node()
 
     def random_sample_analysis(self, aas: list, groups, N=1000):
         """使用随机采样的形式，分析实验组和对照组的区别
@@ -923,7 +921,7 @@ class ProConNetwork:
                 .render(os.path.join(self.data_dir, "mutation relationship.html"))
         )
 
-    def _group_plot_centtrality(self):
+    def _group_plot_with_node(self):
         groups = self.analysis_mutation_group.aa_groups_position
         groups_names = self.analysis_mutation_group.aa_groups_info["name"]
         groups_colors = self.analysis_mutation_group.aa_groups_info["color"]
@@ -1058,15 +1056,77 @@ class ProConNetwork:
         def calculate_conservation(grp):
             return [self.G.nodes[aa]["size"] for aa in grp]
 
+        def calculate_weighted_shortest_path(grp):
+            res = []
+            if not hasattr(self, "weighted_shortest_path_length"):
+                log.info("没有 self.weighted_shortest_path_length, 初始化")
+                # log.debug(" = %s", dict(nx.shortest_path_length(self.G, weight="weight")))
+                # log.debug(" = %s", dict(nx.shortest_path_length(self.G, )))
+                # self.weighted_shortest_path_length = dict(nx.shortest_path_length(self.G, weight="weight"))
+                # with open(os.path.join(self.data_dir, "weighted shortest path length.json"), "w") as f:
+                #     log.info("保存至文件")
+                #     f.write(json.dumps(self.weighted_shortest_path_length))
+
+                with open(os.path.join(self.data_dir, "weighted shortest path length.json"), ) as f:
+                    log.info("加载文件")
+                    self.weighted_shortest_path_length = json.loads(f.read())
+
+                log.debug("初始化完成")
+
+            wspl = self.weighted_shortest_path_length
+            for n1, n2 in combinations(grp, 2):
+                res.append(wspl[n1][n2])
+            return res
+
+        def calculate_edge_betweenness_centrality(grp):
+            log.debug("edge betweenness")
+            res = []
+            if not hasattr(self, "edge_betweenness_centrality"):
+                log.info("没有 self.edge_betweenness_centrality, 初始化")
+                # self.edge_betweenness_centrality = dict(nx.edge_betweenness_centrality(self.G, weight="weight"))
+                try:
+                    # 保存至 json 文件
+                    # 重新建立索引
+                    # info_map = defaultdict(dict)
+                    # for (n1, n2), value in self.edge_betweenness_centrality.items():
+                    #     info_map[n1][n2] = value
+                    #     info_map[n2][n1] = value
+                    #
+                    # with open(os.path.join(self.data_dir, "edge betweenness centrality.json"), "w") as f:
+                    #     log.info("保存至文件")
+                    #     f.write(json.dumps(info_map))
+
+                    with open(os.path.join(self.data_dir, "edge betweenness centrality.json"), ) as f:
+                        log.info("加载文件")
+                        self.edge_betweenness_centrality= json.loads(f.read())
+
+                except:
+                    log.error("保存或加载文件失败")
+                log.debug("初始化完成")
+
+            ebc = self.edge_betweenness_centrality
+            for n1, n2 in combinations(grp, 2):
+                if n1 in ebc and n2 in ebc[n1]:
+                    res.append(ebc[n1][n2])
+                elif n2 in ebc and n1 in ebc[n2]:
+                    res.append(ebc[n2][n1])
+                else:
+                    res.append(0)
+            return res
+
+        # 关于节点
         calculate_group_and_sample_score(groups, group_count_sample, calculate_degree_centrality, "degree centrality")
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_betweenness_centrality,
-                                         "betweenness centrality")
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_closeness_centrality,
-                                         "closeness centrality")
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_avg_weighted_degree,
-                                         "average weighted degree")
+        calculate_group_and_sample_score(groups, group_count_sample, calculate_betweenness_centrality, "betweenness centrality")
+        calculate_group_and_sample_score(groups, group_count_sample, calculate_closeness_centrality, "closeness centrality")
+        calculate_group_and_sample_score(groups, group_count_sample, calculate_avg_weighted_degree, "average weighted degree")
         calculate_group_and_sample_score(groups, group_count_sample, calculate_page_rank, "page rank")
         calculate_group_and_sample_score(groups, group_count_sample, calculate_conservation, "conservation")
+
+        # 关于边
+        calculate_group_and_sample_score(groups, group_count_sample, calculate_weighted_shortest_path,
+                                         "shortest weighted path length")
+        calculate_group_and_sample_score(groups, group_count_sample, calculate_edge_betweenness_centrality,
+                                         "edge betweenness centrality")
 
 
 if __name__ == '__main__':
@@ -1074,11 +1134,11 @@ if __name__ == '__main__':
     # 保守性网络
     # 需要关注的变异
     mutation_groups = AnalysisMutationGroup()
-    mutation_groups.display_seq_and_aa()
-    # pcn = ProConNetwork(mutation_groups, threshold=100)
-    # pcn.analysisG()
-    # end_time = time.time()
-    # log.info(f"程序运行时间: {end_time - start_time}")
+    # mutation_groups.display_seq_and_aa()
+    pcn = ProConNetwork(mutation_groups, threshold=100)
+    pcn.analysisG()
+    end_time = time.time()
+    log.info(f"程序运行时间: {end_time - start_time}")
 
     # thresholds = [50, 100, 150, 200, 250, 300]
     # for t in thresholds:

@@ -1,0 +1,43 @@
+# PremPs: https://lilab.jysw.suda.edu.cn/research/PremPS
+# PDB id: 7CHF
+# result: https://lilab.jysw.suda.edu.cn/research/PremPS/job/2021121501082801078587577
+# ΔΔG(kcal mol-1) predicted unfolding free energy change induced by a single mutation
+# (positive and negative sign corresponds to destabilizing and stabilizing mutations, respectively);
+#Chain to Mutate	Residue Mutant Residue	
+#split by tab 
+R	G339	D
+R	R346	K
+R	R346	S
+R	V367	F
+R	S371	L
+R	S373	P
+R	S375	F
+R	P384	L
+R	N394	S
+R	Q414	K
+R	K417	N
+R	K417	T
+R	N439	K
+R	N440	K
+R	G446	S
+R	Y449	H
+R	Y449	N
+R	N450	K
+R	L452	R
+R	L452	Q
+R	S477	N
+R	T478	K
+R	V483	A
+R	E484	A
+R	E484	K
+R	E484	Q
+R	F490	S
+R	F490	R
+R	Q493	R
+R	S494	P
+R	G496	S
+R	Q498	R
+R	N501	Y
+R	N501	T
+R	Y505	H
+R	E516	Q
