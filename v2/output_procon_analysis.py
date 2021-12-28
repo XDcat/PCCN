@@ -131,10 +131,12 @@ class AnalysisMutationGroup:
         aas = self.non_duplicated_aas
         aas = sorted(aas, key=lambda x: int(x[1:-1]))
         log.info(f"fasta({len(self.fasta)}): {self.fasta}")
-        log.info(f"fasta:\n"
-                 f"{self.fasta}\n" + "aas:\n" + "\n".join(aas)
-                 )
-        log.debug("len(self.positions) = %s", len(self.positions))
+        # log.info(f"fasta:\n"
+        #          f"{self.fasta}\n" + "aas:\n" + "\n".join(aas)
+        #          )
+        # log.debug("len(self.positions) = %s", len(self.positions))
+        count = [len(group) for group in self.aa_groups_position]
+        log.debug("pd.value_counts(count).sort_index() = %s", pd.value_counts(count).sort_index())
 
 
 class ProConNetwork:
@@ -443,7 +445,7 @@ class ProConNetwork:
         # 寻找最值
         min_value = min(min(aas_degrees), min(sample_degrees))
         max_value = max(max(aas_degrees), max(sample_degrees))
-        # 进行归一化
+        # 计算坐标分割
         min_value = math.floor(min_value * 10) / 10
         max_value = math.ceil(max_value * 10) / 10 + 0.03
         cut_split = np.arange(min_value, max_value, 0.1).tolist()
@@ -664,7 +666,6 @@ class ProConNetwork:
     def calculate_average_shortest_path_length(self, ):
         """平均最短路径长度"""
         # data -> aa : [变异，非变异]
-        data = {}
         aas = self.analysis_mutation_group.non_duplicated_aas_positions
         aas_sample = self.analysis_mutation_group.non_duplicated_aas_sample
         aas_scores = []
@@ -681,8 +682,12 @@ class ProConNetwork:
         plot_data = pd.DataFrame(sample_scores, index=aas, )
         plot_data = plot_data.stack().reset_index()
         plot_data.columns = ["aa", "group", "length"]
-        fig: plt.Figure
+        # 保存详细数据
+        detail_data = pd.DataFrame(
+            {"aa": aas, "aas_avg_shortest_length": aas_scores, "sample_avg_shortest_length": sample_scores, "position": [int(i[:-1]) for i in aas]}
+        ).sort_values(by="position", ).to_csv(os.path.join(self.data_dir, "averrage shortest length.csv"))
 
+        fig: plt.Figure
         # 根据平均最短路径，绘制箱线图并与单值进行比较
         # axes: List[plt.Axes]
         ax: plt.Axes
@@ -763,6 +768,8 @@ class ProConNetwork:
         # self._plot_origin_distribution()  # 绘制所有节点的保守性的分布情况
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
+        # self._plot_2D()  # 二维坐标图
+
         # self._plot_procon_distribution()  # 分数分布图
         # self._plot_degree_distribuition()  # 度分布
         # self._plot_node_box()  # 箱线图：中心性 + 保守性
@@ -978,6 +985,14 @@ class ProConNetwork:
                 axes[-1].set_title(f"p = {p_value:.3f}", y=-0.1)
                 axes[-1].set_xlabel("")
 
+                # 给global加上箱线图
+                global_axes = self.group_global_axes[self.group_global_ax_count]
+                self.group_global_ax_count += 1
+                sns.boxplot(data=_plot_data, x="label", y="score", ax=global_axes,)
+                self.group_global_fig.show()
+                global_axes.set_xlabel(f"{fig_name} (p={p_value:.3f})", y=-0.1)
+                # global_axes.set_xlabel("")
+
                 # 输出结果
                 fig.suptitle(fig_name, )
                 fig.tight_layout()
@@ -1016,6 +1031,7 @@ class ProConNetwork:
                     {"score": _s1 + _s2, "label": ["mutation"] * len(_s1) + ["sample"] * len(_s2)},
                 )
                 sns.boxplot(data=_plot_data, x="label", y="score", ax=axes[-1])
+
                 p_value = mannwhitneyu(_s1, _s2).pvalue
                 axes[-1].set_title(f"p = {p_value:.3f}", y=-0.1)
                 axes[-1].set_xlabel("")
@@ -1098,7 +1114,7 @@ class ProConNetwork:
 
                     with open(os.path.join(self.data_dir, "edge betweenness centrality.json"), ) as f:
                         log.info("加载文件")
-                        self.edge_betweenness_centrality= json.loads(f.read())
+                        self.edge_betweenness_centrality = json.loads(f.read())
 
                 except:
                     log.error("保存或加载文件失败")
@@ -1114,11 +1130,18 @@ class ProConNetwork:
                     res.append(0)
             return res
 
+        self.group_global_fig: plt.Figure = plt.figure(figsize=(16, 8))
+        self.group_global_axes = [j for i in self.group_global_fig.subplots(2, 4) for j in i]
+
+        self.group_global_ax_count = 0
         # 关于节点
         calculate_group_and_sample_score(groups, group_count_sample, calculate_degree_centrality, "degree centrality")
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_betweenness_centrality, "betweenness centrality")
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_closeness_centrality, "closeness centrality")
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_avg_weighted_degree, "average weighted degree")
+        calculate_group_and_sample_score(groups, group_count_sample, calculate_betweenness_centrality,
+                                         "betweenness centrality")
+        calculate_group_and_sample_score(groups, group_count_sample, calculate_closeness_centrality,
+                                         "closeness centrality")
+        calculate_group_and_sample_score(groups, group_count_sample, calculate_avg_weighted_degree,
+                                         "average weighted degree")
         calculate_group_and_sample_score(groups, group_count_sample, calculate_page_rank, "page rank")
         calculate_group_and_sample_score(groups, group_count_sample, calculate_conservation, "conservation")
 
@@ -1128,14 +1151,137 @@ class ProConNetwork:
         calculate_group_and_sample_score(groups, group_count_sample, calculate_edge_betweenness_centrality,
                                          "edge betweenness centrality")
 
+        self.group_global_fig.tight_layout()
+        self.group_global_fig.savefig(os.path.join(self.data_dir, "group distribution global.png"), dpi=300)
+
+
+
+    def _plot_2D(self, font_size="x-large", txt_rotation=0, x_rotation=90):
+        analysis = self.analysis_mutation_group.analysis
+        type1 = []
+        type2 = []
+        name2index = {}
+        for i, row in analysis.items():
+            # 所有出现的变异  type1
+            # t1 = pd.DataFrame({"aa": row["aas"]})
+            t1 = pd.DataFrame(row["type1"])
+            t1["y"] = int(i) - 1
+            # 寻找名称
+            if type(row["WHO label"]) == str:
+                name = "{}({})".format(row["Lineage + additional mutations"], row["WHO label"], )
+            else:
+                name = "{}".format(row["Lineage + additional mutations"], )
+            t1["name"] = name
+            name2index[name] = i
+
+            # type2
+            t2 = row["type2"]
+            t2 = pd.DataFrame(t2)
+            t2["y1"] = t2["y2"] = int(i) - 1  # 两点的纵坐标
+
+            type1.append(t1)
+            type2.append(t2)
+
+        type2 = pd.concat(type2)
+        type1 = pd.concat(type1)
+
+        type1["idx"] = type1["aa"].str[1:-1].astype(int)
+        # type1["position"] = type1["aa"].str[1:-1] + type1["aa"].str[0]
+        # 建立位点到x坐标的映射: 找到所有出现的变异
+        pst_2_x = type1["idx"].drop_duplicates().sort_values().to_list()
+        pst_2_x = {j: i for i, j in enumerate(pst_2_x)}
+
+        # 找到 type1 和 type2 的横坐标
+        type1["x"] = type1["idx"].map(pst_2_x)
+        type2["x1"] = type2["site1"].str[:-1].astype(int).map(pst_2_x)
+        type2["x2"] = type2["site2"].str[:-1].astype(int).map(pst_2_x)
+
+        # 构建 type2 曲线最高点: 找到第三点的坐标
+        gap = 1
+        type2["x3"] = (type2["x1"] + type2["x2"]) / 2
+        log.debug("type2 = %s", type2)
+        type2["y3"] = (type2["y1"] + gap / 4) + (type2["x2"] - type2["x1"]).abs() / (len(pst_2_x) - 2)
+
+        log.debug("type1 = %s", type1)
+        log.debug("type2 = %s", type2)
+
+        # 边
+        type2_info = type2.loc[:, ["site1", "site2", "info", "rate"]].drop_duplicates(["site1", "site2"])
+        log.debug("type2_info = %s", type2_info)
+
+        # 绘图
+        def two_degree_bc(x, y, dots_num=100):  # bezier curve
+            """二阶贝塞尔曲线"""
+            x1, x2, x3 = x
+            y1, y2, y3 = y
+            xt = []  # 目标点的x坐标
+            yt = []  # 目标点的y坐标
+            x_dots12 = np.linspace(x1, x2, dots_num)  # 线段AB的x坐标
+            y_dots12 = np.linspace(y1, y2, dots_num)  # 线段AB的y坐标
+            x_dots23 = np.linspace(x2, x3, dots_num)  # 线段BC的x坐标
+            y_dots23 = np.linspace(y2, y3, dots_num)  # 线段BC的y坐标
+            for i in range(dots_num):  # 获得目标点的轨迹
+                x = x_dots12[i] + (x_dots23[i] - x_dots12[i]) * i / (dots_num - 1)
+                y = y_dots12[i] + (y_dots23[i] - y_dots12[i]) * i / (dots_num - 1)
+                xt.append(x)
+                yt.append(y)
+            xt = np.array(xt)
+            yt = np.array(yt)
+            return xt, yt
+
+        flg_size = (len(pst_2_x), len(analysis))
+        fig_size = np.array(flg_size) / 2.6
+        flg, ax = plt.subplots(figsize=fig_size.tolist())
+        ax.scatter(type1["x"], type1["y"], s=0)
+
+        # 添加文字：变异
+        for i, row in type1.sort_values(["y", ]).iterrows():
+            x, y, txt = row["x"], row["y"], row["aa"]
+            # ax.text(x, y, txt, ha="center", va="center", size=font_size, rotation=txt_rotation)
+            ax.text(x, y, txt[-1], ha="center", va="center", size=font_size, rotation=txt_rotation)
+
+        # 绘制曲线
+        for i, row in type2.iterrows():
+            x1, x2, x3, y1, y2, y3 = row[["x1", "x2", "x3", "y1", "y2", "y3"]]
+            x = [x1, x3, x2]
+            y = [y1, y3, y2]
+            x_smooth, y_smooth = two_degree_bc(x, y)
+            y_smooth += 0.15
+            alpha = row["rate"] / 100
+            ax.plot(x_smooth, y_smooth, "C1", alpha=alpha * 1.5)
+            # ax.plot(x_smooth, y_smooth, "C1", )
+            # ax.plot(x_smooth, y_smooth, )
+
+        # 添加坐标标签
+        xtick_names = type1["position"].drop_duplicates()
+        arg_sort = xtick_names.str[:-1].astype(int).argsort()
+        xtick_names = xtick_names.iloc[arg_sort]
+        ytick_names = type1["name"].drop_duplicates()
+        arg_sort = ytick_names.apply(lambda x: name2index[x]).astype(int).argsort()
+        ytick_names = ytick_names.iloc[arg_sort]
+
+        ax.set_xticks(range(len(xtick_names)))
+        ax.set_yticks(range(len(ytick_names)))
+        ax.set_xticklabels(xtick_names, size=font_size)
+        ax.set_yticklabels(ytick_names, size=font_size)
+        # ax.invert_yaxis()  # 反转y轴
+        ax.set_ymargin(0.03)
+        [txt.set_rotation(x_rotation) for txt in ax.get_xticklabels()]
+
+        # 绘制表格
+        flg.tight_layout()
+        flg.show()
+        flg.savefig(os.path.join(self.data_dir, "2D relationship.png"), dpi=300)
+
 
 if __name__ == '__main__':
     start_time = time.time()
     # 保守性网络
     # 需要关注的变异
     mutation_groups = AnalysisMutationGroup()
-    # mutation_groups.display_seq_and_aa()
+    mutation_groups.display_seq_and_aa()
     pcn = ProConNetwork(mutation_groups, threshold=100)
+    # log.debug("len(pcn.type2) = %s", len(pcn.type2))
     pcn.analysisG()
     end_time = time.time()
     log.info(f"程序运行时间: {end_time - start_time}")
