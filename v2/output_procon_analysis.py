@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import os
 from scipy.special import comb
-from scipy.stats import mannwhitneyu
+from scipy.stats import mannwhitneyu, ttest_1samp
 from itertools import combinations, permutations
 from collections import defaultdict
 from brokenaxes import brokenaxes
@@ -249,7 +249,10 @@ class ProConNetwork:
         # 绘制关系图
         G = nx.Graph()
         for i, row in nodes.iterrows():
-            G.add_node(row["name"], size=row["size"])
+            if row["name"] in self.analysis_mutation_group.non_duplicated_aas_positions:
+                G.add_node(row["name"], size=row["size"], is_mutation=True)
+            else:
+                G.add_node(row["name"], size=row["size"], is_mutation=False)
 
         for i, row in links.iterrows():
             G.add_edge(row["source"], row["target"], weight=row["weight"])
@@ -684,7 +687,8 @@ class ProConNetwork:
         plot_data.columns = ["aa", "group", "length"]
         # 保存详细数据
         detail_data = pd.DataFrame(
-            {"aa": aas, "aas_avg_shortest_length": aas_scores, "sample_avg_shortest_length": sample_scores, "position": [int(i[:-1]) for i in aas]}
+            {"aa": aas, "aas_avg_shortest_length": aas_scores, "sample_avg_shortest_length": sample_scores,
+             "position": [int(i[:-1]) for i in aas]}
         ).sort_values(by="position", ).to_csv(os.path.join(self.data_dir, "averrage shortest length.csv"))
 
         fig: plt.Figure
@@ -778,6 +782,16 @@ class ProConNetwork:
 
         # 以组为单位的图
         self._group_plot_with_node()
+
+    def output_for_gephi(self):
+        nx.write_gexf(self.G, os.path.join(self.data_dir, "all network.gexf"))
+
+    def output_for_DynaMut2(self):
+        with open(os.path.join(self.data_dir, "dynamut2 input.txt"), "w") as f:
+            for a1, a2 in combinations(self.analysis_mutation_group.non_duplicated_aas, 2):
+                if "X" in a1 or "X" in a2:
+                    continue
+                f.write(f"A {a1};A {a2}\n")
 
     def random_sample_analysis(self, aas: list, groups, N=1000):
         """使用随机采样的形式，分析实验组和对照组的区别
@@ -934,7 +948,7 @@ class ProConNetwork:
         groups_colors = self.analysis_mutation_group.aa_groups_info["color"]
         group_count_sample = self.analysis_mutation_group.group_count_sample
 
-        def calculate_group_and_sample_score(grp, grp_sample, func, fig_name, kind="distribution"):
+        def calculate_group_and_sample_score(grp, grp_sample, func, fig_name, kind="distribution", excel_writer=None):
             grp_scores = [func(i) for i in grp]
             grp_mean_score = [np.mean(i) for i in grp_scores]
             grp_sample_scores = {}
@@ -947,7 +961,9 @@ class ProConNetwork:
             # log.debug("grp_sample_scores = %s", grp_sample_scores)
             grp_info = pd.DataFrame({"name": groups_names, "score": grp_mean_score, "color": groups_colors})
             grp_info["length"] = [len(g) for g in grp]
+            grp_info["index"] = np.arange(len(grp_info)) + 1
             log.debug("np.unique(grp_info.length) = %s", np.unique(grp_info.length))
+
             # 绘制图表
             if kind == "distribution":
                 """绘制采样分数的分布图，并将毒株标注在图中"""
@@ -956,6 +972,8 @@ class ProConNetwork:
                 colors = sns.color_palette(n_colors=len(grp_sample_scores))
                 axes = [j for i in axes for j in i]
                 ax_all_in_one = axes[7]
+
+                statistic_table = []
                 for i, N in enumerate(grp_sample_scores.keys()):
                     # 绘制分布图
                     color = colors[i]
@@ -963,12 +981,43 @@ class ProConNetwork:
                     sample_mean_score = grp_sample_scores[N]
                     sns.distplot(sample_mean_score, ax=ax, color=color)
                     sns.distplot(sample_mean_score, ax=ax_all_in_one, color=color)
-                    for index, row in grp_info[grp_info["length"] == N].sort_values("score",
-                                                                                    ascending=False).iterrows():
+
+                    # 统计数据: 分位数和平均数
+                    statistic_data = {
+                        "a quarter of a quintile": np.percentile(sample_mean_score, 25),
+                        "one half quantile": np.percentile(sample_mean_score, 50),
+                        "three quarters of a quintile": np.percentile(sample_mean_score, 75),
+                        "mean": np.mean(sample_mean_score)
+                    }
+
+                    # 处理当前N的每个毒株
+                    current_n_grp_info = grp_info[grp_info["length"] == N]
+                    current_n_grp_info = current_n_grp_info.sort_values("score", ascending=False)
+                    for index, row in current_n_grp_info.iterrows():
                         _x = [row["score"]] * len(sample_mean_score)
                         _y = range(1, len(sample_mean_score) + 1)
                         ax.axvline(row["score"], ls="-", label=row["name"], color=row["color"])
                         ax_all_in_one.axvline(row["score"], ls="-", label=row["name"], color=row["color"])
+
+                        # 收集每组一些统计数据
+                        t, pvalue = ttest_1samp(sample_mean_score, row["score"])
+                        if pvalue < 0.05:
+                            if t < 0:
+                                is_remarkable = "Yes. Left."
+                            else:
+                                is_remarkable = "Yes. Right."
+                        else:
+                            is_remarkable = "No"
+
+                        statistic_data["score"] = row["score"]
+                        statistic_data["t"] = t
+                        statistic_data["p"] = pvalue
+                        statistic_data["result"] = is_remarkable
+                        statistic_data["name"] = row["name"]
+                        statistic_data["index"] = row["index"]
+
+                        statistic_table.append(statistic_data.copy())
+
                     ax.set_title(f"N = {N}", y=-0.1)
                     ax.legend()
                 ax_all_in_one.set_title(f"all", y=-0.1)
@@ -988,7 +1037,7 @@ class ProConNetwork:
                 # 给global加上箱线图
                 global_axes = self.group_global_axes[self.group_global_ax_count]
                 self.group_global_ax_count += 1
-                sns.boxplot(data=_plot_data, x="label", y="score", ax=global_axes,)
+                sns.boxplot(data=_plot_data, x="label", y="score", ax=global_axes, )
                 self.group_global_fig.show()
                 global_axes.set_xlabel(f"{fig_name} (p={p_value:.3f})", y=-0.1)
                 # global_axes.set_xlabel("")
@@ -998,6 +1047,13 @@ class ProConNetwork:
                 fig.tight_layout()
                 fig.show()
                 fig.savefig(os.path.join(self.data_dir, f"group distribution {fig_name}.png"), dpi=300)
+
+                # 存储统计信息
+                if excel_writer:
+                    statistic_table = pd.DataFrame(statistic_table)
+                    statistic_table = statistic_table.sort_values("index")
+                    statistic_table.to_excel(excel_writer, sheet_name=fig_name)
+
             elif kind == "score_sorted":
                 """ 直接绘制排序后的分数（废弃，只做备份）"""
                 fig: plt.Figure = plt.figure(figsize=(20, 20))
@@ -1130,31 +1186,39 @@ class ProConNetwork:
                     res.append(0)
             return res
 
+        # 单独将箱线图拿出
         self.group_global_fig: plt.Figure = plt.figure(figsize=(16, 8))
         self.group_global_axes = [j for i in self.group_global_fig.subplots(2, 4) for j in i]
 
         self.group_global_ax_count = 0
+
+        # 统计信息表
+        excel_writer = pd.ExcelWriter(os.path.join(self.data_dir, "group distribution statistic information.xlsx"))
+
         # 关于节点
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_degree_centrality, "degree centrality")
+        calculate_group_and_sample_score(groups, group_count_sample, calculate_degree_centrality, "degree centrality",
+                                         excel_writer=excel_writer)
         calculate_group_and_sample_score(groups, group_count_sample, calculate_betweenness_centrality,
-                                         "betweenness centrality")
+                                         "betweenness centrality", excel_writer=excel_writer)
         calculate_group_and_sample_score(groups, group_count_sample, calculate_closeness_centrality,
-                                         "closeness centrality")
+                                         "closeness centrality", excel_writer=excel_writer)
         calculate_group_and_sample_score(groups, group_count_sample, calculate_avg_weighted_degree,
-                                         "average weighted degree")
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_page_rank, "page rank")
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_conservation, "conservation")
+                                         "average weighted degree", excel_writer=excel_writer)
+        calculate_group_and_sample_score(groups, group_count_sample, calculate_page_rank, "page rank",
+                                         excel_writer=excel_writer)
+        calculate_group_and_sample_score(groups, group_count_sample, calculate_conservation, "conservation",
+                                         excel_writer=excel_writer)
 
         # 关于边
         calculate_group_and_sample_score(groups, group_count_sample, calculate_weighted_shortest_path,
-                                         "shortest weighted path length")
+                                         "shortest weighted path length", excel_writer=excel_writer)
         calculate_group_and_sample_score(groups, group_count_sample, calculate_edge_betweenness_centrality,
-                                         "edge betweenness centrality")
+                                         "edge betweenness centrality", excel_writer=excel_writer)
 
         self.group_global_fig.tight_layout()
         self.group_global_fig.savefig(os.path.join(self.data_dir, "group distribution global.png"), dpi=300)
 
-
+        excel_writer.close()
 
     def _plot_2D(self, font_size="x-large", txt_rotation=0, x_rotation=90):
         analysis = self.analysis_mutation_group.analysis
@@ -1283,6 +1347,7 @@ if __name__ == '__main__':
     pcn = ProConNetwork(mutation_groups, threshold=100)
     # log.debug("len(pcn.type2) = %s", len(pcn.type2))
     pcn.analysisG()
+    # pcn.output_for_gephi()
     end_time = time.time()
     log.info(f"程序运行时间: {end_time - start_time}")
 
