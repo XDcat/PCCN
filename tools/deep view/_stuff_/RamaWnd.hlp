@@ -1,0 +1,40 @@
+/**************** HELP: Ramachandran Window *****************
+/------------------------------------------------------------
+Please note that this help does not replace the
+user-guide, nor the tutorial. Both can be found at
+http://www.expasy.ch/spdbv/
+ 
+/General informations 
+The Ramachandran window plots only values for the currently
+selected amino-acids of the current layer.
+Amino-acids appear as a little cross with the exception of Gly
+that appears as a square. Note that Gly and Pro can be hidden
+from the plot depending on the preferences settings.
+To know to which amino-acid a point belongs, simply place the
+mouse pointer onto a point or a group of points (without clicking).
+Its (their) name(s) will appear at the top of the Window.
+ 
+/Exporting numerical values
+Omega, Phi, Psi and secondary structure assignment of the
+currently displayed points can be saved as a tabulated text-file
+for further analysis from the appropriate item of the File menu.
+Moreover, an image can also be exported with the Export Pict item
+of the File menu (Mac only). In this case note that you can hide
+the core and allowed regions with the TAB key.
+
+/Using the Ramachandran plot to alter the backbone
+The Ramachandran plot can be used to directly modify a Phi/Psi
+angle of a residue with a direct feedback of the modification.
+All you need to do is drag a point at its new location.
+You can constrain the rotation around either of the Phi or Psi
+axis by holding down the "9" or "0" key while moving the point.
+By default it is the C-terminal part of the protein that will
+move, as a little 'c' drawn just below the help icon reminds you.
+If you want the N-terminal part to move, click on the 'c' that
+will be changed into a 'n'. If you want to move only a part of
+the backbone (and not the whole backbone up to the C-terminal),
+you must break the backbone between the last amino-acid you want
+to move and the first you want to stay fixed. This is done with
+the appropriate item of the tool menu.
+
+

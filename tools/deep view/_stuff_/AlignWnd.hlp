@@ -1,0 +1,64 @@
+ 
+/***************** HELP: Align Window *****************
+/-------------------------------------------------------
+Please note that this help does not replace the
+user-guide, not the tutorial. Both can be found at
+http://www.expasy.ch/spdbv/mainpage.htm   
+
+ 
+ 
+/General Information
+/-------------------
+Placing the mouse pointer on any amino-acid will
+make it blink on the screen, and a feedback is
+provided on the bottom left of the window.
+
+
+You can see a preview of structural alignment by
+clicking on the little text icon located at the top
+left corner or the window. You can alter the presentation
+of the multiple sequence alignment with the appropriate
+dialog of the preference menu.
+Alignments can be saved as text files with the appropriate
+item of the File Menu.
+
+The name of the currently active layer appears in red,
+and clicking on a protein name activates its layer.
+
+/Selection
+/---------
+clicking on a residue will select it. Discontinuous
+selection is achieved with simultaneously maintianing 
+the "Control" key down.
+Note that the selection can be extended to all layers
+with the "Shift" key.
+
+/Centering the view on a residue
+/-------------------------------
+option click on a residue (right mouse button for PC users)
+will center the view around its alpha carbon.
+
+/Modification of the Alignment
+/-----------------------------
+Click on a residue and use the space and backspace key.
+Note that all sequences that have been structurally aligned
+will move as a block. Indeed, during modelling, you will
+frequently have to move the target sequence relative to
+all templates, that are already correctly superposed.
+If, fvor some reason, you need to refine the structural
+alignement, you have to hold the control key while you
+hit the space or backspace key.
+You can "slide" several selected residues at the same time
+with the left and right arrows keys (providing there is
+a gap at their left or right side respectively).
+You can change the order of the sequences by clicking-dragging
+a name at its new location. It can be handy when you 
+want to save a text view of structural alignement with
+closely related sequences grouped together (Mac only for now).
+Use with caution as it is not fully tested right now.
+
+/Other
+/----- 
+Hitting the "*" key when cursor is on an amino-acid will
+browse the rotamer library (same as mutate tool).
+

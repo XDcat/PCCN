@@ -1,0 +1,26 @@
+please do
+
+# The following script does the same as the previous one
+# except that it will write results for phi and psi in a file
+# this shows how to do string concatenation, and conversion
+# from floating point values to string.
+# Then it will open the resulting file so that you see what has been done.
+
+
+open pdb from download "1CRN.pdb";
+
+$MYFILENAME = "results";
+$MYFILE = open file $MYFILENAME in usrstuff for writing; 
+$X = 0;
+$NBGROUPS = groupcount of "1crn";
+do
+{
+	$SEL = select in "1crn" pos $X;
+	$PHI = phi($SEL);
+	$PSI = psi($SEL);
+	print on $MYFILE "phi = " + (string)$PHI + " psi = " + (string)$PSI;
+} while (++$X < $NBGROUPS);
+close file $MYFILE;
+open text $MYFILENAME in usrstuff;
+
+thank you

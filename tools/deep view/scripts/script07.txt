@@ -1,0 +1,33 @@
+please do
+
+# The following script load a protein,
+# alters the OH coordinate of TYR29
+# and performs an energy minimization
+# on the modified residue.
+
+open from download "1CRN.pdb";
+$X = select in 0 num 29;
+$A = get coord " OH " of $X;
+$T = <0.2,-0.2,0.0>;
+$i = 0;
+do 
+{
+	set coord " OH " of $X to ($A + (float)$i*$T);
+	redraw;
+	pause 0.25;
+	$i++;
+} while ($i<10);
+$DIST = dist( get coord " OH " of $X,
+              get coord " CZ " of $X );
+
+print "Distance OH - CZ is " + (string)$DIST;
+
+$E0 = compute in "1crn" energy;
+$E1 = minimize $X with 40 cycles;
+$DIST = dist( get coord " OH " of $X,
+              get coord " CZ " of $X );
+print "Energy before " + (string)$E0 + " after " + (string)$E1 + 
+      ". Distance OH - CZ is now " + (string)$DIST; 
+
+thank you
+

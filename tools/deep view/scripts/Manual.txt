@@ -1,0 +1,1624 @@
+SPDBV scripting language user guide.
+===================================================================
+The parser of SPDBV scripting language has been generated with
+flex and yacc, whose combination allows to build very advanced
+parsers.
+The scripting language will be quite familiar for persons
+who know C or perl. The scripting language supports
+variables, conditionnal branching, loops, arrays and file access.
+Subroutines are also supported, but you must be aware that all
+variables are global. Despite this limitation, it allows to
+make the scripts more compact and readeable, and can also be
+used to prepare a kind of "jump table" of your favourite
+functions that can be executed simply by clicking on their name
+from the SPDBV interface or from added menus.
+
+The scripts can be stopped at specific points to let
+users interact with the graphical interface before
+resuming operation. This allows among other things to
+access commands not directly available from the script,
+take parameters from the user input, or execute other
+script commands not included in the script by typing
+them directly from the "Execute script command" item of
+the Edit menu.
+
+Scripts can be either loaded as TEXT file (with the
+open TEXT item of the file menu) or with the "Run Script"
+item of the file menu.
+On unix systems, scripts can be passed as the last
+parameter of the command line (after optional PDB files).
+
+The place to post and exchange scripts is on the
+spdbv mailing list maintained by Prof. Gale Rhodes at
+http://www.usm.maine.edu/~rhodes/SPVTut/text/DiscuSPV.html
+===================================================================
+As we all like to be polite, scripts must start with please do
+and end with thank you.
+all instructions are terminated with a semicolon.
+all information following a # is ignored untill the end of the line.
+
+===================================================================
+Data Types:
+===================================================================
+
+In the manual, data types appear between <>.
+These means that a value of the mentionned type is expected
+(or returned). This value can be obtained from a variable, or
+provided directly.
+
+Supported types are:
+
+vector            example: <1.0,1.0,1.0>
+float             example: 1.0
+int               example: 42
+string            example: "Hello World!"
+
+layer             example: "1CRN" (alternately, layers can be
+                           referred to by position the first layer 
+					  loaded is 0 the second 1, etc.
+selection         example: select in <layer> pos <int> to <int>;
+file              example:
+internal variable example: gCurrentOS
+
+matrix            example: [	[1.0,0.0,0.0] 
+						[0.0,1.0,0.0]
+						[0.0,0.0,1.0]
+						[0.0,0.0,0.0]
+						[0.0,0.0,0.0] ]
+		Describes an identity matrix.
+		The three first lines are the rotation
+		The fourth line contains a translation to be applied before the rotation
+		The fifth line contains a translation to be applied after the rotation
+		No math operations are allowed on those "special" matrices.
+
+===================================================================
+Data Types:
+===================================================================
+
+There are two types of variables:
+script variables (that can be used to store values in scripts)
+and program variables (internal spdbv variables).
+
+assigning a value to a variable is done with 
+$varname = value;
+data types for variables is attributed implicitely during the
+assignment.
+
+$X = 1.0; will assign the value 1.0 of type <float> to $X.
+$X = 1;   will assign the value 1 of type <int> to $X.
+
+operations on variables are (usually) possible only
+between variables of the same type, but you can force
+a value to be of a different type through typecasting.
+for example:
+
+$X = (float)1; will assign the value 1.0 of type <float> to $X.
+
+valid typecast are:
+
+(int)
+(float)
+(string)
+
+===================================================================
+Arrays:
+===================================================================
+
+Currently, only 1D and 2D arrays of <int> <float> and <vector> and
+1D arrays of <string> are supported.
+The syntax is the following:
+
+$X[<int>] = value;
+
+The type of array is automatically determined by the kind of value
+you put into it the first time.
+A good trick to prevent having to periodically increase
+the array size is to assign a default value to the
+higher array index.
+For example if the first assignment is
+$X[499] = 0; this will allocate an array to hold 500 int values. 
+Alternately, you can also initialize an array like this:
+$X = (int)[500]; note that this method is required for 2D arrays.
+
+Memory is allocated dynamically and will only be released
+when a 'thank you' statement is reached: if you want to
+get back something (memory), you better be polite ;-)
+
+2D arrays
+
+contrarily to 1D array, they need to be allocated before beeing used
+and can't grow dynamically dring script execution.
+
+example: allocate a 2D array of 11x11 ints (valid indices are 0..10)
+$X = (int)[11][11];
+
+you can allocated 2D arrays of int, float, and vectors.
+An example is provided in vectorarray.txt
+
+String arrays.
+Strings are a little bit special, in the sense that they are in
+fact one dimension. The second dimension gives the maximum
+string length. This allows support for 2D arrays of chars.
+In the future a distinction between char and string will
+be implemented.
+
+Example:
+$S = (string)[2][9]; # will allocate space for 2 strings of 8 characters
+# not 9 characters, because the last char is always the terminating character (0)
+$S[0] = "hello world"; # this will be clamped to 8 characters
+$S[1] = "world";
+
+print $S[0]; # will print "hello wo"
+print $S[0][1]; # will print "e"
+
+$S[0][1] = "a";
+print $S[0]; # will print "hallo wo"
+
+$S[0][1] = $S[1][1]; 
+print $S[0]; # will print "hollo wo"
+print $S[0][1]; # will print "o"
+
+$S[0] = $S[1]; 
+print $S[0]; # will print "world"
+
+
+note that specific characters of regular strings
+can also be accessed like arrays.
+For example:
+
+$LETTERS = "abcdefghij";
+print $LETTERS[1]; # will print b
+
+===================================================================
+Operations:
+===================================================================
+
+it is possible to add, substract, multiply or divide data types.
+Some operations are of course not possible (multiplying two strings
+or two atom selections).
+Adding two strings will produce a concatenation.
+
+$X = "Hello" + " World!"; is equivalent to $X = "Hello World!";
+
+In the case of vectors, multiplication is scalar if one of the member
+is of type <float>:
+$X = <1.0,1.0,1.0> * 3.0;  will put <3.0,3.0,3.0> into $X.
+
+or performs a dot product if the operation involves two vectors.
+the scalar product can be obtained with the 'X' operator:
+
+$X = <0.0,1.0,0.0> X <0.0,0.0,1.0>;
+
+floating point and integer variables can be
+pre/post incremented with ++<var> and <var>++ respectively,
+or pre/post decremented with --<var> and <var>-- respectively.
+This is mainly used for loops.
+
+The remainder (modulo) of an integer diviision can
+be accessed by the % operator as in
+
+	print 8 % 3;  
+
+which would give 2
+
+===================================================================
+Commands: (alphabetically)  PRELIMINARY for version 3.7b1
+                            all commands might not be implemented
+					   on all platforms.
+					   More commands will be added as needed
+===================================================================
+
+You can find several scripts examples in the scripts directory
+of the SPDBV distribution. Scripts are named very originally
+script01.txt script02.txt etc.
+For each of the following commands, it is mentionned in which
+example script you can find it.
+The scripts are designed to progressively introduce more
+and more features and an other way to learn this language is
+to study the scripts starting from script01.txt
+-------------------------------------------------------------------
+access
+
+will get the relative accessibility of a residue X, compared
+to a 100% ref value being computed in an extended conformation
+in the pentapeptide GGXGG
+
+access(<selection>)
+
+alternately, you can access directly a specific residue
+from a specific layer, which is faster and handy in loops with:
+
+access(<layer>,<int>)
+
+returned value is of type <float>.
+
+related commands: name res ss access
+Demonstrated in example script:  11
+-------------------------------------------------------------------
+acos
+
+compute the arc cosine of an expression.
+
+acos(<float>)
+
+values are in radians
+
+related commands: sin asin cos tan atan PI
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+angle
+
+compute the angle AOB between three atoms (vectors).
+
+<floatvar> = angle(A,O,B);
+
+where A,O and B are <vector> values
+Result is returned in degrees.
+
+related commands: dist get torsion
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+align
+
+will make a primary sequence alignment between layers.
+
+align <layer> onto <layer>;
+
+
+where <string> contains the question to be presented to the user.
+related commands: if
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+align_pos
+
+returns the position (column) in the sequence alignment
+for the specified residue. Count starts at zero, as always.
+
+align_pos(<selection>)
+
+alternately, you can access directly a specific residue
+from a specific layer, which is faster and handy in loops with:
+
+align_pos(<layer>,<int>)
+
+returned value is of type <int>.
+
+related commands: align_pos_to_index, "generate structural alignment" superpose rms fit
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+<int> = align_length(<layer>)
+in case of success, return the column of the last residue for the concerned layer.
+in case of failure, returns -1
+related commands: align_pos, generate structural alignment, rms, fit
+---------------------------------------------------------------------
+<int> = align_pos_to_index(<layer>,<int>)
+returns the index of the residue found in the
+specified column of the sequence alignment for the given layer.
+This index can be used in other functions to
+obtain properties of the residue.
+related commands: align_pos, generate structural alignment, rms, fit
+---------------------------------------------------------------------
+<float> = aligned_percent_id(<layer>,<layer>)
+returns the %identity between two aligned sequences, only
+for the aligned residues (gaps and trailing ends are
+not considered in the computation)
+related commands:  aligned_percent_sim, global_percent_id, global_percent_sim, superpose, compute structural alignment
+---------------------------------------------------------------------
+<float> = aligned_percent_sim(<layer>,<layer>)
+returns the %similarity between two aligned sequences
+the last number is the threshold in the current substitution
+matrix to consider two amino acids similar.
+Only the aligned residues are considered (gaps and trailing ends are
+not considered in the computation)
+related commands:  aligned_percent_id, global_percent_id, superpose, global_percent_sim, compute structural alignment
+---------------------------------------------------------------------
+<float> = area(<layer>,<int>)
+returns the area of the cavity number <int> of the specified layer
+Related commands: vol, build, cavitycount
+---------------------------------------------------------------------
+asin
+
+compute the arc sinus of an expression.
+
+asin(<float>)
+
+values are in radians
+
+related commands: sin cos acos tan atan PI
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+ask
+
+will make a dialog (yes,no) appear for user feedback.
+
+$int_varname = ask <string>;
+
+
+where <string> contains the question to be presented to the user.
+related commands: if
+Demonstrated in example script:  08 and 10
+-------------------------------------------------------------------
+atan
+
+compute the arc tangent of an expression.
+
+atan(<float>)
+
+values are in radians
+
+related commands: sin asin cos acos tan PI
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+break
+
+can be used in a do while loop.
+This will terminate the execution of a do while loop
+prematurately.
+(ignoring any instruction found between the break
+and the while statement).
+
+related commands: goto do while break
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+build
+
+add various objects such as amino acids, molecular surface.
+
+build in <layer> molecular surface of quality <int>;
+
+related commands: delete
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+<int> = cavitycount of layer
+returns the number of surfaces (and cavities) present in
+a layer.
+Related commands: build
+---------------------------------------------------------------------
+center
+
+center view on a selection or on visible groups.
+
+center on <selection>;
+center on visible;
+Demonstrated in example script:  05 09 13
+-------------------------------------------------------------------
+chain
+
+will get the chain name of the first selected group found
+in a selection.
+
+chain(<selection>)
+
+alternately, you can access directly a specific residue
+from a specific layer, which is faster and handy in loops with:
+
+chain(<layer>,<int>)
+
+returned value is of type <string>.
+
+related commands: name res ss access
+Demonstrated in example script:  11
+-------------------------------------------------------------------
+<int> = clashcount(residueindex,residueindex,type,type);
+where type can be either "backbone" or "sidechain" or "het"
+              returns the number of clashes for the specific "type" of atoms.
+		    
+note that the first layer is 0
+Example: $X = layercount;
+Related commands: Compute, hbondcount
+-------------------------------------------------------------------
+color
+
+color some parts of the view.
+This is functionnally equivalent to the color column of the control panel.
+
+color [in <layer>] <part> of <selection> by <vector>;
+when in <layer> is omitted, the current active layer is assumed.
+
+color <part> of <selection_variable> by <vector>;
+color <part> of <selection_variable> in <color>;
+color <layer> by "rmsd";
+color <layer> by "chain";
+color <layer> by "ss";
+
+where <part> can be any combination of
+res,side,label,surface,ribbon,vdw
+<vector> is a rgb color (with intensity of each component
+are between 0.0 and 1.0.
+<color> is any of the predefined kyewords:
+ red green blue yellow white black grey cyan orange purple
+ 
+examples: color in "1crn" ribbon of res "F","N" by <1.0,0.0,0.0>;
+$SEL = select in 0 all; color res,sidechain of $SEL in blue;
+
+related commands: hide show
+Demonstrated in example script:  05 13
+-------------------------------------------------------------------
+compute
+
+performs various computations on a protein
+
+compute in <layer> electrostatic potiential using "[coulomb|pb]" with "[partial|full]" charges;
+compute in <layer> hbond;
+<floatvar> = compute in <layer> energy;
+
+related commands: discard minimize
+Demonstrated in example script:  07 and 09
+-------------------------------------------------------------------
+clear               ** USEFUL but DANGEROUS **
+
+clear a file on disk.
+
+clear file <string>;  
+
+(where <string> is a variable that contains a filename).
+
+related commands: open close readln
+-------------------------------------------------------------------
+close
+
+close a layer or a file.
+
+close <layer>;  
+close file <file>;
+
+(where <file> is a variable that contains a file previously open).
+related commands: open clear readln
+Demonstrated in example script:  02 03 and 04
+-------------------------------------------------------------------
+continue
+
+can be used in a do while loop.
+This will directly execute the next round of the loop
+(ignoring any instruction found between the continue
+and the while statement).
+
+related commands: goto do while break
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+cos
+
+compute the cosine of an expression.
+
+cos(<float>)
+cos(<int>)
+
+This returns the value in radians
+
+related commands: sin asin acos tan atan PI
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+delete
+
+delete selected residues, or hydrogens from a layer.
+
+delete <selection>;
+delete in <layer> hydrogens;
+delete in <layer> molecular surface;
+delete in <layer> electrostatic potential;
+
+related commands: build
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+dist
+
+compute the distance between two atoms (vectors).
+
+<floatvar> = dist(<vector>,<vector>);
+
+related commands: angle get torsion
+Demonstrated in example script:  07
+-------------------------------------------------------------------
+export
+
+this command allows to save images or pov-ray scenes.
+
+export image as <string>;
+export stereo image as <string>;
+export pov as <string> [and render];
+
+where <string> contains the filename with full path.
+
+alternately, you can save the file in one of the predifined
+directories [usrstuff|download|temp] with the following command
+
+export pov in [usrstuff|download|temp] as <string> [and render];
+
+see save for more explanations about path and filemames.
+note that the [and render option] will open the file for rendering
+on mac and pc, but will automatically launch pov on unix boxes
+provided you save the scene in the usrstuff directory.
+ 
+related commands: save
+Demonstrated in example script:  09
+-------------------------------------------------------------------
+false
+is equivalent to 1
+Example: $X = true;
+if ($X == false)
+{
+	print "false";
+}
+related commands: false
+-------------------------------------------------------------------
+fit
+
+this command is equivalent to the fit (from selection) command of spdbv.
+
+fit <layer> onto <layer> using <string>;
+
+where <string> contains the method to be used ("CA", "backbone", "all").
+related commands: rms superpose 
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+fit improve <layer> onto <layer> using <string>;
+
+this command is equivalent to the improve fit command of spdbv.
+This will start from a given 3d superposition, compute
+structural alignment and use it to try to find a better
+rigid superposition (one that will decrease the rmsd, while
+trying to include more residues)
+
+related commands: rms superpose 
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+generate structural alignment
+related commands: rms superpose fit
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+get
+
+can access internal spdbv variables or atomic coordinates,
+retrieve aa sequences, or capture the current selection status
+of a specific layer (when modified directly from the graphical
+user interface).
+The list of internal variables that can be accessed is
+provided at the end of this guide.
+
+$sel = get selection of <layer>;
+$varname = get <internal variable>;
+$vector_varname = get coord <string> of <selection>;
+$string_varname = get seq of <selection>;
+
+where <string> contains the 4 characters atom name (for. ex " CA ")
+and selection a selection.
+related commands: set
+Demonstrated in example script:  07 08 09 and 10
+-------------------------------------------------------------------
+<matrix> = get matrix of <layer>
+returns the current transformation matrix of a layer.
+This is the matrix describes the transformation that was
+used to move the coordinates from theit initial values
+(when the protein was loaded) to their actual location
+(after a fit for exmaple).
+This is a 5x3 matrix.
+the first 3 lines contains the rotation
+the fourth line contains a translation applied before the rotation
+the fifth line contains a translation applied after the rotation.
+
+matrices are set using the following syntax:
+$M = [ [1.0, 0.0, 0.0] 
+       [0.0, 1.0, 0.0]
+       [0.0, 0.0, 1.0]
+       [0.0, 0.0, 0.0]
+       [0.0, 0.0, 0.0] ];
+and are printed on one line, for easier parsing, using
+print (string)$M;                  
+-------------------------------------------------------------------
+<string> = getenv(<string>)
+returns the value of an environment variable (unix only)
+-------------------------------------------------------------------
+<float> = global_percent_id(<layer>,<layer>)
+returns the %identity between two aligned sequences
+
+please note that this instruction is not symmetrical
+global_percent_id(0,1) is not equal to 
+global_percent_id(1,0). Indeed, the number of conserved residues
+is divided by the total length of the first sequence.
+related commands:  aligned_percent_id, aligned_percent_sim, global_percent_sim, superpose, compute structural alignment
+Demonstrated in example script:  05
+---------------------------------------------------------------------
+<float> = global_percent_sim(<layer>,<layer>,<int>)
+returns the %similarity between two aligned sequences
+the last number is the threshold in the current substitution
+matrix to consider two amino acids similar
+related commands:  aligned_percent_id, aligned_percent_sim, global_percent_id, superpose, compute structural alignment
+---------------------------------------------------------------------
+goto
+
+one of the most useful (and controversal although it is one
+of the rare commands to be wired directly on any chip...)
+command that allow to continue the execution from a different
+point of the script. 
+
+goto <label>;
+
+Execution will continue immediately after <label>, which must end with
+a colon.
+
+example:  goto elsewhere;
+          elsewhere: print "welcome";
+
+related commands: sub do while return
+Demonstrated in example script: none
+-------------------------------------------------------------------
+groupcount
+
+will return the number of groups in a layer.
+This is functionnally equivalent to a select all followed
+by a selcount, athough it is quicker.
+
+$int_varname = groupcount of <layer>;
+
+related commands: selcount
+Demonstrated in example script:  02 03 and 04
+-------------------------------------------------------------------
+<int> = hbondcount(residueindex,residueindex,type,type);
+where type can be either "backbone" or "sidechain" or "het"
+              returns the number of hydrogen bonds for the specific "type" of atoms.
+
+note that the first layer is 0
+Example: $X = layercount;
+Related commands: Compute, clashcount
+-------------------------------------------------------------------
+hide
+
+hide some parts from the view.
+This is functionnally equivalent to the control panel.
+
+hide <part> of <selection>;
+hide in <layer> <part> of <selection>;
+
+where <part> can be any combination of
+res,side,label,surface,ribbon,vdw
+related commands: show color
+Demonstrated in example script:  06
+-------------------------------------------------------------------
+<int> = id_score(<string>,<string>);
+returns the number of identical residues in the two strings.
+strings should be of the same length, if not the score will only
+be computed over the length of the first string. 
+Related commands: sim_score, open matrix
+-------------------------------------------------------------------
+improve fit
+
+
+<int> = sim_score(<string>,<string>);
+returns the score according to the current substitution matrix.
+strings should be of the same length, if not the score will only
+be computed over the length of the first string. 
+Related commands: id_score, open matrix
+-------------------------------------------------------------------
+inline>
+text
+<inline
+
+This is used in conjunction with the open command to
+load PDB files directly embedded in the script, which
+is useful mostly for web servers that need to return
+a script+pdb file in a single file.
+
+example:
+open pdb INLINE>
+ATOM      1  N   THR     1      17.047  14.099   3.625  1.00 13.79
+ATOM      2  CA  THR     1      16.967  12.784   4.338  1.00 10.80
+ATOM      3  C   THR     1      15.685  12.755   5.133  1.00  9.19
+ATOM      4  O   THR     1      15.268  13.825   5.594  1.00  9.85
+ATOM      5  CB  THR     1      18.170  12.703   5.337  1.00 13.02
+ATOM      6  OG1 THR     1      19.334  12.829   4.463  1.00 15.06
+ATOM      7  CG2 THR     1      18.150  11.546   6.304  1.00 14.23
+<INLINE;
+
+related commands: open
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+<int> = first_selected(<layer>)
+returns the residue index of the first amino acid selected in the specified layer
+
+Related commands: last_selected, is_selected
+-------------------------------------------------------------------
+<int> = last_selected(<layer>)
+returns the residue index of the last amino acid selected in the specified layer
+
+Related commands: first_selected, is_selected
+-------------------------------------------------------------------
+is_selected
+
+is_selected(<layer>,<int>)
+is_selected(<int>)
+
+When <layer> is omitted, the current active layer is used.
+
+returned value is of type <int> and is 1 if the group is selected
+and 0 otherwise.
+
+related commands: 
+Demonstrated in example script:  11
+-------------------------------------------------------------------
+layercount              returns the number of layers (number of files loaded)
+note that the first layer is 0
+Example: $X = layercount;
+-------------------------------------------------------------------
+<int> = layerflag(<layer>,flag);
+layerflag(<layer>,flag) = true;
+layerflag(<layer>,flag) = false;
+where flag can be is_selected, visible, ca_trace, HOH, hbond, hydrogen
+             sets or returns the status (true or false) of a specific flag
+		   of the layer info window.
+		  
+Example: $X = layerflag(visible);
+-------------------------------------------------------------------
+layername
+
+will return the <string> value of the layer name
+
+<string_var> = layername of <int>
+<string_var> = layername(<int>)
+
+where int is the relative position of the layer from the first loaded
+which is number 0, of course.
+
+related commands: 
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+max
+
+will return the max value of two numbers or variables.
+
+max of (<float>,<float>);
+max of (<int>,<int>);
+
+related commands: min
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+min
+
+will return the min value of two numbers or variables.
+
+min of (<float>,<float>);
+min of (<int>,<int>);
+
+related commands: max
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+minimize
+
+performs an energy minimization using n cycles of steepest descent
+
+minimize <selection> with <int> cycles;
+
+related commands: compute, regularize
+Demonstrated in example script:  07
+-------------------------------------------------------------------
+move
+
+move a selection.
+
+move <selection> by <vector>;
+
+where <vector> contains the translation in angstroms.
+
+related commands:  zoom rotate
+Demonstrated in example script:  09
+-------------------------------------------------------------------
+mutate <selection> to <string>
+mutate the first aminoacid selected into a new kind
+<string> must contain the new amino acid as one character residue code.
+The best rotamer is selected
+
+where <selection> must contain one valid amino acid (first selected is taken)
+and <string> contains the one letter code of the new residue.
+
+related commands: rotamer
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+name
+
+will get the three letter name of the first selected group found
+in a selection.
+
+name(<selection>)
+
+alternately, you can access directly a specific residue
+from a specific layer, which is faster and handy in loops with:
+
+name(<layer>,<int>)
+
+returned value is of type <string> for ex: is 'ALA' or 'ATP'.
+
+related commands: num res chain ss access
+Demonstrated in example script:  11
+-------------------------------------------------------------------
+normalize
+
+will normalize a vector.
+
+normalize(<vector>)
+
+returned value is of type <vector>.
+
+related commands: vector operations.
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+num
+
+will get the number of the first selected group found
+in a selection.
+
+num(<selection>)
+
+alternately, you can access directly a specific residue
+from a specific layer, which is faster and handy in loops with:
+
+num(<layer>,<int>)
+
+returned value is of type <int>.
+
+related commands: name res chain ss access
+Demonstrated in example script:  11
+-------------------------------------------------------------------
+omega
+
+will get the omega peptidic bond torsion angle for the first
+selected amino acid found in a selection.
+
+omega(<selection>)
+
+alternately, you can access directly a specific residue
+from a specific layer, which is faster and handy in loops with:
+
+omega(<layer>,<int>)
+
+returned value is of type <float> and is returned in degrees.
+
+related commands: phi psi ss
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+open
+see open pdb, open file, open text, open matrix, open rotolib
+-------------------------------------------------------------------
+open pdb
+load a pdb file in the workspace (next available layer).
+
+open [pdb] from "disk|net" <string>;   
+note that it is possible to omit "pdb" as it is the default value.
+
+<string> contains the full filename (see below).
+
+- - - - -
+The filename must be the absolute path of your file.
+Unix users will enderstand what I mean, but Mac users might
+be a little confuse. A full path (on Mac) is constructed as follows:
+
+name_of_disl:name_of_folder:name_of_subfolder:name_of_subsubfolder:filename
+
+for example, assume you store your pdb files in a folder named 'pdb'
+located in the 'System' disk. You can access the file '1crn.pdb' like this:
+
+System:pdb:1crn.pdb
+
+As you can see, Mac uses ':' as separator.
+This is of course different for unix which uses '/' and from windows
+which uses '\'.
+In order to make your scripts as portable as possible, I would
+recommend separating the file name from the path,
+which will let you (or other users) change just the path (one line)
+to make a generic script run on thieir machine.
+
+consider this example:
+
+open "System:pdb:1crn.pdb";
+open "System:pdb:1atp.pdb";
+
+it is better rewriten like this:
+
+$path = "System:pdb:";   # change this line to point to your pdb files directory.
+open $path + "1crn.pdb";
+open $path + "1atp.pdb";
+
+Alternately, to be cross platform, you
+can also use one of the predetermined directories:
+
+open [pdb] from usrstuff <string>;
+open [pdb] from temp <string>;
+open [pdb] from download <string>;
+
+see the section open file below for explanation
+-------------------------------------------------------------------
+open file
+
+This command allows to create files or open arbitrary text files
+for further processing. 
+
+
+or allows to open a file as read-only.
+
+$file_varname = open file <string>;
+$file_varname = open file <string> for reading;
+
+or allows to open a file as write  (CAUTION WHEN USING THIS!).
+
+$file_varname = open file <string> for writing;
+
+or allows to append to a file  (CAUTION WHEN USING THIS!).
+
+$file_varname = open file <string> for appending;
+
+
+
+In fact, using the full path of your file (directories+filename)
+is potentially dangerous if for sonme reason the
+filename get screwed up. Besides, it is not cross-platform
+and you likely wish to have your scripts running everywhere, 
+I suggest that you and work with files store the files in your 'usrstuff' directory
+using the following equivalent commands:
+
+
+$file_varname = open file <string> in usrstuff;
+$file_varname = open file <string> in usrstuff for reading;
+
+or allows to open a file as write  (CAUTION WHEN USING THIS!).
+
+$file_varname = open file <string> in usrstuff for writing;
+
+or allows to append to a file  (CAUTION WHEN USING THIS!).
+
+$file_varname = open file <string> in usrstuff for appending;
+
+
+where <string> must *ONLY* contain the file name (no directory, no path)
+
+-------------------------------------------------------------------
+open matrix <string>;
+changes the default substitution matrix.
+Matrices are located in the usrstuff/matrix directory
+This will affect the Align and superpose command behaviour.
+
+Example: open matrix "Blosum62";
+-------------------------------------------------------------------
+open text <string>; 
+open text <string> in usrstuff; 
+
+
+The open command can also be used to open a text file, which
+is only useful coupled with the graphical user interface.
+
+
+-------------------------------------------------------------------
+open seq <string>;   
+
+this can be used to load a raw sequence to model.
+Sequence must be in format FASTA, SWISSPROT or SEQRES. 
+
+related commands: close clear readln inline print save
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+open surface in <layer> <string>;   
+where string is the path and filename
+The surface must be a surface in the DeepView format.
+related commands: save
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+pause
+
+will stop the script execution for some seconds.
+
+pause <float>;
+related commands: stop 'thank you' 'please do'
+Demonstrated in example script:  05 06 07 09
+-------------------------------------------------------------------
+phi
+
+will get the phi torsion angle for the first selected amino acid
+found in a selection.
+
+phi(<selection>)
+
+alternately, you can access directly a specific residue
+from a specific layer, which is faster and handy in loops with:
+
+phi(<layer>,<int>)
+
+returned value is of type <float> and is returned in degrees.
+
+related commands: psi omega ss
+Demonstrated in example script:  01 02 03 04
+-------------------------------------------------------------------
+PI
+
+return the value of PI.
+
+related commands: sin asin cos acos tan atan
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+purge gaps
+Will remove all unnecessary gaps in the sequence alignments.
+DDF---HGK
+DDY--KHGR
+
+will become
+DDF-HGK
+DDYKHGR
+
+-------------------------------------------------------------------
+please do
+
+initiate a script, and reset all scripts variables.
+Note that this statement must be on the FIRST line of the script.
+
+related commands: stop pause 'please do'
+Demonstrated in example script:  all
+-------------------------------------------------------------------
+print
+
+prints a value (string, variable, number etc..) onto
+stdout or in a spdbv communication dialog.
+
+print on dialog;
+print on stdout;
+print on <file> <expression>
+print <expression>;
+
+where expression is any combination of aritmetic values or
+concatenation of strings.
+Note that a newline is printed after each print operation.
+You might then need to prepare a string (from concatenation)
+before printing.
+Demonstrated in example script:  01 02 03 04 06 07 08 11
+-------------------------------------------------------------------
+psi
+
+will get the psi torsion angle for the first selected amino acid
+found in a selection.
+
+psi(<selection>)
+
+alternately, you can access directly a specific residue
+from a specific layer, which is faster and handy in loops with:
+
+psi(<layer>,<int>)
+
+returned value is of type <float> and is returned in degrees.
+
+related commands: phi omega
+Demonstrated in example script:  03 04
+-------------------------------------------------------------------
+readln
+
+read the next line from a text file or from a dialog box.
+
+$string_varname = readln from file <file>;
+$string_varname = readln from user <string>;
+
+where <file> is a file previously open with the open file command.
+and <string> is a prompt that will appear in the dialog.
+
+related commands: open close clear substring
+Demonstrated in example script:  04 06
+-------------------------------------------------------------------
+redraw;
+
+will force the main window to be refreshed.
+Useful only in the interactive mode.
+Demonstrated in example script:  05 07
+-------------------------------------------------------------------
+regularize
+
+performs an energy minimization without electrostatics not non-bonded
+interactions using n cycles of steepest descent
+
+regularize <selection> with <int> cycles;
+
+related commands: compute, minimize
+Demonstrated in example script:  07
+-------------------------------------------------------------------
+rename;
+
+rename chain of <selection> as <string>;
+
+will change the chain name of the selected residues.
+
+rename <layer> as <string>;
+will change the layer name
+
+related commands:  renumber
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+renumber;
+
+renumber <selection> from <int>;
+renumber <selection> add <int>;
+
+will change the residue number of selected residues.
+
+related commands:  rename
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+res
+
+will get the one letter name of the first selected group found
+in a selection.
+
+res(<selection>)
+
+alternately, you can access directly a specific residue
+from a specific layer, which is faster and handy in loops with:
+
+res(<layer>,<int>)
+
+returned value is of type <string> for ex: is 'A' or 'C' or 'D',...
+
+related commands: num name chain ss access
+Demonstrated in example script:  11
+-------------------------------------------------------------------
+<int> = rotamer <int> of <selection>
+puts the rotamer number <int> (depending on the local backbone
+geometry) on the first residue selected
+This returns the score ot the rotamer (lower is better).
+related commands: mutate
+Demonstrated in example script:  none
+---------------------------------------------------------------------
+<int> = rotamercount(<selection>)
+return the number of possible rotamers for the first amino acid selected
+<int> = rotamercount(<layer>,<int>)
+return the number of possible rotamers for a given residue
+
+Related commands: mutate,rotamerprob
+---------------------------------------------------------------------
+<int> = rotamerprob rotamer of (<selection>)  
+where rotamer is the rotamer index number for the given residue
+compare the sidechain of the first selected residue to the rotamer
+library and returns the frequency at which the closest match
+is found in the current secondary structure.
+
+Related commands: mutate,rotamercount
+---------------------------------------------------------------------
+rotate
+
+rotate the view successively around axis x,y,z:
+
+rotate <vector>;
+where <vector> contains rotation angles in degrees.
+
+This command can also be used to rotate a selection around
+a specific axis.
+
+rotate <selection> by <float> [deg|rad] around axis <vector> <vector>;
+
+or to do a torsion (rotate atoms downstream a bond around this
+bond) using the following syntax:
+
+rotate atoms of <selection> by <float> [deg|rad] around bond <string> <string>;
+
+related commands:  zoom move
+Demonstrated in example script:  05 06 09
+-------------------------------------------------------------------
+return
+
+It will resume execution where it was before
+entering the subroutine.
+See sub for more explanations
+
+related commands: goto do while sub
+Demonstrated in example script:  08 10
+-------------------------------------------------------------------
+rms
+
+this command is equivalent to the RMS command of spdbv.
+
+rms of <layer> and <layer> using <string>;
+<floatvar> = rms of <layer> and <layer> using <string>;
+
+where <string> contains the method to be used ("CA", "backbone", "all").
+
+related commands: fit superpose
+Demonstrated in example script:  05
+-------------------------------------------------------------------
+save
+
+save a all or part of pdb files from some layers.
+
+save <layer> as <string>;  
+save selection of <layer> as <string>;
+
+(where <string> contains the full filename (see discussion in open).
+
+an alternative set of commands that will
+save files in predefined directories located under
+the spddbv main directory is available.
+Directories can be usrstuff,temp or download:
+
+save <layer> as <string> in [usrstuff|temp|download];  
+save selection of <layer> as <string> in [usrstuff|temp|download];
+
+in this case <string> must contain *ONLY* the filename, as the directory is
+implicit. This is very useful to make scripts portable among the
+various OS supported (Windows, Macintosh, IRIX and Linux).
+
+related commands: open
+Demonstrated in example script:  06
+-------------------------------------------------------------------
+save seq of <layer> as <string>
+save <layer> as seq <string>
+save the content of the given layer as a fasta file
+-------------------------------------------------------------------
+save alignment as <string>
+save the sequence alignment in a file. The alignment is presented
+as if you had clicked on the text icon of the alignment window.
+Alignment preferences apply.
+(a better, more parsable format will come later).
+-------------------------------------------------------------------
+save surface of <layer> as <string>
+save surface of <layer> in [temp] as <string>
+save the surface in a file.
+Related commands: open surface
+-------------------------------------------------------------------
+selcount
+
+will return the number of selected groups in a layer.
+
+$int_varname = selcount of <layer>;
+
+related commands: groupcount
+Demonstrated in example script:  06
+-------------------------------------------------------------------
+select
+
+allow to select specific residues and perform logical 
+operations on them. This can then be used to color or hide
+residues, among other things.
+
+<var> = select [in <layer>] <selection>;
+select <var>;
+
+when [in <layer>] is ommitted, the current active layer is assumed.
+where <var> must contain a selection
+and <selection> can be any combination of:
+
+all
+none                
+water hoh solvent h2o
+strand
+helix
+het                  will select all HETATM               
+aa                   will select all amino acids               
+nt                   will select all nucleotides              
+res   <string>       residue kind  example:  res "A", "C", "D"
+name  <string>       residue name  example:  res "ALA", "OXT", "ATP"
+chain <string>       residue chain example:  chain "A", " "
+num   <int>          residue number
+pos   <int>          residue absolute position in layer (start at 0).
+pos   <int> to <int> residue range absolute position in layer (start at 0).
+seq   <string>       a sequence (can be a prosite pattern).
+within <float> of <selection_var>
+
+example:
+
+$sel1 = select in "1ATP" res "Y" and chain "I";
+It is currently not possible to provide very complex
+selections in one operation, but this is easily overcomed
+as selections can be added or substracted:
+
+example:
+$sel = $sel1 + $sel2 + sel3 - sel4;
+
+
+A special case allows to get the current selection state
+of a layer into a variable. This is useful to capture
+a selection made directly from the user graphical interface.
+
+$sel = get selection of <layer>;
+Demonstrated in example script:  all
+-------------------------------------------------------------------
+set
+
+can set internal spdbv variables or atomic coordinates.
+The list of internal variables that can be accessed is
+provided at the end of this guide.
+
+set <internal variable> = $varname;
+set coord <string> of <selection> = $vector_varname;
+
+where <string> contains the 4 characters atom name (for. ex " CA ")
+and selection a selection.
+
+It also allows to toggle the backbone representation for a 
+layer to "ca_trace":
+
+set ca_trace [ON|OFF] for <layer>;
+
+related commands: get
+Demonstrated in example script:  07
+-------------------------------------------------------------------
+show
+
+show some parts from the view.
+This is functionnally equivalent to the control panel.
+
+show <part> of <selection>;
+show in <layer> <part> of <selection>;
+
+where <part> can be any combination of
+res,side,label,surface,ribbon,vdw
+
+related commands: hide color
+Demonstrated in example script:  06 09 13
+-------------------------------------------------------------------
+silent
+
+can be used in conjunction witht the stop command
+to prevent any feedback of which line the script was stopped.
+
+silent stop;
+
+related commands: stop
+Demonstrated in example script:  08 10
+-------------------------------------------------------------------
+sin
+
+compute the sinus of an expression.
+
+sin(<float>)
+sin(<int>)
+
+This returns the value in radians
+
+related commands: asin cos acos tan atan PI
+-------------------------------------------------------------------
+ss
+
+will get the secondary structure assignment of the first
+selected amino acid found in a selection.
+
+ss(<selection>)
+
+alternately, you can access directly a specific residue
+from a specific layer, which is faster and handy in loops with:
+
+ss(<layer>,<int>)
+
+returned value is of type <string> and is 'h' 's' or 'c'.
+
+related commands: phi psi omega
+Demonstrated in example script:  11
+-------------------------------------------------------------------
+stop
+
+will stop the script in a way that it can be continued
+from the graphical user interface with "shift" open script.
+Very convenient if you want to interactiuvely inspect a molecule
+before resuming the script flow.
+
+related commands: 'please do' 'thank you' pause silent
+Demonstrated in example script:  06 08
+-------------------------------------------------------------------
+sub
+
+this command is nothing else than a goto that remembers where
+it was before. It will resume execution where it was before
+entering the subroutine as soon as a return statement is reached.
+
+sub <label>;  <--- note that this must be the only command on a line
+
+Execution will continue immediately after <label>, which must end with
+a colon.
+Note that subroutines must be located at the end of the script
+(after the thank you statement).
+All variables beeing global, be very careful when you
+use them, especially loops variables).
+
+example:  
+
+please do
+sub elsewhere;
+thank you
+
+elsewhere:
+{
+	print "Is grass really greener here?";
+	return;
+}
+
+related commands: goto do while return
+Demonstrated in example script:  08 10
+-------------------------------------------------------------------
+substring
+
+allow to access substrings within a string by position.
+Substrings are separated by spaces and numbering start from 0.
+
+$string_varname = substring <int> of <string>;
+
+example: 
+
+$X = substring 0 of "Hello World!"; will put "Hello" into $X.
+$X = substring 1 of "Hello World!"; will put "World!" into $X.
+
+Demonstrated in example script:  04
+-------------------------------------------------------------------
+superpose
+
+this command is equivalent to the magic fit of spdbv
+
+<int> = superpose <layer> onto <layer> using <string>;
+
+where <string> contains the method to be used ("CA", "backbone", "all","ss","ss_of_selection").
+This returns the number of solutions as an int.
+When "ss" or "ss_of_selection" is used, and more than one solution is possible, a temp
+file "match.txt" is written and a window will be opene with one solution
+per line.
+
+related commands: rms fit
+Demonstrated in example script:  05
+-------------------------------------------------------------------
+<surface> = surface of <layer>
+saves the surface of a given layer in a special array.
+Example: $surf[0] = surface of "1CRN";
+A maximum of 128 surfaces can be stored.
+Note that the given surface needs to have been precomputed.
+Related commands: build
+---------------------------------------------------------------------
+surface of <layer> = <surface>;
+replace the current surface of a layer by the one stored in the array.
+Example: surface of "1CRN" = $surf[0];
+---------------------------------------------------------------------
+system               ** USEFUL but DANGEROUS **
+
+system <string>;
+
+This command is supported only for SGI and Linux versions.
+executes a shell system command. It is mainly useful
+to execute a script that will put results into a file
+that can then be open as read-only with the open file
+command and read line by line with readln.
+
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+tan
+
+compute the tangent of an expression.
+
+tan(<float>)
+tan(<int>)
+
+This returns the value in radians
+
+related commands: sin asin cos acos atan PI
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+transform <layer> by <matrix>
+This command will apply a transformation matrix onto the content of a layer.
+where matrix is expressed like
+[ [a,b,c] [d,e,f] [g,h,i] [j,k,l] [m,n,o] ]
+where float values a to i describe a 3x3 rotation matrix
+j k l describe a translation to be applied before the rotation
+m n o describe a translation to be applied after the rotation
+
+The column order is x y z.
+related commands: move
+-------------------------------------------------------------------
+true
+is equivalent to 1
+Example: $X = true;
+if ($X == true)
+{
+	print "true";
+}
+related commands: false
+-------------------------------------------------------------------
+torsion
+
+compute the torsion angle ABCD between fouratoms (vectors).
+In other words, the angle between planes ABC and BCD.
+
+<floatvar> = torsion(A,B,C,D);
+
+where A,B,C and D are <vector> values
+Result is returned in degrees.
+
+related commands: dist get torsion
+Demonstrated in example script:  none
+-------------------------------------------------------------------
+thank you
+
+polite way of ending a script, which will also free any
+memory assigned for arrays.
+Demonstrated in example script:  all
+-------------------------------------------------------------------
+<float> = vol(<layer>,<int>)
+returns the volume of the cavity number <int> of the specified layer
+Related commands: area, build, cavitycount
+---------------------------------------------------------------------
+zoom
+
+this command changes the camera position to zoom in or out
+
+zoom <float>
+
+where <float> is the percent change.
+100.0 means no change, 
+110.0 will do a close-up (enlarge the image by 10%)
+90.0 will zoom out (decrease the image size by 10%)
+
+related commands: rotate move
+Demonstrated in example script:  05
+-------------------------------------------------------------------
+===================================================================
+Tests (conditionnal execution):
+===================================================================
+
+if (expression test expression)
+{
+} 
+else 
+{
+}
+
+where test can be
+== for identity
+!= for different
+>  for greater than
+>=  for greater than or equal to
+<  for smaller than
+<=  for smaller than or equal to
+
+Demonstrated in example script:  04 06 08
+===================================================================
+Loops:
+===================================================================
+
+Two kinds of loops are supported that allow to cope with
+any situation. The higher level for(;;) statement is not
+implemented:
+
+
+in the following case, statements will be executed at least once,
+and more depending on the result of the test.
+
+do
+{  <-- note that statements must start on the next line.
+  statements;
+} 
+while (expression test expression);  <-- note the semicolon
+
+
+in the following case, statements may not be executed at all,
+depending on the result of the test.
+
+while (expression test expression)  
+{
+  statements;
+}
+
+Demonstrated in example script:  01 02 03 04 05 06 07 09
+===================================================================
+Internal variables:
+===================================================================
+
+This is the list of recognized internal spdbv variables, that
+can be accessed by the get and set commands.
+Access to additional variables will be added in the future, as needed.
+
+nbLayer                 returns the position of the last layer
+                        as it starts at 0, when one layer is loaded
+				    its value is 0. Its value is 1 for two layers
+				    etc.
+                        as it starts at 0, when one layer is loaded
+				    its value is 0. Its value is 1 for two layers
+				    etc.
+active_layer            returns the position of the currently active
+                        layer (the one shown in the control panel).
+gDotDensity
+gCurrentOS              contains "MAC" "SGI" "LINUX" or "WINDOWS" 
+
+The following variables affect the behaviour of alerts
+presented during the load of a protein:
+
+gReconstructSidechain    0 or 1  reconstruct missing sidechains 
+gShowConnectAlert        0 or 1  report missing or bad CONECT 
+gShowHETATMAlert         0 or 1  report ATOM treated as HETATM
+gLoadWater               0 or 1  load solvent molecules
+gPartialOccupancyWarning 0 or 1  
+
+Demonstrated in example script:  08 10 for active_layer
+*******************************************************************

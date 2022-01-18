@@ -250,9 +250,9 @@ class ProConNetwork:
         G = nx.Graph()
         for i, row in nodes.iterrows():
             if row["name"] in self.analysis_mutation_group.non_duplicated_aas_positions:
-                G.add_node(row["name"], size=row["size"], is_mutation=True)
+                G.add_node(row["name"], size=row["size"], is_mutation=True, pst=int(row["name"][:-1]))
             else:
-                G.add_node(row["name"], size=row["size"], is_mutation=False)
+                G.add_node(row["name"], size=row["size"], is_mutation=False, pst=int(row["name"][:-1]))
 
         for i, row in links.iterrows():
             G.add_edge(row["source"], row["target"], weight=row["weight"])
@@ -336,7 +336,7 @@ class ProConNetwork:
             log.debug("无缓存，直接计算")
             # 边 betweenness
             log.info("边 中介中心性 betweenness")
-            e_bc = edge_betweenness_centrality(self.G, weight=weight)
+            e_bc = edge_betweenness_centrality(self.G, weight=weight, normalized=False)
             with open(outpath[3], "wb") as f:
                 pickle.dump(e_bc, f)
         else:
@@ -787,11 +787,12 @@ class ProConNetwork:
         nx.write_gexf(self.G, os.path.join(self.data_dir, "all network.gexf"))
 
     def output_for_DynaMut2(self):
-        with open(os.path.join(self.data_dir, "dynamut2 input.txt"), "w") as f:
+        with open(os.path.join(self.data_dir, "dynamut2 input v2.txt"), "w") as f:
             for a1, a2 in combinations(self.analysis_mutation_group.non_duplicated_aas, 2):
                 if "X" in a1 or "X" in a2:
                     continue
-                f.write(f"A {a1};A {a2}\n")
+                if self.G.has_edge(self._aa2position(a1), self._aa2position(a2)):
+                    f.write(f"A {a1};A {a2}\n")
 
     def random_sample_analysis(self, aas: list, groups, N=1000):
         """使用随机采样的形式，分析实验组和对照组的区别
@@ -1346,8 +1347,9 @@ if __name__ == '__main__':
     mutation_groups.display_seq_and_aa()
     pcn = ProConNetwork(mutation_groups, threshold=100)
     # log.debug("len(pcn.type2) = %s", len(pcn.type2))
-    pcn.analysisG()
-    # pcn.output_for_gephi()
+    # pcn.analysisG()
+    pcn.output_for_gephi()
+    # pcn.output_for_DynaMut2()
     end_time = time.time()
     log.info(f"程序运行时间: {end_time - start_time}")
 

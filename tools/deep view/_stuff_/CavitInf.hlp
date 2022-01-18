@@ -1,0 +1,30 @@
+ 
+/************** HELP: Layer Infos Window ***************
+/-------------------------------------------------------
+Please note that this help does not replace the
+user-guide, not the tutorial. Both can be found at
+http://www.expasy.ch/spdbv/              (SWITZERLAND)
+ 
+ 
+/General Information
+/-------------------
+
+The first line contains the protein molecular surface.
+Subsequent lines (if any) are for cavities.
+
+You can show or hide a specific cavity by clicking in the "vis" column.
+Click on the little box to change a cavity color.
+
+Area are given in squared Angstroms
+Volumes are given in cubic Angstroms
+
+To center the view around a cavity, simply control-Click
+on the corresponding line. Note that residues that are in
+contact with the surface are automatically selected.
+Shif-Control-Click will not only center but also show only
+residues in contact to the surface
+
+/-------------------------------------------------------
+Holding down the shift key while clicking on a checkmark will
+affect all cavities of the current Layer.
+

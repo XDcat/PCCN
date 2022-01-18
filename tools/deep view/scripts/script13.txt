@@ -1,0 +1,34 @@
+please do
+
+# The following script is a demonstration of how to
+# manipulate selections to do a command
+# functionnally equivalent to "Select Groups Close to
+# another chain" of the Select menu.
+# It is slower, but more flexible because you
+# can choose the two chains concerned.
+
+
+open pdb from download "4MDH.pdb"; 
+
+$SELA = select in "4mdh" chain "A";
+$SELB = select in "4mdh" chain "B";
+color res of $SELA in red;
+color res of $SELB in blue;
+center on visible;
+
+$SEL1 = select within 4.0 of $SELA;
+$SEL2 = select within 4.0 of $SELB;
+
+# as there is no "AND" (union) function we need
+# to do this trick.
+
+$SELA = $SEL1 - $SELA;
+$SELB = $SEL2 - $SELB;
+$SEL = $SELA + $SELB;
+
+select $SEL;
+show res,side of $SEL;
+
+thank you
+
+

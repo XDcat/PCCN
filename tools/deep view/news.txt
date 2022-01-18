@@ -1,0 +1,124 @@
+DeepView - Swiss-Pdb Viewer
+
+Release Notes - PC version 3.7 SP5
+
+==============================================================
+
+
+Dear DeepViewers,
+
+thanks to your constructive critics during the last months, we 
+found several bugs in the windows version 3.7. In this bug fix 
+release (let's call it Service Packs) we tried to fix many of 
+the known problems. 
+
+Cheers
+
+Torsten & Nicolas
+
+==============================================================
+
+Release 3.7 (SP3)
+
+* The empty character problem caused by the "Mutate" function 
+  when mutating small to large residues should be fixed
+
+* Infinite file size problem with PovRay output fixed
+
+* MegaPOV output has been removed and replaced by PovRay 3.5
+
+* PovRay output (hopefully) complies with PovRay 3.5 syntax
+
+* PovRay label problem for SS-bonded cysteines fixed.
+
+* New & faster DeepView file server installed:
+  Server: www.swissmodel.unibas.ch Port: 27000
+
+24. March 2003   
+Torsten (Torsten.Schwede@unibas.ch) 
+============================================================= 
+
+Release 3.7 (SP4)
+
+* Bugfix for a crash when loading PDB entry 1QEY 
+
+* Bugfix for a sporadic problem in the layer info window
+
+
+8. April 2003 
+Torsten (Torsten.Schwede@unibas.ch)
+============================================================= 
+
+Release 3.7 (SP5)
+
+* Bugfix: Molecular surfaces in POV RAY were displaced 
+  when several layers were superposed
+
+* Bugfix: Saving files with residue insertion codes was 
+  broken
+
+6. June 2003 
+Torsten (Torsten.Schwede@unibas.ch)
+
+============================================================= 
+
+Known problems with the current release:
+
+* Still had no time to implement the new DelPhi3 format ...
+* Poisson-Boltzmann calculation is broken ...
+
+
+Please let us know if you find other bugs and problems with
+this release ...
+
+============================================================= 
+
+Release Note 3.7 Dear Swiss-PdbViewer users,
+
+We are glad to announce the availability of version 3.7, which 
+corrects several glitches of the version 3.7b2.
+
+
+We no longer have enough time to dedicate to answer directly to 
+all questions that are sent to us. Therefore, please use the 
+e-mail discussion list that was setup by Prof. Gale Rhode 
+(check our web site to subscribe).
+Although we will continue to read and consider all bug reports 
+and requests for improvements that are directly sent to us, we 
+are unlikely to answer those mails.
+
+Have fun,
+Nicolas, Torsten & Alexandre.
+
+============================================================= 
+
+
+Comments about release 3.7 
+- There is an updated version of the Manual on the main site.
+- It is possible to use custom colors for amino acids
+through the custom color menu. See an example file in your usrstuff
+directoy.
+- Better CCP4 Electron density map cross-platform support
+(when computed on PC or linux can be read on Mac sgi)
+- Rock and roll motion should be stopped using esc key.
+- Fixed the add residue bug that was always adding an Ala regardless
+of what was selected.
+- Fixed a few bugs in the Pov-Ray scene creation.
+- Better stereo red/blue rendering
+- Fixed bugs in the scripting language and added support for 2D arrays.
+Some of the examples present on the web site will no longer work correctly,
+However, the examples provided with the distribution are functional (for
+some of them, you may have to download specific files such as 1ATP or 4MDH
+and place them in your 'download' directory).
+The scripting language manual will be updated later directly on the Web site.
+- reorganization of the Fit menu to provide better access to a
+second exhaustive 3D-fit method.
+- Added a few filetypes on the Mac. Files of type 'BINA' and '????'
+can be open in addition to files of type 'TEXT'. This should help
+Mac users read the files returned by Swiss-Model.
+
+Finally, Mac users will be happy to know that I am debugging a
+carbonized version that will lift the 256 colors limitation and
+work on OSX. The port is complete, and I am currently testing
+that the various dialogs and scripts run smoothly.
+Nicolas

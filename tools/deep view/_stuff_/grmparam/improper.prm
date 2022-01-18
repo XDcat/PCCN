@@ -1,0 +1,9 @@
+#GROMOS96 Improper Parameters for Swiss-PdbViewer 3.5
+  3 parameters kindly provided by Wilfred van Gunsteren.  
+Ref: W.F. van Gunsteren et al. (1996) in Biomolecular simulation:
+     the GROMOS96 manual and user guide. Vdf Hochschulverlag ETHZ
+     (http://igc.ethz.ch/gromos)  
+------------------------------------------------
+*    *    *    *      0.0510     0.00000        1
+*    *    *    *      0.1020    35.26439        2
+*    *    *    *      0.2040     0.00000        3

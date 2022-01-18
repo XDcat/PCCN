@@ -1,0 +1,61 @@
+please do
+
+# The following script does the same as the previous one
+# but demonstrate the use of arrays by storing values in a first pass
+# then providing a second loop to actually write them.
+# then it will reopen the file and create a second one 
+# swapping the columns phi and psi, which demonstrate how
+# to parse and process text files (which could be used as
+# input parameters for scripts).
+
+
+open pdb from download "1CRN.pdb";
+$NBGROUPS = groupcount of "1crn";
+
+# ---- computing values ----.
+
+$X = 0;
+do
+{
+	$SEL = select in "1crn" pos $X;
+	$PHI[$X] = phi($SEL);
+	$PSI[$X] = psi($SEL);
+} while (++$X < $NBGROUPS);
+
+# ---- writing values in file ----.
+
+$MYFILENAME = "results";
+$MYFILE = open file $MYFILENAME in usrstuff for writing; 
+$X = 0;
+do
+{
+	print on $MYFILE "phi= " + (string)$PHI[$X] + " psi= " + (string)$PSI[$X];
+} while (++$X < $NBGROUPS);
+close file $MYFILE;
+
+# ---- reading and writing a swapped file
+
+$MYFILENAME2 = "swappedresults";
+$INPUTFILE = open file $MYFILENAME in usrstuff for reading; 
+$OUTPUTFILE = open file $MYFILENAME2 in usrstuff for writing; 
+do
+{
+	$LINE = readln from file $INPUTFILE;
+	$PHItxt = substring 1 of $LINE;  # remember that we start at zero (which contains 'phi=')
+	$PSItxt = substring 3 of $LINE;
+	if ($LINE != "")  #line not empty
+	{
+		print on $OUTPUTFILE "psi= " + $PSItxt + " phi= " + $PHItxt;
+	}
+} while ($LINE != "");
+
+close file $INPUTFILE;
+close file $OUTPUTFILE;
+
+
+# --- showing their content -------
+
+open text $MYFILENAME  in usrstuff;
+open text $MYFILENAME2 in usrstuff;
+
+thank you

@@ -1,0 +1,47 @@
+please do
+
+# The following script is a demonstration of
+# how to print out information about selected
+# residues. On UNIX platforms, we print on
+# stdout, on Mac and PC in a dialog.
+# look in other examples to know how to print 
+# in a file.
+
+if ((get gCurrentOS == "SGI") OR (get gCurrentOS == "LINUX"))
+{
+	print on stdout;
+}
+else
+{ 
+	print on dialog;
+}
+
+
+open pdb from download "1ATP.pdb"; 
+
+
+# --- select residues that are close to the ATP
+#     show them and center view on it.
+
+$SEL1 = select in "1atp" name "ATP1";
+$SEL2 = select within 3.0 of $SEL1;
+show res,side of $SEL2;
+center on visible;
+
+$NBGROUPS = groupcount of "1atp";
+$X = 0;
+do
+{
+	if (is_selected("1atp",$X) == true)
+	{
+		print "chain: " + chain("1atp",$X) + " "
+		    + "name: " + name("1atp",$X) + " "
+		    + "one letter: " + res("1atp",$X) + " "
+		    + "num: " + (string)num("1atp",$X) + " "
+		    + "sec struct: " + ss("1atp",$X) + " "
+		    + "%access: " + (string)access("1atp",$X); 
+	}
+} while (++$X < $NBGROUPS);
+
+thank you
+

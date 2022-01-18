@@ -1,0 +1,70 @@
+please do
+
+# The following script is a demonstration of
+# how to rotate a selection around an axis
+# or some atoms of an het group around a bond,
+# and move selection around.
+# and save a pov-ray scripts.
+
+open pdb from download "1ATP.pdb"; 
+
+# --- select residues that are close to the ATP
+#     show them and center view on it.
+
+$SEL1 = select in "1atp" name "ATP1";
+$SEL2 = select within 4.0 of $SEL1;
+show res,side of $SEL2;
+center on visible;
+compute in "1ATP" hbond;
+
+# ----------- rotate atp around an axis defined by two atoms ----------
+
+$ATM1 = get coord " PG " of $SEL1;
+$ATM2 = get coord " N1 " of $SEL1;
+
+$X = 0;
+do
+{
+	rotate $SEL1 by 20.0 deg around axis $ATM1 $ATM2;
+	compute in "1ATP" hbond;
+	pause 0.1;
+	$X++;
+} while ($X < 18);
+
+# ----------- rotate a SUBPART of atp around an axis defined by two atoms ----------
+
+$X = 0;
+do
+{
+	rotate atoms of $SEL1 by 20.0 deg around bond " C1* " " N9 ";
+	compute in "1ATP" hbond;
+	pause 0.1;
+	$X++;
+} while ($X < 18);
+
+
+# ----------- move atp around  ----------
+
+$V[0] = <0.3,0.0,0.0>;
+$V[1] = <0.0,0.3,0.0>;
+$V[2] = <-0.3,0.0,0.0>;
+$V[3] = <0.0,-0.3,0.0>;
+
+$i = 0;
+do
+{
+	$X = 0;
+	do
+	{
+		move $SEL1 by $V[$i];
+		compute in "1ATP" hbond;
+		pause 0.1;
+		$X++;
+	} while ($X < 5);
+} while (++$i < 4);
+
+# --- save a pov ray scene, and launch the rendering pov engine.
+
+export pov in USRSTUFF as "1atp_activ2.pov" and render;
+
+thank you

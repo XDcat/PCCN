@@ -1,0 +1,23 @@
+please do
+
+# The following script does the same as the previous one
+# except that it will write results in a file
+# so that you don't have to click 47 times on OK.
+# besides you can keep track of results, which is convenient.
+
+open pdb from download "1CRN.pdb";
+
+$MYFILE = open file "results" in usrstuff for writing;
+$X = 0;
+$NBGROUPS = groupcount of "1crn";
+do
+{
+	$SEL = select in "1crn" pos $X;
+	$PHI = phi($SEL);
+	print on $MYFILE $PHI;
+} while (++$X < $NBGROUPS);
+close file $MYFILE;
+
+thank you
+
+

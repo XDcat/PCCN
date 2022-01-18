@@ -1,0 +1,51 @@
+/
+/Click on the appropriate translation
+/along one axis of the unit cell
+/axis are a (red) b (green) and c (blue)
+/
+/The direction of the translation is given
+/by + or - or 0 (no translation)
+/-----------------------------------------
+ 
+/abc        TRANSLATION ALONG ONE AXIS
+/---
++00
+0+0
+00+
+ 
+-00
+0-0
+00-
+ 
+/abc        TRANSLATION ALONG a and b
+/---
+++0
++-0
+-+0
+--0
+
+/abc        TRANSLATION ALONG a and c
+/---
++0+
++0-
+-0+
+-0-
+ 
+/abc        TRANSLATION ALONG b and c
+/---
+0++
+0+-
+0-+
+0--
+ 
+/abc        TRANSLATION ALONG a b and c
+/---
++++
+++-
++-+
++--
+ 
+-++
+-+-
+--+
+---

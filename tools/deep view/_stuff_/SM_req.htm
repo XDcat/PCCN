@@ -1,0 +1,120 @@
+<HTML>
+<HEAD>
+   <TITLE>SWISS-MODEL Optimise </TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" VLINK="#800080">
+<FORM action="$" method="POST" enctype="multipart/form-data">
+
+<P><BASEFONT size = 3></P>
+
+<P><CENTER><B><FONT SIZE="+3">Optimise Mode Request submission
+form</FONT></B></CENTER></P>
+
+<P>
+<HR>
+</P>
+
+<P><INPUT TYPE="hidden" NAME="FOC" VALUE="P"><INPUT TYPE="hidden"
+NAME="FOC" VALUE="P"><B><FONT SIZE="+2">Please fill these
+fields:</FONT></B></P>
+
+<P><TABLE  CELLSPACING=1 borders=0>
+   <TR>
+      <TD bgcolor="ffcccc">
+         <P>Your Email address:
+      </TD><TD>
+         <P><INPUT TYPE="text" NAME="email" VALUE="$" SIZE=35>
+      </TD><TD>
+         <P>(MUST be correct!)
+      </TD></TR>
+   <TR>
+      <TD bgcolor="ffffcc">
+         <P>Your Name :
+      </TD><TD>
+         <P><INPUT TYPE="text" NAME="name" VALUE="$" SIZE=35>
+      </TD><TD>
+         <P>
+      </TD></TR>
+   <TR>
+      <TD bgcolor="ccccff">
+         <P>Request title :
+      </TD><TD>
+         <P><INPUT TYPE="text" NAME="title" VALUE="$" SIZE=35>
+      </TD><TD>
+         <P>Will be added to the results header.
+      </TD></TR>
+</TABLE></P>
+
+<P>
+<HR>
+</P>
+
+<P><B><FONT SIZE="+1">Your SWISS-MODEL project file can be found
+in:</FONT></B></P>
+
+<BLOCKQUOTE><P><B><FONT COLOR="#AF0000">$</FONT></B></P>
+
+<P><I>Copy/paste the file path in the field below or click on the
+'Browse' button to select the project</I></P>
+
+<P>&nbsp;&nbsp;<INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="50">
+</P>
+
+<P><CENTER>Now <INPUT TYPE="submit" NAME="Envoi"
+VALUE="Send Request"> or <INPUT TYPE="reset" VALUE="Reset Form">
+</CENTER></P></BLOCKQUOTE>
+
+<P>
+<HR>
+</P>
+
+<P><B><FONT SIZE="+2">Results options:</FONT></B> (The SWISS-MODEL
+server will return all results via Email)<BR>
+
+</P>
+
+<BLOCKQUOTE><P><TABLE BORDER=1 WIDTH="87%">
+   <TR>
+      <TD WIDTH=175>
+         <P><INPUT TYPE="radio" NAME="results" VALUE="Spdbv"
+         CHECKED><B>Swiss-PdbViewer mode</B>
+      </TD><TD>
+         <P>will return the final model and the template(s) as a
+         Swiss-PdbViewer project file and a log file tracing all
+         actions taken by the server
+      </TD></TR>
+   <TR>
+      <TD WIDTH=175>
+         <P><INPUT TYPE="radio" NAME="results"
+         VALUE="Normal"><B>Normal mode</B>
+      </TD><TD>
+         <P>includes the final model co-ordinates file in PDB format
+         and a log file tracing all actions taken by the server
+      </TD></TR>
+   <TR>
+      <TD WIDTH=175>
+         <P><INPUT TYPE="radio" NAME="results" VALUE="Short"><B>Short
+         mode</B>
+      </TD><TD>
+         <P>will return only the final model co-ordinates file
+      </TD></TR>
+</TABLE></P>
+
+<P><INPUT TYPE="checkbox" NAME="NOATTACH" VALUE="true">Send the
+results <B>as plain ASCII mail</B> instead of email attachment.<BR>
+
+<INPUT TYPE="checkbox" NAME="WHATCHECKreport" VALUE="true"
+CHECKED>Include a
+<A HREF="http://www.sander.embl-heidelberg.de/whatcheck/"
+TARGET="_blank">WhatCheck report</A> of the final model.</P>
+</BLOCKQUOTE>
+
+<P>
+<HR>
+<A HREF="MAILTO:mcp13936@GlaxoWellcome.co.uk">Manuel C. Peitsch</A>,
+<A HREF="MAILTO:ts80960@GlaxoWellcome.co.uk">Torsten Schwede</A>
+&amp; <A HREF="MAILTO:ng45767@GlaxoWellcome.co.uk">Nicolas Guex</A>.
+</P>
+</FORM>
+</BODY>
+</HTML>

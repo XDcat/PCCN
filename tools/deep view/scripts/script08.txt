@@ -1,0 +1,60 @@
+please do
+
+# The following script is a demonstration of
+# how to add commands to the user interface
+# via scripting. In this case, the commands
+# will act on the current active layer.
+
+open from download "1CRN.pdb";
+print "Click on one of the 'sub' commands in the script window";
+thank you
+
+sub select_charged;  
+silent stop;
+
+sub select_positive; 
+silent stop;
+
+sub select_negative; 
+silent stop;
+
+
+
+
+# Here are the subroutines that can be called
+# by clicking on their names. You should not
+# click on them, as they need to be called as
+# subroutines.
+
+
+select_charged:
+{
+# conceptually not the most efficient way,
+# to do it, but interesting teaching example
+
+	$l = get active_layer;
+	sub select_positive;
+	$SEL1 = get selection of $l;
+	sub select_negative;
+	$SEL2 = get selection of $l;
+	$SEL = $SEL1 + $SEL2;
+	select $SEL;
+	return;
+}
+
+select_positive:
+{
+	$l = get active_layer;
+	if (ask "Shall I include His residues?" == 1)
+	{ select in $l res "K","R","H"; }
+	else {  select in $l res "K","R";}
+	return;
+}
+
+select_negative:
+{
+	$l = get active_layer;
+	select in $l res "D","E";
+	return;
+}
+

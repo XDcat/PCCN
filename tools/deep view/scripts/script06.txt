@@ -1,0 +1,65 @@
+please do
+
+# The following script is a demonstration of
+# how to select prosite patterns, save residues of the pattern
+# show and hide residues and labels
+# and rotate the molecule (with a pause between frames
+# that can be provided by the user during the script execution).
+
+
+open pdb from download "1CRN.pdb"; 
+
+# ----------- example of prosite pattern search ----------
+
+$SEL1 = select in "1crn" seq "C-C-x(5)-R-x(2)-[FY]-x(2)-C";
+show res, side, label of $SEL1;
+print "nb residues in motif: " + (string)selcount of "1crn";
+
+
+# ----------- example of save (not in usrstuff, just for the demo) ----------
+
+if (get gCurrentOS == "SGI")
+{
+	$savefilename = "/tmp/mypdb.pdb";
+}
+else
+{
+	if (get gCurrentOS == "MAC")
+	{
+		$savefilename = "System:mypdb.pdb";
+	}
+	else
+	{
+		$savefilename = "C:\Temp\mypdb.pdb";
+	}
+}
+
+
+select $SEL1;
+save selection of "1crn" as $savefilename;
+
+$ALL = select in "1crn" all;
+$SEL2 = $ALL - $SEL1;
+
+# ----------- example of loop with rotate view and delay ----------
+
+# - first, ask the user how many seconds to pause between frames.
+
+$DELAYSTRING = readln from user "please, enter the delay between frames in seconds";
+$DELAY = (float)$DELAYSTRING;
+
+# - then, do the rotation, hiding and showing residues not in pattern.
+
+$X = 0;
+$MUSTSHOW = 0;
+do
+{
+	if ($MUSTSHOW == 1) { show res of $ALL; $MUSTSHOW = 0; }
+	else                { hide res of $SEL2; $MUSTSHOW = 1; }
+
+	rotate <10.0,0.0,0.0>;
+	pause $DELAY;
+	$X++;
+} while ($X < 36);
+
+thank you

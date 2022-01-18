@@ -1,0 +1,49 @@
+/************** HELP: Layer Infos Window ***************
+/-------------------------------------------------------
+Please note that this help does not replace the
+user-guide, not the tutorial. Both can be found at
+http://www.expasy.ch/spdbv/     
+ 
+ 
+/General Information
+/-------------------
+The name of the currently active layer appears in red,
+and clicking on a layer name activates it.
+This will become the current layer.
+
+All other columns are toggles allowing to individually
+change the status of a layer. From left to right:
+
+vis:  layer is visible (same as the checkbox in the Control Panel)
+mov:  layer can move (same as the checkbox in the Control Panel
+
+axis: Draw Referential for the concerned layer at its (0,0,0) coord.
+
+CA:   Force layer backbone to be drawn as Carbon Alpha Trace.
+
+O:    Backbone oxygens of this layer are visible
+
+H:    Hydrogens of this layer (if any) are visible
+Hbnd: Same for H-bonds (if they have been computed)
+Hdst: Same for H-bonds distances
+
+side: allow sidechains to be visible even when backbone is hidden
+      might be useful when rendering images with ribbons
+      representations
+
+HOH:  water of this layer are visible. Note that by default
+      water (HOH, SOL, WAT) are not loaded into the workspace.
+      Uncheck the appropriate item of the "Loading Protein"
+      preferences menu to load waters.
+
+cyc:  This layer is elected for cycling through (blinking)
+      Cycling through layers is achieved with Control+Tab
+      This will automatically display ONLY the next layer
+      having an enabled cycling flag.
+
+sel:  Shows the number of groups currently selected in each layer.
+
+/-------------------------------------------------------
+Holding down the shift key while clicking on a checkmark will
+affect all layers.
+

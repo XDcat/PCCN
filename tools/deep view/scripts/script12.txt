@@ -1,0 +1,44 @@
+please do
+
+# The following script is a demonstration of how to
+# rotate the molecule with a pause between frames
+# and superpose proteins.
+
+
+open pdb from download "1CRN.pdb"; 
+open pdb from download "1BHP.pdb"; 
+
+$SEL1 = select in "1crn" all;
+color res of $SEL1 by <1.0,0.0,0.0>;
+center on visible;
+
+# ----------- example of loop with rotate view and delay ----------
+
+$X = 0;
+do
+{
+	rotate <15.0,0.0,0.0>;
+	pause 0.2;
+	$X++;
+} while ($X < 20);
+
+
+# ----------- example of superposition ----------
+
+superpose "1bhp" onto "1crn" using "CA";
+redraw;
+center on visible;
+print "RMS is " + (string)rms of "1bhp" and "1crn" using "CA" +
+      " for " + (string)selcount of "1crn" + " residues";
+
+$X = 0;
+do
+{
+	zoom 102.0;
+	pause 0.1;
+	$X++;
+} while ($X < 20);
+
+thank you
+
+

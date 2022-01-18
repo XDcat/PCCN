@@ -1,0 +1,133 @@
+ 
+/***************** HELP: Control Panel *****************
+/-------------------------------------------------------
+Please note that this help does not replace the
+user-guide, not the tutorial. Both can be found at
+http://www.expasy.ch/spdbv/          (SWITZERLAND)
+ 
+/Keyboard modifiers summary
+---------------------------
+
+when click on a group name:
+
+/SHIFT will act on all groups.
+/CONTROL will act only on selection without affecting other groups.
+/SHIFT+CONTROL will deselect instead of selecting/enabling.
+/OPTION (right mouse button) is used to center a group or select
+/                 groups belonging to the same secondary structure.
+
+when click on a checkmark raw:
+
+/SHIFT will act on the whole raw.
+/SHIFT+CONTROL will act on the whole raw of each layer
+
+-----------------------------------------------------------------
+/General Infos:
+-------------
+The Control Panel is divided into two parts: a header
+and a list displaying all the groups of the currently
+active layer.
+ 
+/Header:
+------
+You can change the currently active layer
+with the popup located at the top of the header or
+by using the Tab Key.
+A whole layer can be hidden or "frozen" by altering
+the status of the corresponding checkbox of the header
+(see also the Layer Infos window).
+ 
+/List:
+----
+The Color column has a little arrow meaning that a
+pop-up is available. By default BS is written just
+above (which stands for Backbone+Sidechains). It means
+that changing a color will affect a gropup backbone 
+and sidechain. The pop-up menu let you choose on what
+part of the group will be affected by a color change.
+
+Similarily, the "dots" column has a pop-up letting
+you choose whether van der Waals dots or accessible
+surface dots have to be displayed for the residue.
+Accessibile surface is simply plotted by increasing 
+the radius of each atom by 1.4 Angstrom.
+Note that the van der waals dots appear as solid
+space-filling spheres with Quickdraw3D or POV-Ray
+rendering.
+
+Clicking in a column with change the status of the
+checkmark for the corresponding residue.
+"Shift" click will act on the whole column.
+
+Also, a VERY handy feature when inspecting several
+proteins: "Shift+Control" click in a column will
+not only act on the whole column, but on the whole
+column of all layers. Hence you can display or undisplay
+all sidechains with one click.
+  
+
+/Selection:
+---------
+Selected groups appear in red
+ 
+To VIEW ONLY the selected groups, hit the return key,
+or click on the "show" button located in the header.
+ 
+To ADD selected groups to the view without undisplaying
+the others, use "Control"+return (or "Control" click on
+the "show" button).
+ 
+To REMOVE selected groups to the view without affecting
+the others, use "Shift"+"Control"+return
+(or "Shift"+"Control"+click on the "show" button).
+
+To undisplay selected groups that were visible and
+show selected groups that were hidden (toggle), hit
+the ENTER key of the numerical keypad (+ key for PC users).
+ 
+Clicking on a group name will select it and deselect
+any previously selected group. However, deselection
+can be prevented by holding down the "command" key
+while clicking.
+ 
+/Hot Typing Selection:
+--------------------
+Let's say you want to select ALA12, HIS42 and ARG65
+of chain A, GLY15 of chain B, and TRP1 of "no chain name".
+First of all, you will have to type "a12". Notice that a "A"
+appears in red at the top of the first column of the
+control panel. It means that any successive numbers will
+automatically be assigned to chain A so that you don't have
+to specify the chain anymore. So hold down the "Control" key
+(for discontinuous selection) and type "42" then wait half
+a second and type "65", wait, type "b15", wait, and finally
+hit the "Spacebar" (to reset the chain selection to
+"nothing") and type "1".
+Note for PC users: the "Control key" must be hit after having
+typed the residue number and not be held down while you
+type numbers.
+ 
+/Tips & Tricks:
+-------------
+  
+When several chains are present, clicking on a chain
+name (displayed in front of the amino-acid name) will
+select the chain.
+
+clicking on a secondary structure will select all groups
+belonging to it.
+  
+"Option" + click (right mousebutton for PC) on a group
+name will center its Alpha Carbon in the view. In this case
+the group is drawn in bold in the control Panel.
+
+"Option" + click (right mousebutton for PC) on a secondary
+strucutre will center the secondary strucutre in the view.
+
+"Option" + click (right mousebutton for PC) on a chain name
+will center the chain in the view.
+
+If you atered the selection or view by mistake, immediately
+use the UNDO item of the edit menu to return to the previous
+state.
+

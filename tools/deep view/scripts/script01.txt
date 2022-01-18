@@ -1,0 +1,20 @@
+please do
+
+# The following script is a demonstration of how to
+# loop through some groups of a file to get some properties
+# This uses selction by group positions (think it as
+# each line of the control panel, but remember that
+# position start at zero.
+
+open pdb from download "1CRN.pdb";
+
+$X = 5;
+do
+{
+	$SEL = select in "1crn" pos $X;
+	$PHI = phi($SEL);
+	print $PHI;
+} while (++$X < 8);
+
+thank you
+

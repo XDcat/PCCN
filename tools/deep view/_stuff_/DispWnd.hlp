@@ -1,0 +1,115 @@
+ 
+/**************** HELP: Display Window *****************
+/-------------------------------------------------------
+Please note that this help does not replace the
+user-guide, not the tutorial. Both can be found at
+http://www.expasy.ch/spdbv/mainpage.htm   
+ 
+ 
+/Display
+-------
+
+The display window is divided into two regions.
+The top one gives access to the most commonly used tools,
+and the bottom part displays the residues marked as
+visible in the control panel.
+
+You can alter some display parameters such as stereo
+separation, slab depth and van der Waals dots density
+by clicking on the top left icon. Other parameters
+can be accessed through the Display menu, or from
+the Preference menu (such as default colors for residues
+and secondary structures.
+
+/Molecule manipulation
+---------------------
+
+The next three icons allow to select the translation,
+zoom and rotation tools (note that you can also use
+the "Tab" key to activate the next tool).
+Once a tool is selected, simply click and drag the
+mouse to move the molecule.
+Note that you can constrain movement along the x y or z
+axis by simultaneously holding down the "control" "option"
+or "command" key (F5 F6 and F7 for PC users).
+
+By default, molecules are rotated in "world coordinates"
+A little earth icon reminds this. Clicking onto this
+earth will switch to "local coordinates", which will
+allow to move the protein around the centroid of its
+bounding box.
+
+/   important fact:
+    whenever you rotate a molecule, all its coordinates are
+    updated. This is very handy when you want to superpose
+    molecules. When a molecule is saved, the new position
+    of atoms are written unless the "Save in Original Orientation"
+    item of the File menu is checked. If you save a project and
+    that this flag is enabled, the orientation will be the one
+    of the first protein loaded.
+
+/Measuring tools
+---------------
+
+The third group of icons regroups the most commonly used tools.
+
+- Distance between two atoms.
+
+- Angle between three atoms.
+
+- Dihedral angles (By default, gives a measure of omega,
+  phi and psi angles of the picked amino-acid (you can pick
+  any atom of the aa). But when this tool is invoked with
+  the "control" key, it will prompt you to pick 4 atoms,
+  which allows to measure the torsion angle of any specific bond.
+
+_ Provenance of an atom (will give the name of the molecule,
+  group, chain, and atom).
+ 
+- Display/Undisplay or select groups that are/aren't at a
+  certain distance from an atom. More advanced features
+  are accessible through the select menu.
+  
+- Center the molecule on one atom (using this tool will
+  automatically switch to world coordinates).
+
+- Fit a molecule onto an other (available only when two or more
+  molecules are loaded). In this case, you will be prompted
+  to pick three corresponding atoms of molecule to fit.
+  More advanced fitting features are available in the "Tools" menu.
+  Read the user guide for more information.
+
+- Mutation tool.
+
+- Torsion tool allowing to rotate sidechains atoms downstram a
+  specfic bond. A real-time evaluation of clashes and hydrogen
+  bonds is performed. 
+  The procedure is very easy: first click on the tool, then pick
+  any atom belonging to the amino-acid you want to modify. Any
+  sidechain bond can be rotated by holding down a key from "1" to "5"
+  while clicking and moving the mouse from left-to right. Key "1" will
+  rotate the CA-CB bond, key "2" the CB-CD bond and so on. Clicking
+  a second time on the "Torsion" tool will ask you if you want to keep or
+  discard the torsions. If you accept, atoms names will be updated
+  accordingly to the IUPAC nomenclature, if needed. 
+
+  Note that the torsion tool can also be used to dynamically alter the Phi
+  or Psi angle by holding down the "9" or "0" key respectively.
+  All the backbone from this point will move. If you want to move
+  only a part of the backbone, you'll have to break it (Tools menu).
+  If you want to freeze the C-terminal part of the backbone and move
+  the N-terminal, uncheck the appropriate item of the Tools menu.
+
+  An other way of altering the backbone is to use the Ramachandran plot.
+                        ÿ
+
+All the functions described previously will ask you to pick atoms
+in the display window. Follow the instructions that appear in red under
+the tools; the results will be given at the same place as well as
+directly on the molecule.
+
+Note: if "caps lock" is down, you can measure several distances or angles
+successively. To exit the "repeated" measurement mode, you can either
+depress "caps lock" or hit "esc".
+
+ 

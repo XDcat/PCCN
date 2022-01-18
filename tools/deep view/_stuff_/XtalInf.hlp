@@ -1,0 +1,41 @@
+ /************** HELP: EDM Infos Window ***************
+/-------------------------------------------------------
+Please note that this help does not replace the
+user-guide, not the tutorial. Both can be found at
+http://www.expasy.ch/spdbv/
+ 
+ 
+/General Information
+/-------------------
+The name of the currently active Electron Density Map appears in red,
+and clicking on an EDM name activates it. Each map can be contoured
+at two different sigmas.
+This will become the current Electron Density map.
+the current map is the one that will be closed when the "Close Map"
+item of the File menu is invoked, and the one that is used for best
+fitting during mutations or scan for compatible peptide fragments,
+and also the one whose sigma contouring values can be
+modified in real time with the top and bottom arrows keys.
+
+All other columns are toggles allowing to individually
+change the status of an EDM. From left to right:
+
+vis:   contour visible
+
+dot:   contour in dotted lines (might be easier to see the structure)
+
+sigma: sigma contouring value
+
+corX:  Coarse Contouring along the X axis. Only one section out
+       of two will be used to do the contouring. Faster, but less
+       precise display.
+corY:  Same for Y axis.
+corZ:  Same along Z axis.
+
+cell:  Display unit cell. Unit cell axis abc are colored in red, green blue.
+
+col:   color of the map.
+
+/-------------------------------------------------------
+
+
