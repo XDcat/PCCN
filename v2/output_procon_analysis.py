@@ -784,7 +784,28 @@ class ProConNetwork:
         self._group_plot_with_node()
 
     def output_for_gephi(self):
+        # 图文件
         nx.write_gexf(self.G, os.path.join(self.data_dir, "all network.gexf"))
+        # 给边添加一列，区分是否有骨架
+        rows = []
+        for source, target in self.G.edges:
+            is_neighbour = abs(int(target[:-1]) - int(source[:-1])) == 1
+            is_mutation = (source in self.analysis_mutation_group.non_duplicated_aas_positions) or (target in self.analysis_mutation_group.non_duplicated_aas_positions)
+            tag = "normal"
+            if is_neighbour:
+                tag = "neighbour"
+            elif is_mutation:
+                tag = "mutation"
+
+            rows.append([source, target, is_neighbour, is_mutation, tag])
+        rows = pd.DataFrame(rows, columns=["source", "target", "is_neighbour", "is_mutation", "tag"], )
+        rows.to_csv(os.path.join(self.data_dir, "all_network_with_neighbour_flag.csv"))
+        rows["is_neighbour"].to_csv(os.path.join(self.data_dir, "all_network_only_neighbour_flag.csv"))
+
+
+
+
+
 
     def output_for_DynaMut2(self):
         with open(os.path.join(self.data_dir, "dynamut2 input v2.txt"), "w") as f:
