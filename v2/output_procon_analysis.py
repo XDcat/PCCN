@@ -804,16 +804,19 @@ class ProConNetwork:
 
 
 
-
-
-
     def output_for_DynaMut2(self):
-        with open(os.path.join(self.data_dir, "dynamut2 input v2.txt"), "w") as f:
-            for a1, a2 in combinations(self.analysis_mutation_group.non_duplicated_aas, 2):
-                if "X" in a1 or "X" in a2:
-                    continue
-                if self.G.has_edge(self._aa2position(a1), self._aa2position(a2)):
-                    f.write(f"A {a1};A {a2}\n")
+        for group, name in zip(self.analysis_mutation_group.aa_groups,
+                                self.analysis_mutation_group.aa_groups_info["name"]
+                               ):
+            with open(os.path.join(self.data_dir, f"dynamut2 input v3 ({name}).txt"), "w") as f:
+                for a1, a2 in combinations(group, 2):
+                    if "X" in a1 or "X" in a2:
+                        continue
+                    if name == "Omicron":
+                        if self.G.has_edge(self._aa2position(a1), self._aa2position(a2)):
+                            f.write(f"A {a1};A {a2}\n")
+                    else:
+                        f.write(f"A {a1};A {a2}\n")
 
     def random_sample_analysis(self, aas: list, groups, N=1000):
         """使用随机采样的形式，分析实验组和对照组的区别
@@ -1369,8 +1372,8 @@ if __name__ == '__main__':
     pcn = ProConNetwork(mutation_groups, threshold=100)
     # log.debug("len(pcn.type2) = %s", len(pcn.type2))
     # pcn.analysisG()
-    pcn.output_for_gephi()
-    # pcn.output_for_DynaMut2()
+    # pcn.output_for_gephi()
+    pcn.output_for_DynaMut2()
     end_time = time.time()
     log.info(f"程序运行时间: {end_time - start_time}")
 
