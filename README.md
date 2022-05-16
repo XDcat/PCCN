@@ -34,5 +34,10 @@ How to use?
    将数据解析为csv格式，结果为`data/procon/type{}_parse.csv`
    
 6. `analysis_procon.py`找出相关的变异的保守性，并结果为 `data/procon/analysis.json`, 将excel中的数据保存为json文件，之后将可以不用访问json
-7. `output_procon_analysis`将上一步得到的结果，解析为excel、图片格式
-   > 暂时弃用，但是有一张很重要的图：同一组变异中共保守性的连线
+7. `v2/output_procon_analysis`将上一步得到的结果，解析为excel、图片格式
+
+---
+2022年5月16日更新
+1. 以前的数据结果都放在了 data/v1/ 中
+2. 更新变体文件 `总结 - 20220516`
+3. 运行 `analysis_procon.py`

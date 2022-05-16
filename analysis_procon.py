@@ -12,6 +12,7 @@ import logconfig
 import pandas as pd
 from Bio import SeqIO
 import itertools
+import numpy as np
 
 logconfig.setup_logging()
 log = logging.getLogger("cov2")
@@ -43,22 +44,36 @@ def load_procon_res(res_path):
 
 
 def check_aa(seq, aa):
-    position = int(aa[1:-1])
+    position = aa[1:-1]
+    if position.isdigit():
+        position = int(position)
+    else:
+        print("非法变异", aa)
+        return False
     origin = aa[0].upper()
     if seq[position - 1].upper() == origin:
         return True
     else:
+        print("非法变异", aa)
         return False
 
 
 if __name__ == '__main__':
     # 加载变异
-    variation_file = "./data/总结 - 20211201.xlsx"
+    variation_file = "./data/总结 - 20220516.xlsx"
     log.info("加载变异")
     variation = pd.read_excel(variation_file, sheet_name=1, index_col=0)
+    variation["Year and month first detected"] = pd.to_datetime(variation["Year and month first detected"])
     variation["Year and month first detected"] = variation["Year and month first detected"].dt.strftime('%B %d, %Y')
     log.debug("columns: %s", variation.columns)
     log.debug(variation)
+
+    # 去除没有证据或者不清楚的数据，在这些列中: Impact on transmissibility	Impact on immunity	Impact on severity
+    evidence_columns = ["Impact on transmissibility", "Impact on immunity", "Impact on severity"]
+    # print(np.unique(variation[evidence_columns].values.reshape((1, -1))))
+    is_vital = variation[evidence_columns].applymap(lambda x: "increase" in x.lower()).any(axis=1)
+    variation = variation[is_vital]
+    log.debug(f"剩余数量{variation.shape}")
 
     # 检查变异是否合法
     fasta_file = "./data/YP_009724390.1.txt"
@@ -66,16 +81,24 @@ if __name__ == '__main__':
     t_fasta = {}
     for i, row in variation.iterrows():
         aas = row.loc["Spike mutations of interest"].split(",")
-        aas = [i.strip() for i in aas]
-        for aa in aas:
-            if check_aa(fasta, aa):
-                log.debug("%s: %s 合法", i, aa)
-            else:
-                raise RuntimeError("变异不合法")
+        aas = map(lambda x: x.strip(), aas)
+        # 过滤无效的变异
+        aas = filter(lambda x: check_aa(fasta, x), aas)
+        aas = list(aas)
+        # print(aas)
+
+        # # aas = [i.strip() for i in aas]
+        # for aa in aas:
+        #     if check_aa(fasta, aa):
+        #         # log.debug("%s: %s 合法", i, aa)
+        #         pass
+        #     else:
+        #         log.debug("%s: %s 不合法", i, aa)
+        #         # raise RuntimeError("变异不合法")
         t_fasta[i] = row.to_dict()
         t_fasta[i]["aas"] = aas
     fasta = t_fasta
-    log.info("变异均合法")
+    # 0 / 0
 
     # 加载 procon 结果
     result_dir = "./data/procon"
@@ -133,5 +156,3 @@ if __name__ == '__main__':
     analysis_res_path = "./data/procon/analysis.json"
     with open(analysis_res_path, "w") as f:
         f.write(json.dumps(fasta, indent="\t"))
-
-
