@@ -32,8 +32,8 @@ if __name__ == '__main__':
     # plt.show()
 
     solubility_count = pd.DataFrame({
-        "all mutations": [11570, 12494, 123],
-        "important mutations": [9, 48, 1]
+        "all substitutions": [11570, 12494, 123],
+        "substitutions in variants": [9, 48, 1]
     }, index=["decrease", "no effect", "increase"])
     print(solubility_count)
     # fig:plt.Figure = plt.figure(figsize=(20, 5))

@@ -474,11 +474,11 @@ class ProConNetwork:
         axes: List[plt.Axes]
         fig, axes = plt.subplots(1, 2, figsize=(15, 7.5))
         aas_degrees_cut.plot.bar(ax=axes[0])
-        axes[0].set_title("degree distribution of mutations")
+        axes[0].set_title("degree distribution of variant nodes")
         axes[0].set_xticklabels(aas_degrees_cut.index, rotation=0)
 
         sample_degrees_cut.plot.bar(ax=axes[1])
-        axes[1].set_title("degree distribution")
+        axes[1].set_title("degree distribution of sampled nodes")
         axes[1].set_xticklabels(sample_degrees_cut.index, rotation=0)
 
         fig.show()
@@ -490,7 +490,7 @@ class ProConNetwork:
         aas_sample = self.analysis_mutation_group.non_duplicated_aas_sample
         aas_sample = np.array(aas_sample).reshape(-1).tolist()  # 扁平化
         plot_data = pd.DataFrame(
-            {"position": aas + aas_sample, "is_mutation": [True] * len(aas) + [False] * len(aas_sample)})
+            {"position": aas + aas_sample, "is_variant": [True] * len(aas) + [False] * len(aas_sample)})
 
         nodes_size = {node: self.G.nodes[node]["size"] for node in self.G.nodes}
         node_data = pd.DataFrame(
@@ -513,17 +513,17 @@ class ProConNetwork:
         fig: plt.Figure
         axes: List[plt.Axes]
         fig, axes = plt.subplots(4, 1, figsize=(10, 15))
-        sns.boxplot(x=plot_data["conservation"], y=plot_data["is_mutation"], orient="h", ax=axes[0], )
-        p = cal_p_mannwhitneyu(plot_data["conservation"], plot_data["is_mutation"])
+        sns.boxplot(x=plot_data["conservation"], y=plot_data["is_variant"], orient="h", ax=axes[0], )
+        p = cal_p_mannwhitneyu(plot_data["conservation"], plot_data["is_variant"])
         axes[0].set_xlabel(f"conservtion (p = {p: .3f})")
-        sns.boxplot(x=plot_data["degree centrality"], y=plot_data["is_mutation"], orient="h", ax=axes[1], )
-        p = cal_p_mannwhitneyu(plot_data["degree centrality"], plot_data["is_mutation"])
+        sns.boxplot(x=plot_data["degree centrality"], y=plot_data["is_variant"], orient="h", ax=axes[1], )
+        p = cal_p_mannwhitneyu(plot_data["degree centrality"], plot_data["is_variant"])
         axes[1].set_xlabel(f"degree centrality (p = {p: .3f})")
-        sns.boxplot(x=plot_data["closeness centrality"], y=plot_data["is_mutation"], orient="h", ax=axes[2])
-        p = cal_p_mannwhitneyu(plot_data["closeness centrality"], plot_data["is_mutation"])
+        sns.boxplot(x=plot_data["closeness centrality"], y=plot_data["is_variant"], orient="h", ax=axes[2])
+        p = cal_p_mannwhitneyu(plot_data["closeness centrality"], plot_data["is_variant"])
         axes[2].set_xlabel(f"closeness centrality (p = {p: .3f})")
-        sns.boxplot(x=plot_data["betweenness centrality"], y=plot_data["is_mutation"], orient="h", ax=axes[3])
-        p = cal_p_mannwhitneyu(plot_data["betweenness centrality"], plot_data["is_mutation"])
+        sns.boxplot(x=plot_data["betweenness centrality"], y=plot_data["is_variant"], orient="h", ax=axes[3])
+        p = cal_p_mannwhitneyu(plot_data["betweenness centrality"], plot_data["is_variant"])
         axes[3].set_xlabel(f"betweenness centrality (p = {p: .3f})")
         plt.show()
         fig.savefig(os.path.join(self.data_dir, "boxplot.png"), dpi=500)
@@ -569,25 +569,25 @@ class ProConNetwork:
             # 其他三种
             # 先小范围
             if (u, v) in edge_in_same_group:
-                rows.append([u, v, weight, "same mutation group"])
+                rows.append([u, v, weight, "same variant group"])
             # 再大范围和其他
             if (u, v) in edge_in_different_group:
-                rows.append([u, v, weight, "mutation"])
+                rows.append([u, v, weight, "variant nodes"])
             else:
-                rows.append([u, v, weight, "no mutation"])
+                rows.append([u, v, weight, "sampled nodes"])
         co_conservation = pd.DataFrame(rows, columns=columns)
-        co_conservation = co_conservation[co_conservation["label"] != "same mutation group"]
+        co_conservation = co_conservation[co_conservation["label"] != "same variant group"]
         log.debug("co_conservation.label.value_counts() = %s", co_conservation.label.value_counts())
         sns.boxplot(data=co_conservation, x="co-conservation", y="label", orient="h", ax=ax)
         p_value = cal_p_mannwhitneyu(
             co_conservation["co-conservation"],
-            co_conservation["label"] == "mutation",
-            co_conservation["label"] == "no mutation")
+            co_conservation["label"] == "variant nodes",
+            co_conservation["label"] == "sampled nodes")
         log.debug("p_value = %s", p_value)
         # p_value = cal_p_mannwhitneyu(
         #     co_conservation["co-conservation"],
-        #     co_conservation["label"] == "same mutation group",
-        #     co_conservation["label"] == "no mutation")
+        #     co_conservation["label"] == "same variant group",
+        #     co_conservation["label"] == "no variant")
         log.debug("p_value = %s", p_value)
         ax.set_xlabel(f"co-conservation (p = {p_value:.3f})")
         ax.set_ylabel("")
@@ -779,8 +779,8 @@ class ProConNetwork:
         # self._plot_node_box()  # 箱线图：中心性 + 保守性
         # self._plot_edge_box()  # 共保守性  TODO: 使用采样的方式
         # self.calculate_average_shortest_path_length()
-
-        # 以组为单位的图
+        #
+        # # 以组为单位的图
         self._group_plot_with_node()
 
     def output_for_gephi(self):
@@ -1373,16 +1373,18 @@ if __name__ == '__main__':
     # log.debug("len(pcn.type2) = %s", len(pcn.type2))
     # pcn.analysisG()
     # pcn.output_for_gephi()
-    pcn.output_for_DynaMut2()
+    # pcn.output_for_DynaMut2()
     end_time = time.time()
     log.info(f"程序运行时间: {end_time - start_time}")
 
-    # thresholds = [50, 100, 150, 200, 250, 300]
-    # for t in thresholds:
-    #     pcn = ProConNetwork(mutation_groups, threshold=t)
-    #
-    #     pcn.analysisG()
-    #     # pcn.random_sample_analysis(aas, groups.get_aa_groups())
-    #
-    #     end_time = time.time()
-    #     log.info(f"程序运行时间: {end_time - start_time}")
+    thresholds = [50, 100, 150, 200, 250, 300]
+    for t in thresholds:
+        if t != 100:
+            continue
+        pcn = ProConNetwork(mutation_groups, threshold=t)
+
+        pcn.analysisG()
+        # pcn.random_sample_analysis(aas, groups.get_aa_groups())
+
+        end_time = time.time()
+        log.info(f"程序运行时间: {end_time - start_time}")
