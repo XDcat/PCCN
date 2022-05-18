@@ -23,6 +23,8 @@ from collections import defaultdict
 from brokenaxes import brokenaxes
 from matplotlib.gridspec import GridSpec
 from sklearn import preprocessing
+# 组合数
+from scipy.special import comb
 # 日志
 import logging
 import logconfig
@@ -518,13 +520,13 @@ class ProConNetwork:
         sns.boxplot(x=plot_data["conservation"], y=plot_data["is_variant"], orient="h", ax=axes[0], )
         p = cal_p_mannwhitneyu(plot_data["conservation"], plot_data["is_variant"])
         axes[0].set_xlabel(f"conservtion (p = {p: .3f})")
-        sns.boxplot(x=plot_data["degree centrality"], y=plot_data["is_variant"], ax=axes[1], )
+        sns.boxplot(x=plot_data["degree centrality"], y=plot_data["is_variant"],orient="h",  ax=axes[1], )
         p = cal_p_mannwhitneyu(plot_data["degree centrality"], plot_data["is_variant"])
         axes[1].set_xlabel(f"degree centrality (p = {p: .3f})")
-        sns.boxplot(x=plot_data["closeness centrality"], y=plot_data["is_variant"],  ax=axes[2])
+        sns.boxplot(x=plot_data["closeness centrality"], y=plot_data["is_variant"],orient="h",  ax=axes[2])
         p = cal_p_mannwhitneyu(plot_data["closeness centrality"], plot_data["is_variant"])
         axes[2].set_xlabel(f"closeness centrality (p = {p: .3f})")
-        sns.boxplot(x=plot_data["betweenness centrality"], y=plot_data["is_variant"], ax=axes[3])
+        sns.boxplot(x=plot_data["betweenness centrality"], y=plot_data["is_variant"],orient="h",  ax=axes[3])
         p = cal_p_mannwhitneyu(plot_data["betweenness centrality"], plot_data["is_variant"])
         axes[3].set_xlabel(f"betweenness centrality (p = {p: .3f})")
         plt.show()
@@ -775,7 +777,7 @@ class ProConNetwork:
         self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         self._collect_mutation_info()  # 收集变异位点的消息，生成表格
         self._plot_2D()  # 二维坐标图
-        #
+
         self._plot_procon_distribution()  # 分数分布图
         self._plot_degree_distribuition()  # 度分布
         self._plot_node_box()  # 箱线图：中心性 + 保守性
@@ -792,7 +794,8 @@ class ProConNetwork:
         rows = []
         for source, target in self.G.edges:
             is_neighbour = abs(int(target[:-1]) - int(source[:-1])) == 1
-            is_mutation = (source in self.analysis_mutation_group.non_duplicated_aas_positions) or (target in self.analysis_mutation_group.non_duplicated_aas_positions)
+            is_mutation = (source in self.analysis_mutation_group.non_duplicated_aas_positions) or (
+                        target in self.analysis_mutation_group.non_duplicated_aas_positions)
             tag = "normal"
             if is_neighbour:
                 tag = "neighbour"
@@ -804,12 +807,10 @@ class ProConNetwork:
         rows.to_csv(os.path.join(self.data_dir, "all_network_with_neighbour_flag.csv"))
         rows["is_neighbour"].to_csv(os.path.join(self.data_dir, "all_network_only_neighbour_flag.csv"))
 
-
-
     def output_for_DynaMut2(self):
         for i, (group, name) in enumerate(zip(self.analysis_mutation_group.aa_groups,
-                                self.analysis_mutation_group.aa_groups_info["name"]
-                               )):
+                                              self.analysis_mutation_group.aa_groups_info["name"]
+                                              )):
             name = name.replace("/", "or")
             with open(os.path.join(self.data_dir, f"dynamut2 input v4 ({i} {name}).txt"), "w") as f:
                 for a1, a2 in combinations(group, 2):
@@ -1052,7 +1053,6 @@ class ProConNetwork:
                 # ax_all_in_one.legend()
                 ax_all_in_one.get_legend().remove()
 
-
                 # 箱线图
                 _s1 = grp_mean_score  # 每一组的分数
                 _s2 = np.array(list(grp_sample_scores.values())).reshape(-1).tolist()  # 采样的分数
@@ -1070,7 +1070,13 @@ class ProConNetwork:
                 sns.boxplot(data=_plot_data, x="label", y="score", ax=global_axes, )
                 self.group_global_fig.show()
                 global_axes.set_xlabel(f"{fig_name} (p={p_value:.3f})", y=-0.1)
-                # global_axes.set_xlabel("")
+                # global valid
+                if p_value <= 0.05:
+                    global_axes = self.group_global_valid_axes[self.group_global_valid_ax_count]
+                    self.group_global_valid_ax_count += 1
+                    sns.boxplot(data=_plot_data, x="label", y="score", ax=global_axes, )
+                    self.group_global_valid_fig.show()
+                    global_axes.set_xlabel(f"{fig_name} (p={p_value:.3f})", y=-0.1)
 
                 # 输出结果
                 fig.suptitle(fig_name, )
@@ -1217,11 +1223,37 @@ class ProConNetwork:
                     res.append(0)
             return res
 
+        def calculate_co_conservation_rate():
+            """使用闭包将索引放置在函数内"""
+            # 找到共保守性 pairwise，并建立索引
+            # type2 = self.type2[self.type2["info"] >= self.threshold]
+            type2 = self.type2
+            idx = defaultdict(list)
+            for i, row in type2.iterrows():
+                idx[row.site1].append(row.site2)
+                idx[row.site2].append(row.site1)
+
+            def _cal(grp):
+                # 较强共共保守性占的比例
+                rns = len(grp)  # 氨基酸个数
+                rnp = comb(rns, 2)  # pairwise 个数
+                rpc = 0  # 共保守性 pairwise 个数
+                for p1, p2 in combinations(grp, 2):
+                    if p2 in idx[p1]:
+                        rpc += 1
+                res = [rpc / rnp, ] * len(grp)
+                return res
+            return _cal
+
+
         # 单独将箱线图拿出
         self.group_global_fig: plt.Figure = plt.figure(figsize=(16, 8))
         self.group_global_axes = [j for i in self.group_global_fig.subplots(2, 4) for j in i]
-
         self.group_global_ax_count = 0
+        # 只绘制 p < 0.05 的图
+        self.group_global_valid_fig: plt.Figure = plt.figure(figsize=(16, 8))
+        self.group_global_valid_axes = [j for i in self.group_global_valid_fig.subplots(3, 3) for j in i]
+        self.group_global_valid_ax_count = 0
 
         # 统计信息表
         excel_writer = pd.ExcelWriter(os.path.join(self.data_dir, "group distribution statistic information.xlsx"))
@@ -1245,9 +1277,15 @@ class ProConNetwork:
                                          "shortest weighted path length", excel_writer=excel_writer)
         calculate_group_and_sample_score(groups, group_count_sample, calculate_edge_betweenness_centrality,
                                          "edge betweenness centrality", excel_writer=excel_writer)
+        # # 关于 高保守性
+        # calculate_group_and_sample_score(groups, group_count_sample, calculate_co_conservation_rate(),
+        #                                  "rate of pairwise with co-conservation", excel_writer=excel_writer)
 
         self.group_global_fig.tight_layout()
         self.group_global_fig.savefig(os.path.join(self.data_dir, "group distribution global.png"), dpi=300)
+        [i.set_visible(False) for i in self.group_global_valid_axes[self.group_global_valid_ax_count:]]  # 删除多余子图
+        self.group_global_valid_fig.tight_layout()
+        self.group_global_valid_fig.savefig(os.path.join(self.data_dir, "group distribution global valid.png"), dpi=300)
 
         excel_writer.close()
 
@@ -1256,6 +1294,7 @@ class ProConNetwork:
         type1 = []  # 变体中单位点保守性
         type2 = []  # 变体中共保守性
         name2index = {}  # 变体名 -> 索引
+        co_conservation_rate = []  # 较强高保守性的比例
         for i, (_, row) in enumerate(analysis.items()):
             # 所有出现的变异  type1
             t1 = pd.DataFrame(row["type1"])
@@ -1275,6 +1314,26 @@ class ProConNetwork:
 
             type1.append(t1)
             type2.append(t2)
+
+            # 较强共共保守性占的比例
+            rns = len(t1)
+            rnp = comb(rns, 2)
+            rpc = len(t2)
+            rr = rpc / rnp
+            co_conservation_rate.append(
+                {
+                    "name": name,
+                    "N(substitution)": rns,
+                    "N(pairwise)": rnp,
+                    "N(pairwise with co-conservation)": rpc,
+                    "rate": rr
+                 }
+            )
+        # 保存比例
+        co_conservation_rate = pd.DataFrame(co_conservation_rate)
+        co_conservation_rate.to_csv(
+            os.path.join(self.data_dir, "rate of pairwise with co-conservation.csv")
+        )
 
         # 原始数据
         type1 = pd.concat(type1)
@@ -1349,8 +1408,7 @@ class ProConNetwork:
             y_smooth += 0.15
             alpha = row["rate"] / 100
             ax.plot(x_smooth, y_smooth, "C1", alpha=alpha * 1.5)
-            # ax.plot(x_smooth, y_smooth, "C1", )
-            # ax.plot(x_smooth, y_smooth, )
+            # ax.plot(x_smooth, y_smooth, "C1",)
 
         flg.show()
         # 添加坐标标签
