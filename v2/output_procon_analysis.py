@@ -1,6 +1,7 @@
 import json
 import math
 import re
+from functools import reduce
 
 from pyecharts import options as opts
 from pyecharts.charts import Graph
@@ -492,12 +493,13 @@ class ProConNetwork:
         fig.tight_layout()
         fig.savefig(os.path.join(self.data_dir, f"度分布.png"), dpi=300)
 
-    def _plot_node_box(self, ):
+    def _plot_node_centraility_box(self, ):
         aas = self.analysis_mutation_group.non_duplicated_aas_positions
         aas_sample = self.analysis_mutation_group.non_duplicated_aas_sample
         aas_sample = np.array(aas_sample).reshape(-1).tolist()  # 扁平化
         plot_data = pd.DataFrame(
             {"position": aas + aas_sample, "is_variant": [True] * len(aas) + [False] * len(aas_sample)})
+        plot_data["tag"] = plot_data["is_variant"].apply(lambda x: "variant nodes" if x else "sampled nodes")
 
         nodes_size = {node: self.G.nodes[node]["size"] for node in self.G.nodes}
         node_data = pd.DataFrame(
@@ -519,31 +521,61 @@ class ProConNetwork:
 
         fig: plt.Figure
         axes: List[plt.Axes]
-        fig, axes = plt.subplots(4, 1, figsize=(10, 15))
-        sns.boxplot(x=plot_data["conservation"], y=plot_data["is_variant"], orient="h", ax=axes[0], )
-        p = cal_p_mannwhitneyu(plot_data["conservation"], plot_data["is_variant"])
-        axes[0].set_xlabel(f"conservtion (p = {p: .3f})")
-        sns.boxplot(x=plot_data["degree centrality"], y=plot_data["is_variant"], orient="h", ax=axes[1], )
+        fig, axes = plt.subplots(1, 3, figsize=(13, 10), constrained_layout=True)
+        sns.boxplot(y=plot_data["degree centrality"], x=plot_data["tag"], ax=axes[0], fliersize=1)
         p = cal_p_mannwhitneyu(plot_data["degree centrality"], plot_data["is_variant"])
-        axes[1].set_xlabel(f"degree centrality (p = {p: .3f})")
-        sns.boxplot(x=plot_data["closeness centrality"], y=plot_data["is_variant"], orient="h", ax=axes[2])
+        axes[0].set_title(f"degree centrality (p = {p: .3f})")
+        sns.boxplot(y=plot_data["closeness centrality"], x=plot_data["tag"], ax=axes[1], fliersize=1)
         p = cal_p_mannwhitneyu(plot_data["closeness centrality"], plot_data["is_variant"])
-        axes[2].set_xlabel(f"closeness centrality (p = {p: .3f})")
-        sns.boxplot(x=plot_data["betweenness centrality"], y=plot_data["is_variant"], orient="h", ax=axes[3])
+        axes[1].set_title(f"closeness centrality (p = {p: .3f})")
+        sns.boxplot(y=plot_data["betweenness centrality"], x=plot_data["tag"], ax=axes[2], fliersize=1)
         p = cal_p_mannwhitneyu(plot_data["betweenness centrality"], plot_data["is_variant"])
-        axes[3].set_xlabel(f"betweenness centrality (p = {p: .3f})")
-        plt.show()
-        fig.savefig(os.path.join(self.data_dir, "boxplot.png"), dpi=500)
+        axes[2].set_title(f"betweenness centrality (p = {p: .3f})")
 
-    def _plot_edge_box(self, ):
+        [ax.set_ylabel("") for ax in axes]
+        [ax.set_xlabel("") for ax in axes]
+        plt.show()
+        fig.savefig(os.path.join(self.data_dir, "centraility boxplot.png"), dpi=500)
+
+    def _plot_conservation_box(self, ):
         """计算边的相关参数
         分为三类:
         1. 在同一组的 same mutation group
         2. 在所有可能变异的 mutation
         3. 其他 other
         4. 所有 all
-
         """
+        # 初始化 图片
+        fig: plt.Figure
+        axes: List[plt.Axes]
+        fig, axes = plt.subplots(1, 2, constrained_layout=True)
+        # CR, 参考 centrality 函数
+        aas = self.analysis_mutation_group.non_duplicated_aas_positions
+        aas_sample = self.analysis_mutation_group.non_duplicated_aas_sample
+        aas_sample = np.array(aas_sample).reshape(-1).tolist()  # 扁平化
+        plot_data = pd.DataFrame(
+            {"position": aas + aas_sample, "is_variant": [True] * len(aas) + [False] * len(aas_sample)})
+        plot_data["tag"] = plot_data["is_variant"].apply(lambda x: "variant nodes" if x else "sampled nodes")
+
+        nodes_size = {node: self.G.nodes[node]["size"] for node in self.G.nodes}
+        node_data = pd.DataFrame(
+            {"conservation": nodes_size, "degree centrality": self.degree_c, "closeness centrality": self.closeness_c,
+             "betweenness centrality": self.betweenness_c})
+
+        plot_data["conservation"] = node_data.loc[plot_data["position"], "conservation"].values
+
+        def cal_p_mannwhitneyu(data: pd.Series, bo: pd.Series):
+            x = data[bo].to_list()
+            y = data[bo.apply(lambda x: not x)].to_list()
+            p = mannwhitneyu(x, y).pvalue
+            return p
+
+        sns.boxplot(y=plot_data["conservation"], x=plot_data["tag"], ax=axes[0], fliersize=1)
+        p = cal_p_mannwhitneyu(plot_data["conservation"], plot_data["is_variant"])
+        axes[0].set_title(f"conservation (p = {p: .3f})")
+        axes[0].set_ylabel("")
+
+        # CCR
         aas = self.analysis_mutation_group.non_duplicated_aas_positions
         groups = self.analysis_mutation_group.aa_groups_position
         # 可以在不同组的边
@@ -560,10 +592,6 @@ class ProConNetwork:
             y = data.loc[y].to_list()
             p = mannwhitneyu(x, y).pvalue
             return p
-
-        # 初始化 图片
-        fig: plt.Figure
-        fig, ax = plt.subplots(1, 1, )
 
         # 共保守性
         rows = []
@@ -585,21 +613,22 @@ class ProConNetwork:
         co_conservation = pd.DataFrame(rows, columns=columns)
         co_conservation = co_conservation[co_conservation["label"] != "same variant group"]
         log.debug("co_conservation.label.value_counts() = %s", co_conservation.label.value_counts())
-        sns.boxplot(data=co_conservation, x="co-conservation", y="label", orient="h", ax=ax)
+        sns.boxplot(data=co_conservation, y="co-conservation", x="label", ax=axes[1], fliersize=1,
+                    order=["variant nodes", "sampled nodes", ],
+                    # hue_order=["sampled nodes", "variant nodes"]
+                    )
         p_value = cal_p_mannwhitneyu(
             co_conservation["co-conservation"],
             co_conservation["label"] == "variant nodes",
             co_conservation["label"] == "sampled nodes")
         log.debug("p_value = %s", p_value)
-        # p_value = cal_p_mannwhitneyu(
-        #     co_conservation["co-conservation"],
-        #     co_conservation["label"] == "same variant group",
-        #     co_conservation["label"] == "no variant")
         log.debug("p_value = %s", p_value)
-        ax.set_xlabel(f"co-conservation (p = {p_value:.3f})")
-        ax.set_ylabel("")
+        axes[1].set_title(f"co-conservation (p = {p_value:.3f})")
+        axes[1].set_ylabel("")
+
+        [ax.set_ylabel("") for ax in axes]
+        [ax.set_xlabel("") for ax in axes]
         # 绘图
-        fig.tight_layout()
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "edge_boxplot.png"), dpi=500)
 
@@ -615,12 +644,12 @@ class ProConNetwork:
                              "kind": ["CR"] * len(type1_info) + ["CCR"] * len(type2_info)})
         axes: List[plt.Axes]
         fig, axes = plt.subplots(1, 2, sharex=True, sharey=True, constrained_layout=True, figsize=(10, 8))
-        sns.histplot(data=data[data["kind"] == "CR"], x="score", stat="probability", bins=10, ax=axes[0],)
-        sns.histplot(data=data[data["kind"] == "CCR"], x="score", stat="probability", bins=10, ax=axes[1],)
+        sns.histplot(data=data[data["kind"] == "CR"], x="score", stat="probability", bins=10, ax=axes[0], )
+        sns.histplot(data=data[data["kind"] == "CCR"], x="score", stat="probability", bins=10, ax=axes[1], )
         axes[0].set_xlabel("")
         axes[1].set_xlabel("")
-        axes[0].set_title("CR")
-        axes[1].set_title("CCR")
+        axes[0].set_title("conservation")
+        axes[1].set_title("co-conservation")
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "procon distribution.png"), dpi=500)
 
@@ -771,11 +800,11 @@ class ProConNetwork:
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
         # self._plot_2D()  # 二维坐标图
-
-        # self._plot_procon_distribution()  # 分数分布图
-        self._plot_degree_distribuition()  # 度分布
-        # self._plot_node_box()  # 箱线图：中心性 + 保守性
-        # self._plot_edge_box()  # 共保守性
+        #
+        self._plot_procon_distribution()  # 分数分布图
+        # self._plot_degree_distribuition()  # 度分布
+        # self._plot_node_centraility_box()  # 箱线图：中心性
+        # self._plot_conservation_box()  # 保守性
         # self.calculate_average_shortest_path_length()
         #
         # # # 以组为单位的图
@@ -1024,8 +1053,8 @@ class ProConNetwork:
                     # sns.distplot(sample_mean_score, ax=ax, color=color)
                     # sns.distplot(sample_mean_score, ax=ax_all_in_one, color=color)
 
-                    sns.histplot(sample_mean_score, ax=ax, color=color, kde=True, )
-                    sns.histplot(sample_mean_score, ax=ax_all_in_one, color=color, kde=True)
+                    sns.histplot(sample_mean_score, ax=ax, color=color, kde=True, stat="probability")
+                    sns.histplot(sample_mean_score, ax=ax_all_in_one, color=color, kde=True, stat="probability")
 
                     # 统计数据: 分位数和平均数
                     statistic_data = {
@@ -1297,6 +1326,13 @@ class ProConNetwork:
         # calculate_group_and_sample_score(groups, group_count_sample, calculate_co_conservation_rate(),
         #                                  "rate of co-pairwise", excel_writer=excel_writer)
 
+        # 调整 global 图
+        # title 为 xlabel; 删除 xlabel ylabel
+        for axes in [self.group_global_axes, self.group_global_valid_axes]:
+            axes: List[plt.Axes]
+            [ax.set_title(ax.get_xlabel()) for ax in axes]
+            [ax.set_xlabel("") for ax in axes]
+            [ax.set_ylabel("") for ax in axes]
         self.group_global_fig.tight_layout()
         self.group_global_fig.savefig(os.path.join(self.data_dir, "group distribution global.png"), dpi=300)
         [i.set_visible(False) for i in self.group_global_valid_axes[self.group_global_valid_ax_count:]]  # 删除多余子图
