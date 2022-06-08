@@ -653,7 +653,7 @@ class ProConNetwork:
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "procon distribution.png"), dpi=500)
 
-    def _collect_mutation_info(self, ):
+    def _collect_mutation_info(self, save=True):
         """收集变异节点信息"""
         aas = self.analysis_mutation_group.non_duplicated_aas_positions
         weighted_degrees = self.get_weighted_degree()
@@ -691,7 +691,9 @@ class ProConNetwork:
 
         data = pd.DataFrame(data)
         data = data.set_index("aa", drop=False).sort_index()
-        data.to_csv(os.path.join(self.data_dir, "aas_info.csv"))
+        if save:
+            data.to_csv(os.path.join(self.data_dir, "aas_info.csv"))
+        return data
 
     def calculate_average_shortest_path_length(self, ):
         """平均最短路径长度"""
@@ -798,10 +800,10 @@ class ProConNetwork:
         """绘制相关图表"""
         # self._plot_origin_distribution()  # 绘制所有节点的保守性的分布情况
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
-        # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
+        self._collect_mutation_info()  # 收集变异位点的消息，生成表格
         # self._plot_2D()  # 二维坐标图
         #
-        self._plot_procon_distribution()  # 分数分布图
+        # self._plot_procon_distribution()  # 分数分布图
         # self._plot_degree_distribuition()  # 度分布
         # self._plot_node_centraility_box()  # 箱线图：中心性
         # self._plot_conservation_box()  # 保守性
@@ -1484,6 +1486,11 @@ class ProConNetwork:
         flg.show()
         flg.savefig(os.path.join(self.data_dir, "2D relationship.png"), dpi=300)
 
+    def output_for_topnettree(self):
+        # 找出不同的变异
+        log.info(self.analysis_mutation_group.non_duplicated_aas)
+
+
 
 if __name__ == '__main__':
     start_time = time.time()
@@ -1497,6 +1504,7 @@ if __name__ == '__main__':
     # print(pd.value_counts([len(i) for i in pcn.analysis_mutation_group.aa_groups]))  # 统计变体中变异数量
     # pcn.output_for_gephi()
     # pcn.output_for_DynaMut2()
+    # pcn.output_for_topnettree()
     end_time = time.time()
     log.info(f"程序运行时间: {end_time - start_time}")
 
