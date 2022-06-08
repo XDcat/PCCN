@@ -667,6 +667,8 @@ class ProConNetwork:
             w_degree = weighted_degrees[aa]
             # 加权平均度
             avg_w_degrees = avg_weighted_degrees[aa]
+            # page rank
+            page_rank = self.page_rank[aa]
             # conservation
             if aa in self.type1.position.to_list():
                 conservation = self.type1["information"][self.type1.position == aa].to_list()[0]
@@ -687,6 +689,7 @@ class ProConNetwork:
                  "closeness centrality": self.closeness_c[aa],
                  "betweenness centrality": self.betweenness_c[aa],
                  "degree centrality": self.degree_c[aa],
+                 "page rank": page_rank
                  })
 
         data = pd.DataFrame(data)
@@ -810,7 +813,7 @@ class ProConNetwork:
         # self.calculate_average_shortest_path_length()
         #
         # # # 以组为单位的图
-        # self._group_plot_with_node()
+        self._group_plot_with_node()
 
     def output_for_gephi(self):
         # 图文件

@@ -41,3 +41,17 @@ How to use?
 1. 以前的数据结果都放在了 data/v1/ 中
 2. 更新变体文件 `总结 - 20220516`
 3. 运行 `analysis_procon.py`
+
+2022年6月8日
+通过读取网络的中间文件和stability affinity的结果，寻找其中关系；
+
+中间文件
+* group distribution statistic information.xlsx 变体结果
+  * 1/4 1/2 3/4 quantile 分位数
+  * mean 采样数据平均数
+  * score variant 分数
+  * t p 计算一组分数的平均值的T-test，以及对应的 p 值
+  * result 根据 t p 判断方向
+  * name variant 名称
+  * index 编号
+* aas_info.csv 位点的网络属性
