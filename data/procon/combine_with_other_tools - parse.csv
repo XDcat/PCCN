@@ -1,0 +1,13 @@
+#,kind,network characteristic,spearmanr correlation,p value
+BFE,co-substitution,co-conservation,0.2286987305810796,0.009137131104261
+BFE,co-substitution,edge centrality,-0.2117179828583093,0.0160129911507878
+BFE,variant (co),co-conservation,0.8674033149171271,0.0001225877082726
+BFE,variant (co),edge centrality,-0.8258318791426512,0.0005050351098633
+BFE,variant (single),average weighted degree,0.4399614383247689,0.0072510847328052
+BFE,variant (single),degree centrality,0.5534357721077023,0.0004632745119809
+BFE,variant (single),page rank,0.4955558418137319,0.002117646138662
+BFE,variant (single),weighted degree,0.5794935562609936,0.0002125909886869
+stability,variant (co),edge centrality,-0.5521555770645824,0.032824433940206
+stability,variant (single),average shortest length in sampled data,0.4874718206569775,0.0025654044989637
+stability,variant (single),average shortest length in variant,0.5073107901023196,0.0015887802766628
+stability,variant (single),closeness centrality,-0.4351690830283482,0.0079895521633827

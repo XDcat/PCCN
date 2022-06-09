@@ -258,7 +258,8 @@ class CombineResult:
         c1_columns = variant_single_group.columns[-2:].to_list()
         c2_columns = variant_single_group.columns[2:-2].to_list()
         single_correlation = self.cal_correlation(variant_single_group, c1_columns, c2_columns, "variant-single")
-        single_correlation.to_csv(os.path.join(data_dir, "combine_with_other_tools - variant - single - correlation.csv"))
+        single_correlation.to_csv(
+            os.path.join(data_dir, "combine_with_other_tools - variant - single - correlation.csv"))
 
         # co
         co_data_columns = co_info.columns[-4:].tolist()
@@ -281,7 +282,6 @@ class CombineResult:
         c2_columns = co_data_columns[:2]
         single_correlation = self.cal_correlation(variant_co, c1_columns, c2_columns, "variant-c0")
         single_correlation.to_csv(os.path.join(data_dir, "combine_with_other_tools - variant - co - correlation.csv"))
-
 
     @staticmethod
     def cal_correlation(info: pd.DataFrame, c1_columns: List, c2_columns: List, name: str):
@@ -320,11 +320,74 @@ class CombineResult:
         correlation.name = name
         return correlation
 
+    @staticmethod
+    def parse_result(
+            f_single_correlation=os.path.join(data_dir, "combine_with_other_tools - single - correlation.csv"),
+            f_co_correlation=os.path.join(data_dir, "combine_with_other_tools - co - correlation.csv"),
+            f_variant_s_correlation=os.path.join(data_dir,
+                                                 "combine_with_other_tools - variant - single - correlation.csv"),
+            f_variant_co_correlation=os.path.join(data_dir,
+                                                  "combine_with_other_tools - variant - co - correlation.csv")
+
+    ):
+        """分析三种类别的结果文件，并绘制成表格和热力图"""
+        names = ["substitution", "co-substitution", "variant (single)", "variant (co)"]
+        correlations = [pd.read_csv(i, index_col=[1, 2]) for i in
+                        [f_single_correlation, f_co_correlation, f_variant_s_correlation, f_variant_co_correlation]]
+        all_cor = pd.concat(correlations, keys=names)
+
+        # 统计两种相关性的个数
+        # spearmanr 比较多
+        count_p = sum(all_cor["pearsonr p"] < 0.05)
+        count_sp = sum(all_cor["spearmanr p"] < 0.05)
+        print(f"总个数{all_cor.shape[0]}, pearson 有效个数{count_p}, spearsanr 有效个数{count_sp}")
+
+
+
+        def draw_heatmap(plot_cor):
+            # 热力图
+            fig: plt.Figure
+            axes: List[plt.Axes]
+            fig, axes = plt.subplots(1, 2, sharey="row", figsize=(7, 7))
+            for i, ax in zip(target_columns, axes[:2]):
+                target_data = plot_cor[i].unstack(level=1)
+                sns.heatmap(target_data, ax=ax)
+                ax.set_xlabel(i)
+                ax.set_ylabel("")
+            fig.tight_layout()
+            # fig.show()
+            return fig
+
+        # 找到对应数据
+        target = "spearmanr"
+        target_columns = [target + " correlation", target + " p"]
+        # 整体图
+        plot_cor = all_cor
+        fig = draw_heatmap(plot_cor)
+        fig.show()
+        fig.savefig(os.path.join(data_dir, "combine_with_other_tools - parse - heatmap1.png"))
+        # 有显著性数据的图
+        plot_cor = all_cor
+        idx_invalid = plot_cor[target_columns[-1]] >= 0.05
+        plot_cor[target_columns[0]][idx_invalid] = pd.NA
+        plot_cor[target_columns[1]][idx_invalid] = pd.NA
+        fig = draw_heatmap(plot_cor)
+        fig.show()
+        fig.savefig(os.path.join(data_dir, "combine_with_other_tools - parse - heatmap2.png"))
+
+        # 找出有显著性的数据表格
+        # 单独为 BFE 和 stability 添加一个表格
+        valid_cor = all_cor[all_cor[target_columns[-1]] < 0.05]
+        valid_cor = valid_cor.swaplevel(0, 1).sort_index(level=0)
+        valid_cor = valid_cor[target_columns]
+        valid_cor.index.names = ["#", "kind", "network characteristic"]
+        valid_cor.columns = ["spearmanr correlation", "p value"]
+        valid_cor.to_csv(os.path.join(data_dir, "combine_with_other_tools - parse.csv"))
 
 if __name__ == '__main__':
     # mutation_groups = AnalysisMutationGroup()
     # pcn = ProConNetwork(mutation_groups, threshold=100)
-    cr = CombineResult()
+    # cr = CombineResult()
 
     # 分析单个位点的数据
     # singe_info = cr.analysis_single_mutation()
@@ -333,4 +396,5 @@ if __name__ == '__main__':
     # co_info = cr.analysis_co_mutations()
 
     # 分析毒株
-    cr.analysis_variant()
+    # cr.analysis_variant()
+    CombineResult.parse_result()
