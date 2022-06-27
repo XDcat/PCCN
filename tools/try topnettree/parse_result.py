@@ -39,7 +39,7 @@ if __name__ == '__main__':
     sns.barplot(data=bfe, x="name", y="score", ax=ax, color="C0")
     [i.set_rotation(90) for i in ax.get_xticklabels()]
     ax.set_xlabel("")
-    ax.set_ylabel("Binding affinity changes (kcal/mol)")
+    ax.set_ylabel("BFE changes (kcal/mol)")
     fig.tight_layout()
     fig.show()
     fig.savefig("./data/barplot.png")
