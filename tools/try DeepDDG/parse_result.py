@@ -1,6 +1,11 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+# sns.set()
+sns.set_style("ticks")  # 主题: 白色背景且有边框
+# 更新字体大小
+plt.rcParams.update({'font.size': 16})
+plt.rcParams["axes.titlesize"] = "medium"
 origin_aas = ['P681R', 'Q954H', 'Q613H', 'Y449H', 'Y505H', 'G446S', 'N764K', 'R408S', 'A67V', 'S494P', 'G142D', 'N969K',
               'T547K', 'E516Q', 'E484A', 'N440K', 'K417T', 'V213G', 'Y145H', 'N439K', 'P384L', 'N211I', 'N679K',
               'D405N', 'L452Q', 'Q677H', 'F490S', 'D796Y', 'A222V', 'L981F', 'T478K', 'T95I', 'V367F', 'N501Y', 'S477N',
@@ -30,7 +35,7 @@ if __name__ == '__main__':
 
     fig: plt.Figure
     ax: plt.Axes
-    fig, ax = plt.subplots(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=(14, 4.8))
     sns.barplot(data=fdata, x="name", y="ddG", ax=ax, color="C0")
     [i.set_rotation(90) for i in ax.get_xticklabels()]
     ax.set_xlabel("")

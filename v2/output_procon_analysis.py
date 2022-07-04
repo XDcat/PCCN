@@ -40,6 +40,9 @@ AA = ['-', 'C', 'F', 'I', 'L', 'M', 'V', 'W', 'Y', 'A', 'T', 'D', 'E', 'G', 'P',
 
 # sns.set()
 sns.set_style("ticks")  # 主题: 白色背景且有边框
+# 更新字体大小
+plt.rcParams.update({'font.size': 16})
+plt.rcParams["axes.titlesize"] = "medium"
 
 
 class AnalysisMutationGroup:
@@ -463,34 +466,36 @@ class ProConNetwork:
         log.debug("cut_split = %s", cut_split)
 
         # 折线图
-        aas_degrees.sort_values().reset_index(drop=True).plot()
-        plt.show()
-        sample_degrees.sort_values().reset_index(drop=True).plot()
-        plt.show()
-        plt.loglog(aas_degrees.sort_values().values)
-        plt.show()
-        plt.loglog(sample_degrees.sort_values().values)
-        plt.show()
+        # aas_degrees.sort_values().reset_index(drop=True).plot()
+        # plt.show()
+        # sample_degrees.sort_values().reset_index(drop=True).plot()
+        # plt.show()
+        # plt.loglog(aas_degrees.sort_values().values)
+        # plt.show()
+        # plt.loglog(sample_degrees.sort_values().values)
+        # plt.show()
 
         # 柱状图
-        aas_degrees_cut = pd.cut(aas_degrees, cut_split).value_counts().sort_index() / len(aas_degrees)
-        sample_degrees_cut = pd.cut(sample_degrees, cut_split).value_counts().sort_index() / len(sample_degrees)
-        log.debug("aas_degrees_cut = %s", aas_degrees_cut)
-        log.debug("sample_degrees_cut = %s", sample_degrees_cut)
+        # aas_degrees_cut = pd.cut(aas_degrees, cut_split).value_counts().sort_index() / len(aas_degrees)
+        # sample_degrees_cut = pd.cut(sample_degrees, cut_split).value_counts().sort_index() / len(sample_degrees)
+        # log.debug("aas_degrees_cut = %s", aas_degrees_cut)
+        # log.debug("sample_degrees_cut = %s", sample_degrees_cut)
         # 绘图
         fig: plt.Figure
         axes: List[plt.Axes]
-        fig, axes = plt.subplots(1, 2, figsize=(15, 7.5))
-        aas_degrees_cut.plot.bar(ax=axes[0])
-        axes[0].set_title("degree distribution of variant nodes")
-        axes[0].set_xticklabels(aas_degrees_cut.index, rotation=0)
+        fig, axes = plt.subplots(1, 2, figsize=(6.4, 4.8), sharex=True, sharey=True, constrained_layout=True)
+        # aas_degrees_cut.plot.bar(ax=axes[0])
+        sns.histplot(aas_degrees, stat="probability", ax=axes[0], bins=cut_split)
+        axes[0].set_xlabel("variant")
+        # axes[0].set_xticklabels(aas_degrees_cut.index, rotation=0)
 
-        sample_degrees_cut.plot.bar(ax=axes[1])
-        axes[1].set_title("degree distribution of sampled nodes")
-        axes[1].set_xticklabels(sample_degrees_cut.index, rotation=0)
+        # sample_degrees_cut.plot.bar(ax=axes[1])
+        sns.histplot(sample_degrees, stat="probability", ax=axes[1], bins=cut_split)
+        axes[1].set_xlabel("sample")
+        # axes[1].set_xticklabels(sample_degrees_cut.index, rotation=0)
 
         fig.show()
-        fig.tight_layout()
+        # fig.tight_layout()
         fig.savefig(os.path.join(self.data_dir, f"度分布.png"), dpi=300)
 
     def _plot_node_centraility_box(self, ):
@@ -499,7 +504,7 @@ class ProConNetwork:
         aas_sample = np.array(aas_sample).reshape(-1).tolist()  # 扁平化
         plot_data = pd.DataFrame(
             {"position": aas + aas_sample, "is_variant": [True] * len(aas) + [False] * len(aas_sample)})
-        plot_data["tag"] = plot_data["is_variant"].apply(lambda x: "variant nodes" if x else "sampled nodes")
+        plot_data["tag"] = plot_data["is_variant"].apply(lambda x: "variant" if x else "sample")
 
         nodes_size = {node: self.G.nodes[node]["size"] for node in self.G.nodes}
         node_data = pd.DataFrame(
@@ -521,19 +526,28 @@ class ProConNetwork:
 
         fig: plt.Figure
         axes: List[plt.Axes]
-        fig, axes = plt.subplots(1, 3, figsize=(13, 10), constrained_layout=True)
+        fig, axes = plt.subplots(1, 3, figsize=(11, 4.8), constrained_layout=True)
         sns.boxplot(y=plot_data["degree centrality"], x=plot_data["tag"], ax=axes[0], fliersize=1)
         p = cal_p_mannwhitneyu(plot_data["degree centrality"], plot_data["is_variant"])
-        axes[0].set_title(f"degree centrality (p = {p: .3f})")
+        # axes[0].set_title(f"degree centrality (p = {p: .3f})")
+        axes[0].set_title(f"p = {p: .3f}")
+        axes[0].set_xlabel("degree centrality")
+        axes[0].set_ylim(axes[0].get_ylim()[0], 0.55)
+
         sns.boxplot(y=plot_data["closeness centrality"], x=plot_data["tag"], ax=axes[1], fliersize=1)
         p = cal_p_mannwhitneyu(plot_data["closeness centrality"], plot_data["is_variant"])
-        axes[1].set_title(f"closeness centrality (p = {p: .3f})")
+        # axes[1].set_title(f"closeness centrality (p = {p: .3f})")
+        axes[1].set_title(f"p = {p: .3f}")
+        axes[1].set_xlabel(f"closeness centrality")
+
         sns.boxplot(y=plot_data["betweenness centrality"], x=plot_data["tag"], ax=axes[2], fliersize=1)
         p = cal_p_mannwhitneyu(plot_data["betweenness centrality"], plot_data["is_variant"])
-        axes[2].set_title(f"betweenness centrality (p = {p: .3f})")
+        axes[2].set_title(f"p = {p: .3f}")
+        axes[2].set_xlabel(f"betweenness centrality")
+        axes[2].set_ylim(axes[2].get_ylim()[0], 0.0145)
 
         [ax.set_ylabel("") for ax in axes]
-        [ax.set_xlabel("") for ax in axes]
+        # [ax.set_xlabel("") for ax in axes]
         plt.show()
         fig.savefig(os.path.join(self.data_dir, "centraility boxplot.png"), dpi=500)
 
@@ -548,14 +562,14 @@ class ProConNetwork:
         # 初始化 图片
         fig: plt.Figure
         axes: List[plt.Axes]
-        fig, axes = plt.subplots(1, 2, constrained_layout=True)
+        fig, axes = plt.subplots(1, 2, constrained_layout=True, figsize=(7, 4.8))
         # CR, 参考 centrality 函数
         aas = self.analysis_mutation_group.non_duplicated_aas_positions
         aas_sample = self.analysis_mutation_group.non_duplicated_aas_sample
         aas_sample = np.array(aas_sample).reshape(-1).tolist()  # 扁平化
         plot_data = pd.DataFrame(
             {"position": aas + aas_sample, "is_variant": [True] * len(aas) + [False] * len(aas_sample)})
-        plot_data["tag"] = plot_data["is_variant"].apply(lambda x: "variant nodes" if x else "sampled nodes")
+        plot_data["tag"] = plot_data["is_variant"].apply(lambda x: "variant" if x else "sample")
 
         nodes_size = {node: self.G.nodes[node]["size"] for node in self.G.nodes}
         node_data = pd.DataFrame(
@@ -572,7 +586,8 @@ class ProConNetwork:
 
         sns.boxplot(y=plot_data["conservation"], x=plot_data["tag"], ax=axes[0], fliersize=1)
         p = cal_p_mannwhitneyu(plot_data["conservation"], plot_data["is_variant"])
-        axes[0].set_title(f"conservation (p = {p: .3f})")
+        axes[0].set_title(f"p = {p: .3f}")
+        axes[0].set_xlabel(f"conservation")
         axes[0].set_ylabel("")
 
         # CCR
@@ -607,14 +622,14 @@ class ProConNetwork:
                 rows.append([u, v, weight, "same variant group"])
             # 再大范围和其他
             if (u, v) in edge_in_different_group:
-                rows.append([u, v, weight, "variant nodes"])
+                rows.append([u, v, weight, "variant"])
             else:
-                rows.append([u, v, weight, "sampled nodes"])
+                rows.append([u, v, weight, "sample"])
         co_conservation = pd.DataFrame(rows, columns=columns)
         co_conservation = co_conservation[co_conservation["label"] != "same variant group"]
         log.debug("co_conservation.label.value_counts() = %s", co_conservation.label.value_counts())
         sns.boxplot(data=co_conservation, y="co-conservation", x="label", ax=axes[1], fliersize=1,
-                    order=["variant nodes", "sampled nodes", ],
+                    order=["variant", "sample", ],
                     # hue_order=["sampled nodes", "variant nodes"]
                     )
         p_value = cal_p_mannwhitneyu(
@@ -623,11 +638,12 @@ class ProConNetwork:
             co_conservation["label"] == "sampled nodes")
         log.debug("p_value = %s", p_value)
         log.debug("p_value = %s", p_value)
-        axes[1].set_title(f"co-conservation (p = {p_value:.3f})")
+        axes[1].set_title(f"p = {p_value:.3f}")
+        axes[1].set_xlabel(f"co-conservation")
         axes[1].set_ylabel("")
 
         [ax.set_ylabel("") for ax in axes]
-        [ax.set_xlabel("") for ax in axes]
+        # [ax.set_xlabel("") for ax in axes]
         # 绘图
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "edge_boxplot.png"), dpi=500)
@@ -643,13 +659,13 @@ class ProConNetwork:
         data = pd.DataFrame({"score": pd.concat([type1_info, type2_info]).reset_index(drop=True),
                              "kind": ["CR"] * len(type1_info) + ["CCR"] * len(type2_info)})
         axes: List[plt.Axes]
-        fig, axes = plt.subplots(1, 2, sharex=True, sharey=True, constrained_layout=True, figsize=(10, 8))
+        fig, axes = plt.subplots(1, 2, sharex=True, sharey=True, constrained_layout=True, figsize=(6.4, 4.8))
         sns.histplot(data=data[data["kind"] == "CR"], x="score", stat="probability", bins=10, ax=axes[0], )
         sns.histplot(data=data[data["kind"] == "CCR"], x="score", stat="probability", bins=10, ax=axes[1], )
-        axes[0].set_xlabel("")
-        axes[1].set_xlabel("")
-        axes[0].set_title("conservation")
-        axes[1].set_title("co-conservation")
+        # axes[0].set_xlabel("")
+        # axes[1].set_xlabel("")
+        axes[0].set_xlabel("conservation")
+        axes[1].set_xlabel("co-conservation")
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "procon distribution.png"), dpi=500)
 
@@ -727,12 +743,13 @@ class ProConNetwork:
         # 根据平均最短路径，绘制箱线图并与单值进行比较
         # axes: List[plt.Axes]
         ax: plt.Axes
-        fig, ax = plt.subplots(1, 1, figsize=(10, 5))
+        fig, ax = plt.subplots(1, 1, figsize=(10, 4.8))
         # 查看并保存图片
         order_index = np.argsort(aas_scores)
         sns.boxplot(data=plot_data, x="aa", y="length", ax=ax, order=np.array(aas)[order_index], fliersize=1)
         ax.scatter(x=range(len(aas)), y=np.array(aas_scores)[order_index])
-        ax.set_ylabel("average shortest path length")
+        # ax.set_ylabel("average shortest path length")
+        ax.set_ylabel("")
         ax.set_xlabel("")
         [txt.set_rotation(90) for txt in ax.get_xticklabels()]
 
@@ -803,17 +820,17 @@ class ProConNetwork:
         """绘制相关图表"""
         # self._plot_origin_distribution()  # 绘制所有节点的保守性的分布情况
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
-        self._collect_mutation_info()  # 收集变异位点的消息，生成表格
+        # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
         # self._plot_2D()  # 二维坐标图
         #
         # self._plot_procon_distribution()  # 分数分布图
         # self._plot_degree_distribuition()  # 度分布
         # self._plot_node_centraility_box()  # 箱线图：中心性
-        # self._plot_conservation_box()  # 保守性
+        self._plot_conservation_box()  # 保守性
         # self.calculate_average_shortest_path_length()
         #
         # # # 以组为单位的图
-        self._group_plot_with_node()
+        # self._group_plot_with_node()
 
     def output_for_gephi(self):
         # 图文件
@@ -931,7 +948,7 @@ class ProConNetwork:
 
         # plt.plot(x=type2_count.index, y=type2_count.values)
         ax: plt.Axes
-        fig, ax = plt.subplots(figsize=(10, 5))
+        fig, ax = plt.subplots(figsize=(6.4, 4.8))
         type2_count.plot(ax=ax)
         # ax.set_xtick(np.arange(max(type2)))
         ax.set_title("")
@@ -1107,7 +1124,7 @@ class ProConNetwork:
                 _s1 = grp_mean_score  # 每一组的分数
                 _s2 = np.array(list(grp_sample_scores.values())).reshape(-1).tolist()  # 采样的分数
                 _plot_data = pd.DataFrame(
-                    {"score": _s1 + _s2, "label": ["mutation"] * len(_s1) + ["sample"] * len(_s2)},
+                    {"score": _s1 + _s2, "label": ["variant"] * len(_s1) + ["sample"] * len(_s2)},
                 )
                 sns.boxplot(data=_plot_data, x="label", y="score", ax=axes[-1], fliersize=1)
                 p_value = mannwhitneyu(_s1, _s2).pvalue
@@ -1118,14 +1135,15 @@ class ProConNetwork:
                 global_axes = self.group_global_axes[self.group_global_ax_count]
                 self.group_global_ax_count += 1
                 sns.boxplot(data=_plot_data, x="label", y="score", ax=global_axes, fliersize=1)
-                self.group_global_fig.show()
-                global_axes.set_xlabel(f"{fig_name} (p={p_value:.3f})", y=-0.1)
+                # global_axes.set_xlabel(f"{fig_name} (p={p_value:.3f})", y=-0.1)
+                global_axes.set_title(f"p={p_value:.3f}",)
+                global_axes.set_xlabel(f"{fig_name}",)
                 # global valid
                 if p_value <= 0.05:
                     global_axes = self.group_global_valid_axes[self.group_global_valid_ax_count]
                     self.group_global_valid_ax_count += 1
                     sns.boxplot(data=_plot_data, x="label", y="score", ax=global_axes, fliersize=1)
-                    self.group_global_valid_fig.show()
+                    # self.group_global_valid_fig.show()
                     global_axes.set_xlabel(f"{fig_name} (p={p_value:.3f})", y=-0.1)
 
                 # 输出结果
@@ -1297,7 +1315,7 @@ class ProConNetwork:
             return _cal
 
         # 单独将箱线图拿出
-        self.group_global_fig: plt.Figure = plt.figure(figsize=(16, 8))
+        self.group_global_fig: plt.Figure = plt.figure(figsize=(14, 9.6))
         self.group_global_axes = [j for i in self.group_global_fig.subplots(2, 4) for j in i]
         self.group_global_ax_count = 0
         # 只绘制 p < 0.05 的图
@@ -1335,8 +1353,8 @@ class ProConNetwork:
         # title 为 xlabel; 删除 xlabel ylabel
         for axes in [self.group_global_axes, self.group_global_valid_axes]:
             axes: List[plt.Axes]
-            [ax.set_title(ax.get_xlabel()) for ax in axes]
-            [ax.set_xlabel("") for ax in axes]
+            # [ax.set_title(ax.get_xlabel()) for ax in axes]
+            # [ax.set_xlabel("") for ax in axes]
             [ax.set_ylabel("") for ax in axes]
         self.group_global_fig.tight_layout()
         self.group_global_fig.savefig(os.path.join(self.data_dir, "group distribution global.png"), dpi=300)
@@ -1449,6 +1467,7 @@ class ProConNetwork:
         # 初始化图表
         flg_size = [max(len(pst_2_x), len(analysis)), ] * 2
         fig_size = np.array(flg_size) / 2.6
+        print("fig_size:", fig_size)
         flg, ax = plt.subplots(figsize=fig_size.tolist())
 
         # 添加文字：变异
@@ -1496,6 +1515,7 @@ class ProConNetwork:
 
 
 if __name__ == '__main__':
+
     start_time = time.time()
     # 保守性网络
     # 需要关注的变异

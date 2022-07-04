@@ -4,6 +4,11 @@ import re
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# sns.set()
+sns.set_style("ticks")  # 主题: 白色背景且有边框
+# 更新字体大小
+plt.rcParams.update({'font.size': 16})
+plt.rcParams["axes.titlesize"] = "medium"
 
 def read_result(result_file="./data/result.txt"):
     with open(result_file) as f:
@@ -35,7 +40,7 @@ if __name__ == '__main__':
 
     fig: plt.Figure
     ax: plt.Axes
-    fig, ax = plt.subplots(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=(14, 4.8))
     sns.barplot(data=bfe, x="name", y="score", ax=ax, color="C0")
     [i.set_rotation(90) for i in ax.get_xticklabels()]
     ax.set_xlabel("")
