@@ -1,37 +1,32 @@
 import json
+# 日志
+import logging
 import math
+import os
+import pickle
 import re
-from functools import reduce
-
-from pyecharts import options as opts
-from pyecharts.charts import Graph
-import networkx
-import seaborn as sns
 import time
-from Bio import SeqIO
+from collections import defaultdict
+from itertools import combinations, permutations
+from typing import List
+
+import matplotlib.pyplot as plt
 import networkx as nx
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from Bio import SeqIO
 from networkx.algorithms.centrality import degree_centrality, betweenness_centrality, closeness_centrality, \
     edge_betweenness_centrality
 from networkx.algorithms.shortest_paths import shortest_path_length
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
-import os
-from scipy.special import comb
-from scipy.stats import mannwhitneyu, ttest_1samp
-from itertools import combinations, permutations
-from collections import defaultdict
-from brokenaxes import brokenaxes
-from matplotlib.gridspec import GridSpec
-from sklearn import preprocessing
+from pyecharts import options as opts
+from pyecharts.charts import Graph
 # 组合数
 from scipy.special import comb
-# 日志
-import logging
+from scipy.stats import mannwhitneyu, ttest_1samp
+from sklearn import preprocessing
+
 import logconfig
-import pickle
-from typing import List
 
 logconfig.setup_logging()
 log = logging.getLogger("cov2")
@@ -43,6 +38,18 @@ sns.set_style("ticks")  # 主题: 白色背景且有边框
 # 更新字体大小
 plt.rcParams.update({'font.size': 16})
 plt.rcParams["axes.titlesize"] = "medium"
+
+
+# 归一化
+def scaler(d: dict):
+    min_max_scaler = preprocessing.MinMaxScaler()
+    keys = d.keys()
+    # values = np.array(d.values(), dtype=float)
+    values = np.array(list(d.values())).reshape(-1, 1)  # 变为 array
+    values = min_max_scaler.fit_transform(values)  # 归一化
+    values = values.reshape(-1).tolist()  # 恢复为列表
+    res = dict(zip(keys, values))  # 恢复为字典
+    return res
 
 
 class AnalysisMutationGroup:
@@ -357,7 +364,10 @@ class ProConNetwork:
             with open(outpath[3], "rb") as f:
                 e_bc = pickle.load(f)
 
-        return dc, bc, cc, e_bc
+        result = [dc, bc, cc, e_bc]
+        # result = [scaler(i) for i in result]
+        result = tuple(result)
+        return result
 
     def analysis_aa(self, aa: str):
         aa = self._aa2position(aa)
@@ -826,11 +836,11 @@ class ProConNetwork:
         # self._plot_procon_distribution()  # 分数分布图
         # self._plot_degree_distribuition()  # 度分布
         # self._plot_node_centraility_box()  # 箱线图：中心性
-        self._plot_conservation_box()  # 保守性
-        # self.calculate_average_shortest_path_length()
+        # self._plot_conservation_box()  # 保守性
+        self.calculate_average_shortest_path_length()
         #
         # # # 以组为单位的图
-        # self._group_plot_with_node()
+        self._group_plot_with_node()
 
     def output_for_gephi(self):
         # 图文件
@@ -1054,7 +1064,6 @@ class ProConNetwork:
             Ns = sorted(Ns, key=lambda x: int(re.match("\d+", str(x)).group(0)))  # 匹配第一个数字
 
             # 只需要 7组
-            print(grp_info["length"].value_counts().shape[0] == 7)
             assert grp_info["length"].value_counts().shape[0] == 7
 
             # 绘制图表
@@ -1136,8 +1145,8 @@ class ProConNetwork:
                 self.group_global_ax_count += 1
                 sns.boxplot(data=_plot_data, x="label", y="score", ax=global_axes, fliersize=1)
                 # global_axes.set_xlabel(f"{fig_name} (p={p_value:.3f})", y=-0.1)
-                global_axes.set_title(f"p={p_value:.3f}",)
-                global_axes.set_xlabel(f"{fig_name}",)
+                global_axes.set_title(f"p={p_value:.3f}", )
+                global_axes.set_xlabel(f"{fig_name}", )
                 # global valid
                 if p_value <= 0.05:
                     global_axes = self.group_global_valid_axes[self.group_global_valid_ax_count]
@@ -1202,13 +1211,16 @@ class ProConNetwork:
                 fig.savefig(os.path.join(self.data_dir, f"group {fig_name}.png"), dpi=300)
 
         def calculate_degree_centrality(grp):
-            return [self.degree_c[aa] for aa in grp]
+            dc = scaler(self.degree_c)
+            return [dc[aa] for aa in grp]
 
         def calculate_betweenness_centrality(grp):
-            return [self.betweenness_c[aa] for aa in grp]
+            bc = scaler(self.betweenness_c)
+            return [bc[aa] for aa in grp]
 
         def calculate_closeness_centrality(grp):
-            return [self.closeness_c[aa] for aa in grp]
+            cc = scaler(self.closeness_c)
+            return [cc[aa] for aa in grp]
 
         def calculate_avg_weighted_degree(grp):
             """计算一组位点的平均度"""
@@ -1227,7 +1239,8 @@ class ProConNetwork:
             return result
 
         def calculate_page_rank(grp):
-            return [self.page_rank[aa] for aa in grp]
+            pr = scaler(self.page_rank)
+            return [pr[aa] for aa in grp]
 
         def calculate_conservation(grp):
             return [self.G.nodes[aa]["size"] for aa in grp]
@@ -1248,45 +1261,69 @@ class ProConNetwork:
                     self.weighted_shortest_path_length = json.loads(f.read())
 
                 log.debug("初始化完成")
+            # 归一器
+            if not hasattr(self, "scaler_for_weighted_shortest_path_length"):
+                all_values = []
+                for v1 in self.weighted_shortest_path_length.values():
+                    for v2 in v1.values():
+                        all_values.append(v2)
+                all_values = np.array(all_values).reshape((-1, 1))
+                self.scaler_for_weighted_shortest_path_length = preprocessing.MinMaxScaler().fit(all_values)
 
             wspl = self.weighted_shortest_path_length
             for n1, n2 in combinations(grp, 2):
-                res.append(wspl[n1][n2])
+                res.append(
+                    self.scaler_for_weighted_shortest_path_length.transform([[wspl[n1][n2]]])[0][0])
             return res
 
         def calculate_edge_betweenness_centrality(grp):
-            log.debug("edge betweenness")
             res = []
-            if not hasattr(self, "edge_betweenness_centrality"):
-                try:
-                    # 保存至 json 文件
-                    if not os.path.exists(os.path.join(self.data_dir, "edge betweenness centrality.json")):
-                        log.info("没有 self.edge_betweenness_centrality, 初始化")
-                        self.edge_betweenness_centrality = dict(nx.edge_betweenness_centrality(self.G, weight="weight"))
-                        # 重新建立索引
-                        info_map = defaultdict(dict)
-                        for (n1, n2), value in self.edge_betweenness_centrality.items():
-                            info_map[n1][n2] = value
-                            info_map[n2][n1] = value
+            # if not hasattr(self, "edge_betweenness_centrality"):
+            #     try:
+            #         # 保存至 json 文件
+            #         if not os.path.exists(os.path.join(self.data_dir, "edge betweenness centrality.json")):
+            #             log.info("没有 self.edge_betweenness_centrality, 初始化")
+            #             self.edge_betweenness_centrality = dict(nx.edge_betweenness_centrality(self.G, weight="weight"))
+            #             # 重新建立索引
+            #             info_map = defaultdict(dict)
+            #             for (n1, n2), value in self.edge_betweenness_centrality.items():
+            #                 info_map[n1][n2] = value
+            #                 info_map[n2][n1] = value
+            #
+            #             with open(os.path.join(self.data_dir, "edge betweenness centrality.json"), "w") as f:
+            #                 log.info("保存至文件")
+            #                 f.write(json.dumps(info_map))
+            #
+            #         with open(os.path.join(self.data_dir, "edge betweenness centrality.json"), ) as f:
+            #             log.info("加载文件")
+            #             self.edge_betweenness_centrality = json.loads(f.read())
+            #     except:
+            #         log.error("保存或加载文件失败")
+            #     log.debug("初始化完成")
+            #
+            # ebc = self.edge_betweenness_centrality
+            # # ebc_values = []
+            # # for k1, v1 in ebc.items():
+            # #     for k2, v2 in v1.items():
+            # #         ebc_values.append(v2)
+            # # scaler = preprocessing.MinMaxScaler().fit(np.array(ebc_values))
+            #
+            # for n1, n2 in combinations(grp, 2):
+            #     if n1 in ebc and n2 in ebc[n1]:
+            #         res.append(ebc[n1][n2])
+            #     elif n2 in ebc and n1 in ebc[n2]:
+            #         res.append(ebc[n2][n1])
+            #     else:
+            #         res.append(0)
+            if not hasattr(self, "edge_betweenness_centrality_scaler"):
+                self.edge_betweenness_centrality_scaler = scaler(self.edge_betweenness_c)
 
-                        with open(os.path.join(self.data_dir, "edge betweenness centrality.json"), "w") as f:
-                            log.info("保存至文件")
-                            f.write(json.dumps(info_map))
-
-                    with open(os.path.join(self.data_dir, "edge betweenness centrality.json"), ) as f:
-                        log.info("加载文件")
-                        self.edge_betweenness_centrality = json.loads(f.read())
-
-                except:
-                    log.error("保存或加载文件失败")
-                log.debug("初始化完成")
-
-            ebc = self.edge_betweenness_centrality
+            ebc = self.edge_betweenness_centrality_scaler
             for n1, n2 in combinations(grp, 2):
-                if n1 in ebc and n2 in ebc[n1]:
-                    res.append(ebc[n1][n2])
-                elif n2 in ebc and n1 in ebc[n2]:
-                    res.append(ebc[n2][n1])
+                if (n1, n2) in self.edge_betweenness_c:
+                    res.append(ebc[(n1, n2)])
+                elif (n2, n1) in self.edge_betweenness_c:
+                    res.append(ebc[(n2, n1)])
                 else:
                     res.append(0)
             return res
@@ -1513,9 +1550,7 @@ class ProConNetwork:
         log.info(self.analysis_mutation_group.non_duplicated_aas)
 
 
-
 if __name__ == '__main__':
-
     start_time = time.time()
     # 保守性网络
     # 需要关注的变异

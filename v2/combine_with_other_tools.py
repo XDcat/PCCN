@@ -480,6 +480,74 @@ class CombineResult:
         # 保存
         all_cor_sorted_valid.to_excel(os.path.join(data_dir, "combine_with_other_tools - parse - variant.xlsx"))
 
+    @staticmethod
+    def plot_correlation_scatter(co_info_path="../data/procon/combine_with_other_tools - co.csv"):
+        co_info: pd.DataFrame = pd.read_csv(co_info_path, index_col=0)
+        co_info = co_info.rename({"edge centrality": "edge betweenness centrality"}, axis=1)
+        # correlation
+        c1_columns = ["BFE", "stability"]
+        c2_columns = ["co-conservation", "edge betweenness centrality"]
+        correlation = CombineResult.cal_correlation(co_info, c1_columns, c2_columns, "co", )
+        print(correlation)
+
+        for c1 in c1_columns:
+            fig: plt.Figure
+            axes: List[plt.Axes]
+            fig, axes = plt.subplots(1, 2, figsize=(14, 4.8), constrained_layout=True)
+            sns.regplot(data=co_info, x=c1, y="co-conservation", ax=axes[0])
+            sns.regplot(data=co_info, x=c1, y="edge betweenness centrality", ax=axes[1])
+            # 设置 edge centrality 的区间
+            axes[1].set_ylim(axes[1].get_ylim()[0], 0.001)
+            # 设置相关性和 p 值
+            x = axes[0].get_xlim()[0]
+            y = axes[0].get_ylim()[1]
+            correlation_co_conservation = correlation[
+                (correlation.name1 == c1) & (correlation.name2 == "co-conservation")
+                ]
+            ccc = correlation_co_conservation["spearmanr correlation"].values[0]
+            pcc = correlation_co_conservation["spearmanr p"]
+            # axes[0].text(x, y, f"correlation={ccc:.3f}")
+            fig.show()
+            fig.savefig(os.path.join(data_dir, f"correlation_{c1}.png"))
+
+    @staticmethod
+    def get_graph_top3(single_info_path="../data/procon/combine_with_other_tools - single.csv",
+                       co_info_path="../data/procon/combine_with_other_tools - co.csv"):
+        # co
+        co_info: pd.DataFrame = pd.read_csv(co_info_path, index_col=0)
+        co_info = co_info.rename({"edge centrality": "edge betweenness centrality"}, axis=1)
+        co_info["a1"] = co_info["a1"].apply(lambda x: x[1:-1] + x[0])
+        co_info["a2"] = co_info["a2"].apply(lambda x: x[1:-1] + x[0])
+        co_target_names = ["co-conservation", "edge betweenness centrality"]
+        co_res = []
+        for n in co_target_names:
+            co_info_sorted = co_info.sort_values(n, ascending=False)
+            top3 = co_info_sorted.iloc[:3]
+            top3 = top3.apply(lambda x: f"{x.a1}-{x.a2}", axis=1).to_list()
+            top3 = ",".join(top3)
+            co_res.append( {"Network characteristic": n, "Top3": top3})
+
+        # single
+        single_info: pd.DataFrame = pd.read_csv(single_info_path)
+        single_info["conservation"] = single_info["normalized conservation"]
+        single_info["degree"] = single_info["average weighted degree"]
+        print(single_info.columns.to_list())
+        single_target_names = ['degree', 'conservation', 'closeness centrality', 'betweenness centrality', 'degree centrality', 'page rank', 'average shortest length in variant', 'average shortest length in sampled data']
+        single_res = []
+        for n in single_target_names:
+            single_info_sorted = single_info.sort_values(n, ascending=False)
+            top3 = single_info_sorted[:3]
+            top3 = ",".join(top3["aa"].to_list())
+            single_res.append(
+                {"Network characteristic": n, "Top3": top3}
+            )
+        top3_res = single_res + co_res
+        top3_res = pd.DataFrame(top3_res)
+        top3_res.index = top3_res.index.values + 1
+        top3_res.index.name = "#"
+        top3_res.to_excel(os.path.join(data_dir, "network characteristic top3.xlsx"))
+
+
 
 if __name__ == '__main__':
     # 显示所有列
@@ -489,10 +557,10 @@ if __name__ == '__main__':
     # 不换行
     pd.set_option('display.width', 5000)
 
-    # 分析
-    mutation_groups = AnalysisMutationGroup()
-    pcn = ProConNetwork(mutation_groups, threshold=100)
-    cr = CombineResult()
+    # # 分析
+    # mutation_groups = AnalysisMutationGroup()
+    # pcn = ProConNetwork(mutation_groups, threshold=100)
+    # cr = CombineResult()
 
     # # 分析单个位点的数据
     # singe_info = cr.analysis_single_mutation()
@@ -501,8 +569,14 @@ if __name__ == '__main__':
     # co_info = cr.analysis_co_mutations()
 
     # 分析毒株
-    cr.analysis_variant()
+    # cr.analysis_variant()
 
     # 解析结果
     # CombineResult.parse_result()
     # CombineResult.parse_variant_result()
+
+    # 绘制散点图
+    # CombineResult.plot_correlation_scatter()
+
+    # 网络参数前几
+    CombineResult.get_graph_top3()

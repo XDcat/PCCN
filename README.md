@@ -55,3 +55,17 @@ How to use?
   * name variant 名称
   * index 编号
 * aas_info.csv 位点的网络属性
+
+
+---
+2022年7月9日更新
+ecdc 所提供的突变并不完整，需要重新获取，并爬取数据
+* https://www.ecdc.europa.eu/en/covid-19/variants-concern
+
+数据爬取方式来源：
+1. https://cov-lineages.org/ 可以查询到毒株
+2. https://outbreak.info/situation-reports?pango=B.1.617.2 可以查询到毒株对应的突变
+   1. 突变获取连接 : https://api.outbreak.info/genomics/lineage-mutations?pangolin_lineage=B.1.617.2&frequency=0.75
+
+流程
+1. 更新突变列表
