@@ -68,4 +68,10 @@ ecdc 所提供的突变并不完整，需要重新获取，并爬取数据
    1. 突变获取连接 : https://api.outbreak.info/genomics/lineage-mutations?pangolin_lineage=B.1.617.2&frequency=0.75
 
 流程
-1. 更新突变列表
+1. 更新突变列表: https://www.ecdc.europa.eu/en/covid-19/variants-concern
+2. 爬取突变 `crawler.py`
+3. 手动筛选数据，删除
+    * 类似或重复数据
+    * 没有证据的数据
+
+   
