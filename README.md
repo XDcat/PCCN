@@ -29,12 +29,12 @@ How to use?
 3. protein family 蛋白质太多，`filter_fanmily_protein.py`过滤掉同名（物种）的蛋白质，并保存
       * fasta 格式：`data/protein-matching-IPR042578.filter.fasta`
       * 详细数据：`data/protein-matching-IPR042578.filter.csv`
-4. 使用`clustalX2`对齐序列，导出为 `data/protein-matching-IPR042578.filter.fasta.aligned`
-5. 使用`cal_procon.py`计算保守性，结果为 `data/procon/type{}.txt`。由于输出格式是默认的，不方便后续分析数据，
+5. 使用`clustalX2`对齐序列，导出为 `data/protein-matching-IPR042578.filter.fasta.aligned`
+6. 使用`cal_procon.py`计算保守性，结果为 `data/procon/type{}.txt`。由于输出格式是默认的，不方便后续分析数据，
    将数据解析为csv格式，结果为`data/procon/type{}_parse.csv`
    
-6. `analysis_procon.py`找出相关的变异的保守性，并结果为 `data/procon/analysis.json`, 将excel中的数据保存为json文件，之后将可以不用访问json
-7. `v2/output_procon_analysis`将上一步得到的结果，解析为excel、图片格式
+7. `analysis_procon.py`找出相关的变异的保守性，并结果为 `data/procon/analysis.json`, 将excel中的数据保存为json文件，之后将可以不用访问json
+8. `v2/output_procon_analysis`将上一步得到的结果，解析为excel、图片格式
 
 ---
 2022年5月16日更新

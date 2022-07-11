@@ -60,7 +60,7 @@ def check_aa(seq, aa):
 
 if __name__ == '__main__':
     # 加载变异
-    variation_file = "./data/总结 - 20220516.xlsx"
+    variation_file = "./data/总结 - 20220709 - filter.xlsx"
     log.info("加载变异")
     variation = pd.read_excel(variation_file, sheet_name=1, index_col=0)
     variation["Year and month first detected"] = pd.to_datetime(variation["Year and month first detected"])
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     fasta = next(SeqIO.parse(fasta_file, "fasta")).seq
     t_fasta = {}
     for i, row in variation.iterrows():
-        aas = row.loc["Spike mutations of interest"].split(",")
+        aas = row.loc["Spike mutations of interest"].split(" ")
         aas = map(lambda x: x.strip(), aas)
         # 过滤无效的变异
         aas = filter(lambda x: check_aa(fasta, x), aas)

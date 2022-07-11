@@ -90,7 +90,7 @@ class AnalysisMutationGroup:
         categroies = []  # 类别
         for i, row in self.analysis.items():
             aas.append(row["aas"])
-            categroies.append(row["WHO label.1"])
+            categroies.append(row["WHO label"])
             # categroies.append(row["Category"])
             if type(row["WHO label"]) == str:
                 # name = "{} ({})".format(row["Lineage + additional mutations"], row["WHO label"])
@@ -831,16 +831,16 @@ class ProConNetwork:
         # self._plot_origin_distribution()  # 绘制所有节点的保守性的分布情况
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
-        # self._plot_2D()  # 二维坐标图
+        self._plot_2D()  # 二维坐标图
         #
         # self._plot_procon_distribution()  # 分数分布图
         # self._plot_degree_distribuition()  # 度分布
         # self._plot_node_centraility_box()  # 箱线图：中心性
         # self._plot_conservation_box()  # 保守性
-        self.calculate_average_shortest_path_length()
+        # self.calculate_average_shortest_path_length()
         #
         # # # 以组为单位的图
-        self._group_plot_with_node()
+        # self._group_plot_with_node()
 
     def output_for_gephi(self):
         # 图文件
@@ -1502,10 +1502,11 @@ class ProConNetwork:
             return xt, yt
 
         # 初始化图表
-        flg_size = [max(len(pst_2_x), len(analysis)), ] * 2
-        fig_size = np.array(flg_size) / 2.6
+        # flg_size = [max(len(pst_2_x), len(analysis)), ] * 2
+        # fig_size = np.array(flg_size) / 2.6
+        fig_size = (28, 14)
         print("fig_size:", fig_size)
-        flg, ax = plt.subplots(figsize=fig_size.tolist())
+        flg, ax = plt.subplots(figsize=fig_size)
 
         # 添加文字：变异
         for i, row in type1.sort_values(["y", ]).iterrows():
@@ -1538,6 +1539,8 @@ class ProConNetwork:
         ax.set_yticklabels(ytick_names, size=font_size)
         # ax.invert_yaxis()  # 反转y轴
         # ax.set_ymargin(0.03)
+        # ax.set_xmargin(-0.1)
+        ax.margins(0.02)
         [txt.set_rotation(x_rotation) for txt in ax.get_xticklabels()]
 
         # 绘制表格
