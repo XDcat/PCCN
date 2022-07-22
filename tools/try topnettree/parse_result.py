@@ -35,16 +35,15 @@ def read_result(result_file="./data/result.txt"):
 
 
 if __name__ == '__main__':
-    bfe = read_result()
-    print(bfe.dtypes)
+    bfe = read_result("./data/result 2022年7月20日.txt")
 
     fig: plt.Figure
     ax: plt.Axes
-    fig, ax = plt.subplots(figsize=(14, 4.8))
-    sns.barplot(data=bfe, x="name", y="score", ax=ax, color="C0")
-    [i.set_rotation(90) for i in ax.get_xticklabels()]
-    ax.set_xlabel("")
-    ax.set_ylabel("BFE changes (kcal/mol)")
+    fig, ax = plt.subplots(figsize=(4.8, 24))
+    sns.barplot(data=bfe, y="name", x="score", ax=ax, color="C0")
+    # [i.set_rotation(90) for i in ax.get_xticklabels()]
+    ax.set_ylabel("")
+    ax.set_xlabel("BFE changes (kcal/mol)")
     fig.tight_layout()
     fig.show()
     fig.savefig("./data/barplot.png")

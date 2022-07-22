@@ -98,7 +98,7 @@ if __name__ == '__main__':
     t1["position"] = restore_aa(t1["position"], align_map)
     t1["rank"] = np.arange(t1.shape[0]) + 1  # 重置排名
     t1["rate"] = t1["rank"] / origin_fasta_len * 100
-    t1.to_csv(result_files[0][:-4] + "_parse.csv", index=False)
+    # t1.to_csv(result_files[0][:-4] + "_parse.csv", index=False)
 
     log.info("解析 type2")
     t2 = pd.read_csv(result_files[1], sep="\s+", ).iloc[:, :-1]
@@ -108,11 +108,11 @@ if __name__ == '__main__':
     t2["site2"] = restore_aa(t2["site2"], align_map)
     n = origin_fasta_len ** 2
     t2["rate"] = t2["rank"] / n * 100
-    t2.to_csv(result_files[1][:-4] + "_parse.csv", index=False)
+    # t2.to_csv(result_files[1][:-4] + "_parse.csv", index=False)
 
     log.info("解析 type3")
     t3 = pd.read_csv(result_files[2], sep="\s+", )
     t3["site1"] = restore_aa(t3["site1"], align_map)
     t3["site2"] = restore_aa(t3["site2"], align_map)
     t3["site3"] = restore_aa(t3["site3"], align_map)
-    t3.to_csv(result_files[2][:-4] + "_parse.csv", index=False)
+    # t3.to_csv(result_files[2][:-4] + "_parse.csv", index=False)

@@ -82,6 +82,9 @@ class CombineResult:
         aa_info = aa_info.sort_values("conservation", ascending=True)
         aa_info.to_csv(os.path.join(data_dir, "combine_with_other_tools - single.csv"))
 
+
+
+
         # 相关性分析
         c1_columns = ["stability", "BFE"]  # 比较对象 1
         c2_columns = conservation_data_columns  # 比较对象 2
@@ -176,7 +179,7 @@ class CombineResult:
         correlation.to_csv(os.path.join(data_dir, "combine_with_other_tools - co - correlation.csv"))
         return info, correlation
 
-    def read_topnettree(self, result_file="../tools/try topnettree/data/result.txt"):
+    def read_topnettree(self, result_file="../tools/try topnettree/data/result 2022年7月20日.txt"):
         with open(result_file) as f:
             lines = f.readlines()
         lines = lines[1:]
@@ -547,6 +550,21 @@ class CombineResult:
         top3_res.index.name = "#"
         top3_res.to_excel(os.path.join(data_dir, "network characteristic top3.xlsx"))
 
+    @staticmethod
+    def plot_for_stability_bfe(single_info_path="../data/procon/combine_with_other_tools - single.csv"):
+        single_info = pd.read_csv(single_info_path, index_col=None)
+        plot_data = single_info[["BFE", "stability"]]
+        plot_data = plot_data[plot_data.notna().all(axis=1)]
+        fig, axes = plt.subplots(constrained_layout=True, figsize=(6.4, 4.8))
+        sns.histplot(data=plot_data, x="BFE", stat="probability", bins=10, ax=axes, )
+        fig.show()
+        fig.savefig(os.path.join(data_dir, "BFE distribution.png"), dpi=300)
+
+        fig, axes = plt.subplots(constrained_layout=True, figsize=(6.4, 4.8))
+        sns.histplot(data=plot_data, x="stability", stat="probability", bins=10, ax=axes, )
+        fig.show()
+        fig.savefig(os.path.join(data_dir, "stability distribution.png"), dpi=300)
+        # print(plot_data)
 
 
 if __name__ == '__main__':
@@ -557,15 +575,15 @@ if __name__ == '__main__':
     # 不换行
     pd.set_option('display.width', 5000)
 
-    # # 分析
-    # mutation_groups = AnalysisMutationGroup()
-    # pcn = ProConNetwork(mutation_groups, threshold=100)
-    # cr = CombineResult()
+    # 分析
+    mutation_groups = AnalysisMutationGroup()
+    pcn = ProConNetwork(mutation_groups, threshold=100)
+    cr = CombineResult()
 
-    # # 分析单个位点的数据
+    # 分析单个位点的数据
     # singe_info = cr.analysis_single_mutation()
     #
-    # # 分析两个位点
+    # 分析两个位点
     # co_info = cr.analysis_co_mutations()
 
     # 分析毒株
@@ -576,7 +594,10 @@ if __name__ == '__main__':
     # CombineResult.parse_variant_result()
 
     # 绘制散点图
-    # CombineResult.plot_correlation_scatter()
+    CombineResult.plot_correlation_scatter()
 
     # 网络参数前几
-    CombineResult.get_graph_top3()
+    # CombineResult.get_graph_top3()
+
+    # 绘制分布图
+    # CombineResult.plot_for_stability_bfe()

@@ -1,0 +1,203 @@
+Tue Jul 19 14:39:10 UTC 2022
+F486V 7a98_A_F_517_V.ddg
+Prediction of binding affinity change is 6.18452718871 kcal/mol
+A222V 7a98_A_A_253_V.ddg
+Prediction of binding affinity change is 7.09344754446 kcal/mol
+F888L 7a98_A_F_919_L.ddg
+Prediction of binding affinity change is 7.76778632208 kcal/mol
+Q954H 7a98_A_Q_985_H.ddg
+Prediction of binding affinity change is 7.14700104671 kcal/mol
+R246N 7a98_A_R_277_N.ddg
+Prediction of binding affinity change is 6.13091256595 kcal/mol
+F490S 7a98_A_F_521_S.ddg
+Prediction of binding affinity change is 6.90556968045 kcal/mol
+E484Q 7a98_A_E_515_Q.ddg
+Prediction of binding affinity change is 6.2596070198 kcal/mol
+N764K 7a98_A_N_795_K.ddg
+Prediction of binding affinity change is 6.70597805591 kcal/mol
+V367F 7a98_A_V_398_F.ddg
+Prediction of binding affinity change is 8.01646892851 kcal/mol
+T95I 7a98_A_T_126_I.ddg
+Prediction of binding affinity change is 6.60693162059 kcal/mol
+T19I 7a98_A_T_50_I.ddg
+Prediction of binding affinity change is 4.60312053444 kcal/mol
+S982A 7a98_A_S_1013_A.ddg
+Prediction of binding affinity change is 7.52239865081 kcal/mol
+D796H 7a98_A_D_827_H.ddg
+Prediction of binding affinity change is 6.9788411092 kcal/mol
+G339D 7a98_A_G_370_D.ddg
+Prediction of binding affinity change is 6.15602892929 kcal/mol
+R190S 7a98_A_R_221_S.ddg
+Prediction of binding affinity change is 6.91693008656 kcal/mol
+L24S 7a98_A_L_55_S.ddg
+Prediction of binding affinity change is 5.18366596598 kcal/mol
+N501Y 7a98_A_N_532_Y.ddg
+Prediction of binding affinity change is 6.12764228525 kcal/mol
+D405N 7a98_A_D_436_N.ddg
+Prediction of binding affinity change is 7.29078075316 kcal/mol
+S373P 7a98_A_S_404_P.ddg
+Prediction of binding affinity change is 6.14436645649 kcal/mol
+E156G 7a98_A_E_187_G.ddg
+Prediction of binding affinity change is 7.40387800593 kcal/mol
+E1092K 7a98_A_E_1123_K.ddg
+Prediction of binding affinity change is 5.92364489329 kcal/mol
+P681H 7a98_A_P_712_H.ddg
+Prediction of binding affinity change is 6.17464176537 kcal/mol
+Q52R 7a98_A_Q_83_R.ddg
+Prediction of binding affinity change is 5.18366596598 kcal/mol
+H1101Y 7a98_A_H_1132_Y.ddg
+Prediction of binding affinity change is 5.5314310781 kcal/mol
+D796Y 7a98_A_D_827_Y.ddg
+Prediction of binding affinity change is 5.82741714637 kcal/mol
+D215G 7a98_A_D_246_G.ddg
+Prediction of binding affinity change is 8.10230762328 kcal/mol
+T478K 7a98_A_T_509_K.ddg
+Prediction of binding affinity change is 8.03663908854 kcal/mol
+Q613H 7a98_A_Q_644_H.ddg
+Prediction of binding affinity change is 7.08722482465 kcal/mol
+P681R 7a98_A_P_712_R.ddg
+Prediction of binding affinity change is 6.47130272669 kcal/mol
+N439K 7a98_A_N_470_K.ddg
+Prediction of binding affinity change is 7.00435374504 kcal/mol
+S477N 7a98_A_S_508_N.ddg
+Prediction of binding affinity change is 7.89794235615 kcal/mol
+D950N 7a98_A_D_981_N.ddg
+Prediction of binding affinity change is 5.9128650751 kcal/mol
+G142D 7a98_A_G_173_D.ddg
+Prediction of binding affinity change is 6.25878170326 kcal/mol
+A701V 7a98_A_A_732_V.ddg
+Prediction of binding affinity change is 7.72804612009 kcal/mol
+T732A 7a98_A_T_763_A.ddg
+Prediction of binding affinity change is 7.94457207369 kcal/mol
+T20N 7a98_A_T_51_N.ddg
+Prediction of binding affinity change is 5.07842465288 kcal/mol
+H245Y 7a98_A_H_276_Y.ddg
+Prediction of binding affinity change is 6.863004496 kcal/mol
+A570D 7a98_A_A_601_D.ddg
+Prediction of binding affinity change is 6.36072116839 kcal/mol
+G75V 7a98_A_G_106_V.ddg
+Prediction of binding affinity change is 7.81996158734 kcal/mol
+L981F 7a98_A_L_1012_F.ddg
+Prediction of binding affinity change is 4.69932906667 kcal/mol
+R346K 7a98_A_R_377_K.ddg
+Prediction of binding affinity change is 7.12036632862 kcal/mol
+V1176F 7a98_A_V_1207_F.ddg
+
+N211I 7a98_A_N_242_I.ddg
+Prediction of binding affinity change is 7.40231658471 kcal/mol
+Q1071H 7a98_A_Q_1102_H.ddg
+Prediction of binding affinity change is 4.98183226995 kcal/mol
+P26S 7a98_A_P_57_S.ddg
+Prediction of binding affinity change is 5.18366596598 kcal/mol
+K417T 7a98_A_K_448_T.ddg
+Prediction of binding affinity change is 7.82045464604 kcal/mol
+Y449H 7a98_A_Y_480_H.ddg
+Prediction of binding affinity change is 7.68207783961 kcal/mol
+G1219V 7a98_A_G_1250_V.ddg
+
+P9L 7a98_A_P_40_L.ddg
+Prediction of binding affinity change is 5.55776123009 kcal/mol
+N969K 7a98_A_N_1000_K.ddg
+Prediction of binding affinity change is 5.48945585396 kcal/mol
+L5F 7a98_A_L_36_F.ddg
+Prediction of binding affinity change is 5.18366596598 kcal/mol
+S371F 7a98_A_S_402_F.ddg
+Prediction of binding affinity change is 7.97530168465 kcal/mol
+A67V 7a98_A_A_98_V.ddg
+Prediction of binding affinity change is 5.18366596598 kcal/mol
+E780K 7a98_A_E_811_K.ddg
+Prediction of binding affinity change is 7.09244766211 kcal/mol
+L452Q 7a98_A_L_483_Q.ddg
+Prediction of binding affinity change is 6.18880948734 kcal/mol
+N501T 7a98_A_N_532_T.ddg
+Prediction of binding affinity change is 6.65944304375 kcal/mol
+N679K 7a98_A_N_710_K.ddg
+Prediction of binding affinity change is 7.41450497346 kcal/mol
+T716I 7a98_A_T_747_I.ddg
+Prediction of binding affinity change is 6.5368783287 kcal/mol
+T376A 7a98_A_T_407_A.ddg
+Prediction of binding affinity change is 7.5192909166 kcal/mol
+S13I 7a98_A_S_44_I.ddg
+Prediction of binding affinity change is 4.60747904379 kcal/mol
+D253G 7a98_A_D_284_G.ddg
+Prediction of binding affinity change is 7.71321192424 kcal/mol
+H655Y 7a98_A_H_686_Y.ddg
+
+K417N 7a98_A_K_448_N.ddg
+Prediction of binding affinity change is 7.3492027058 kcal/mol
+D1118H 7a98_A_D_1149_H.ddg
+
+D80G 7a98_A_D_111_G.ddg
+Prediction of binding affinity change is 7.73069665516 kcal/mol
+W152C 7a98_A_W_183_C.ddg
+Prediction of binding affinity change is 7.92422089277 kcal/mol
+N440K 7a98_A_N_471_K.ddg
+Prediction of binding affinity change is 7.30962544185 kcal/mol
+L452R 7a98_A_L_483_R.ddg
+Prediction of binding affinity change is 6.04603460248 kcal/mol
+F157L 7a98_A_F_188_L.ddg
+Prediction of binding affinity change is 7.76145000282 kcal/mol
+Y505H 7a98_A_Y_536_H.ddg
+Prediction of binding affinity change is 7.07591450034 kcal/mol
+P384L 7a98_A_P_415_L.ddg
+Prediction of binding affinity change is 6.25747585841 kcal/mol
+S371L 7a98_A_S_402_L.ddg
+Prediction of binding affinity change is 7.595831093 kcal/mol
+D614G 7a98_A_D_645_G.ddg
+Prediction of binding affinity change is 8.00216552661 kcal/mol
+C136F 7a98_A_C_167_F.ddg
+Prediction of binding affinity change is 7.85321734411 kcal/mol
+H245P 7a98_A_H_276_P.ddg
+Prediction of binding affinity change is 7.44459139519 kcal/mol
+Q677H 7a98_A_Q_708_H.ddg
+Prediction of binding affinity change is 6.12222949675 kcal/mol
+D1139H 7a98_A_D_1170_H.ddg
+
+T859N 7a98_A_T_890_N.ddg
+Prediction of binding affinity change is 5.81852022365 kcal/mol
+Y145N 7a98_A_Y_176_N.ddg
+Prediction of binding affinity change is 6.20406201101 kcal/mol
+Q498R 7a98_A_Q_529_R.ddg
+Prediction of binding affinity change is 6.64926578847 kcal/mol
+R408S 7a98_A_R_439_S.ddg
+Prediction of binding affinity change is 7.83676808485 kcal/mol
+S494P 7a98_A_S_525_P.ddg
+Prediction of binding affinity change is 6.45926393955 kcal/mol
+I1130V 7a98_A_I_1161_V.ddg
+
+D80A 7a98_A_D_111_A.ddg
+Prediction of binding affinity change is 7.73675998866 kcal/mol
+G496S 7a98_A_G_527_S.ddg
+Prediction of binding affinity change is 7.08117292821 kcal/mol
+S375F 7a98_A_S_406_F.ddg
+Prediction of binding affinity change is 7.93490086226 kcal/mol
+V213G 7a98_A_V_244_G.ddg
+Prediction of binding affinity change is 8.00617022103 kcal/mol
+E516Q 7a98_A_E_547_Q.ddg
+Prediction of binding affinity change is 6.33349373816 kcal/mol
+T19R 7a98_A_T_50_R.ddg
+Prediction of binding affinity change is 4.05595864158 kcal/mol
+L18F 7a98_A_L_49_F.ddg
+Prediction of binding affinity change is 5.01838865212 kcal/mol
+N856K 7a98_A_N_887_K.ddg
+Prediction of binding affinity change is 7.96786449452 kcal/mol
+A653V 7a98_A_A_684_V.ddg
+
+Y145H 7a98_A_Y_176_H.ddg
+Prediction of binding affinity change is 6.51731427212 kcal/mol
+E484K 7a98_A_E_515_K.ddg
+Prediction of binding affinity change is 6.89921397308 kcal/mol
+T76I 7a98_A_T_107_I.ddg
+Prediction of binding affinity change is 7.00499967705 kcal/mol
+V126A 7a98_A_V_157_A.ddg
+Prediction of binding affinity change is 7.74812825677 kcal/mol
+T1027I 7a98_A_T_1058_I.ddg
+Prediction of binding affinity change is 5.18366596598 kcal/mol
+T547K 7a98_A_T_578_K.ddg
+Prediction of binding affinity change is 8.07447503305 kcal/mol
+D138Y 7a98_A_D_169_Y.ddg
+Prediction of binding affinity change is 7.24489300763 kcal/mol
+E484A 7a98_A_E_515_A.ddg
+Prediction of binding affinity change is 7.70565610506 kcal/mol
+Q493R 7a98_A_Q_524_R.ddg
+Prediction of binding affinity change is 8.22784415192 kcal/mol

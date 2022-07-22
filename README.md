@@ -74,4 +74,13 @@ ecdc 所提供的突变并不完整，需要重新获取，并爬取数据
     * 类似或重复数据
     * 没有证据的数据
 
+网络图颜色
+* 节点
+    * mutation #bf643b 大小20
+    * normal #008ea0  大小10
+* 边
+  * neighbour #f66b0e
+  * mutation #ffc300
+  * normal #b7e5dd
+
    

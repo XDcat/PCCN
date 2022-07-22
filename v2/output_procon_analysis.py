@@ -753,7 +753,7 @@ class ProConNetwork:
         # 根据平均最短路径，绘制箱线图并与单值进行比较
         # axes: List[plt.Axes]
         ax: plt.Axes
-        fig, ax = plt.subplots(1, 1, figsize=(10, 4.8))
+        fig, ax = plt.subplots(1, 1, figsize=(14, 4.8))
         # 查看并保存图片
         order_index = np.argsort(aas_scores)
         sns.boxplot(data=plot_data, x="aa", y="length", ax=ax, order=np.array(aas)[order_index], fliersize=1)
@@ -831,7 +831,7 @@ class ProConNetwork:
         # self._plot_origin_distribution()  # 绘制所有节点的保守性的分布情况
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
-        self._plot_2D()  # 二维坐标图
+        # self._plot_2D()  # 二维坐标图
         #
         # self._plot_procon_distribution()  # 分数分布图
         # self._plot_degree_distribuition()  # 度分布
@@ -840,12 +840,10 @@ class ProConNetwork:
         # self.calculate_average_shortest_path_length()
         #
         # # # 以组为单位的图
-        # self._group_plot_with_node()
+        self._group_plot_with_node()
 
     def output_for_gephi(self):
-        # 图文件
-        nx.write_gexf(self.G, os.path.join(self.data_dir, "all network.gexf"))
-        # 给边添加一列，区分是否有骨架
+        # 边
         rows = []
         for source, target in self.G.edges:
             is_neighbour = abs(int(target[:-1]) - int(source[:-1])) == 1
@@ -857,10 +855,24 @@ class ProConNetwork:
             elif is_mutation:
                 tag = "mutation"
 
-            rows.append([source, target, is_neighbour, is_mutation, tag])
-        rows = pd.DataFrame(rows, columns=["source", "target", "is_neighbour", "is_mutation", "tag"], )
-        rows.to_csv(os.path.join(self.data_dir, "all_network_with_neighbour_flag.csv"))
-        rows["is_neighbour"].to_csv(os.path.join(self.data_dir, "all_network_only_neighbour_flag.csv"))
+            w = self.G.edges[source, target]['weight']
+            if tag == "neighbour" and w < 0.9:
+                w = 0.9
+
+            rows.append([source, target, is_neighbour, is_mutation, tag, w])
+        rows = pd.DataFrame(rows, columns=["source", "target", "is_neighbour", "is_mutation", "tag", "weight"], )
+        rows.to_csv(os.path.join(self.data_dir, "network_edge_info.csv"), index=None)
+
+        # 节点
+        nodes = []
+        for n in self.G.nodes:
+            if n in self.analysis_mutation_group.non_duplicated_aas_positions:
+                node = [n, n, True, 20]
+            else:
+                node = [n, "", False, 10]
+            nodes.append(node)
+        nodes = pd.DataFrame(nodes, columns=["Id","Label", "is_mutation", "size"])
+        nodes.to_csv(os.path.join(self.data_dir, "network_node_info.csv"), index=None)
 
     def output_for_DynaMut2(self):
         for i, (group, name) in enumerate(zip(self.analysis_mutation_group.aa_groups,
@@ -1552,6 +1564,29 @@ class ProConNetwork:
         # 找出不同的变异
         log.info(self.analysis_mutation_group.non_duplicated_aas)
 
+    def generate_ebc(self):
+        if not hasattr(self, "edge_betweenness_centrality"):
+            try:
+                # 保存至 json 文件
+                if not os.path.exists(os.path.join(self.data_dir, "edge betweenness centrality.json")):
+                    log.info("没有 self.edge_betweenness_centrality, 初始化")
+                    self.edge_betweenness_centrality = dict(nx.edge_betweenness_centrality(self.G, weight="weight"))
+                    # 重新建立索引
+                    info_map = defaultdict(dict)
+                    for (n1, n2), value in self.edge_betweenness_centrality.items():
+                        info_map[n1][n2] = value
+                        info_map[n2][n1] = value
+
+                    with open(os.path.join(self.data_dir, "edge betweenness centrality.json"), "w") as f:
+                        log.info("保存至文件")
+                        f.write(json.dumps(info_map))
+
+                with open(os.path.join(self.data_dir, "edge betweenness centrality.json"), ) as f:
+                    log.info("加载文件")
+                    self.edge_betweenness_centrality = json.loads(f.read())
+            except:
+                log.error("保存或加载文件失败")
+            log.debug("初始化完成")
 
 if __name__ == '__main__':
     start_time = time.time()
@@ -1561,13 +1596,15 @@ if __name__ == '__main__':
     mutation_groups.display_seq_and_aa()
     pcn = ProConNetwork(mutation_groups, threshold=100)
     log.debug("len(pcn.type2) = %s", len(pcn.type2))
-    pcn.analysisG()
+    # pcn.analysisG()
+    # pcn.generate_ebc()
     # print(pd.value_counts([len(i) for i in pcn.analysis_mutation_group.aa_groups]))  # 统计变体中变异数量
     # pcn.output_for_gephi()
     # pcn.output_for_DynaMut2()
     # pcn.output_for_topnettree()
     end_time = time.time()
     log.info(f"程序运行时间: {end_time - start_time}")
+    print(mutation_groups.non_duplicated_aas)
 
     # thresholds = [50, 100, 150, 200, 250, 300]
     # for t in thresholds:
