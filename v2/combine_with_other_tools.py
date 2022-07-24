@@ -590,11 +590,11 @@ if __name__ == '__main__':
     # cr.analysis_variant()
 
     # 解析结果
-    # CombineResult.parse_result()
-    # CombineResult.parse_variant_result()
+    CombineResult.parse_result()
+    CombineResult.parse_variant_result()
 
     # 绘制散点图
-    CombineResult.plot_correlation_scatter()
+    # CombineResult.plot_correlation_scatter()
 
     # 网络参数前几
     # CombineResult.get_graph_top3()

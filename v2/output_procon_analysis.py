@@ -4,7 +4,6 @@ import logging
 import math
 import os
 import pickle
-import re
 import time
 from collections import defaultdict
 from itertools import combinations, permutations
@@ -124,14 +123,21 @@ class AnalysisMutationGroup:
 
     def resample_aas(self, aas, N=1000):
         # 重采样
-        positions = pd.Series(self.positions)
+        positions = list(set(self.positions) - set(aas))
+        positions = pd.Series(positions)
         log.debug("开始采样，采样数目为%s", N)
         sample_aas = [positions.sample(n=len(aas), random_state=self.seed + i).tolist() for i in range(N)]
         return sample_aas
 
     def resample_groups(self, N=1000):
+        """
+        根据毒株替换数量采样。
+        :param N:
+        :return:
+        """
         groups = self.aa_groups
-        positions = pd.Series(self.positions)
+        positions = list(set(self.positions) - set(self.non_duplicated_aas_positions))
+        positions = pd.Series(positions)
 
         # 重采样
         sample_groups = {}
@@ -871,7 +877,7 @@ class ProConNetwork:
             else:
                 node = [n, "", False, 10]
             nodes.append(node)
-        nodes = pd.DataFrame(nodes, columns=["Id","Label", "is_mutation", "size"])
+        nodes = pd.DataFrame(nodes, columns=["Id", "Label", "is_mutation", "size"])
         nodes.to_csv(os.path.join(self.data_dir, "network_node_info.csv"), index=None)
 
     def output_for_DynaMut2(self):
@@ -1046,9 +1052,6 @@ class ProConNetwork:
         groups_colors = self.analysis_mutation_group.aa_groups_info["color"]
         group_count_sample = self.analysis_mutation_group.group_count_sample
 
-        # # TODO 采样 10000 次
-        # group_count_sample = self.analysis_mutation_group.resample_groups(10000)
-
         def calculate_group_and_sample_score(grp, grp_sample, func, fig_name, kind="distribution", excel_writer=None):
             grp_scores = [func(i) for i in grp]
             grp_mean_score = [np.mean(i) for i in grp_scores]
@@ -1065,30 +1068,20 @@ class ProConNetwork:
             grp_info["index"] = np.arange(len(grp_info)) + 1
             log.debug("np.unique(grp_info.length) = %s", np.unique(grp_info.length))
 
-            # TODO: 合并 27 BA.2 和 28 BA.2+ L452X
-            # 修改 BA.2+ L452X 数量为 27
-            index_count_27_28 = (grp_info["length"] == 27) | (grp_info["length"] == 28)
-            grp_info.loc[index_count_27_28, "length"] = "27 or 28"
-            grp_sample_scores["27 or 28"] = grp_sample_scores[27]
-            grp_sample_scores.pop(27)
-            grp_sample_scores.pop(28)
-            Ns = grp_sample_scores.keys()
-            Ns = sorted(Ns, key=lambda x: int(re.match("\d+", str(x)).group(0)))  # 匹配第一个数字
-
-            # 只需要 7组
-            assert grp_info["length"].value_counts().shape[0] == 7
-
             # 绘制图表
             if kind == "distribution":
                 """绘制采样分数的分布图，并将毒株标注在图中"""
+                count_plot = len(grp_sample_scores)
                 fig: plt.Figure = plt.figure(figsize=(20, 20))
-                axes: List[plt.Axes] = fig.subplots(3, 3, )
+                axes: List[plt.Axes] = fig.subplots(math.ceil(count_plot / 3), 3, )
                 colors = sns.color_palette(n_colors=len(grp_sample_scores))
                 axes = [j for i in axes for j in i]
-                ax_all_in_one = axes[7]
+                ax_all_in_one = axes[count_plot]  # 总图
+                ax_box_plot = axes[count_plot + 1]  # 箱线图
+                [ax.clear() for ax in axes[count_plot + 2:]] # 其余图删除
 
                 statistic_table = []
-                for i, N in enumerate(Ns):
+                for i, N in enumerate(grp_sample_scores.keys()):
                     # 绘制分布图
                     color = colors[i]
                     ax: plt.Axes = axes[i]
@@ -1147,10 +1140,10 @@ class ProConNetwork:
                 _plot_data = pd.DataFrame(
                     {"score": _s1 + _s2, "label": ["variant"] * len(_s1) + ["sample"] * len(_s2)},
                 )
-                sns.boxplot(data=_plot_data, x="label", y="score", ax=axes[-1], fliersize=1)
+                sns.boxplot(data=_plot_data, x="label", y="score", ax=ax_box_plot, fliersize=1)
                 p_value = mannwhitneyu(_s1, _s2).pvalue
-                axes[-1].set_title(f"p = {p_value:.3f}", y=-0.1)
-                axes[-1].set_xlabel("")
+                ax_box_plot.set_title(f"p = {p_value:.3f}", y=-0.1)
+                ax_box_plot.set_xlabel("")
 
                 # 给global加上箱线图
                 global_axes = self.group_global_axes[self.group_global_ax_count]
@@ -1260,13 +1253,14 @@ class ProConNetwork:
         def calculate_weighted_shortest_path(grp):
             res = []
             if not hasattr(self, "weighted_shortest_path_length"):
-                # log.info("没有 self.weighted_shortest_path_length, 初始化")
+                log.info("没有 self.weighted_shortest_path_length, 初始化")
                 # log.debug(" = %s", dict(nx.shortest_path_length(self.G, weight="weight")))
                 # log.debug(" = %s", dict(nx.shortest_path_length(self.G, )))
-                # self.weighted_shortest_path_length = dict(nx.shortest_path_length(self.G, weight="weight"))
-                # with open(os.path.join(self.data_dir, "weighted shortest path length.json"), "w") as f:
-                #     log.info("保存至文件")
-                #     f.write(json.dumps(self.weighted_shortest_path_length))
+                if not os.path.exists(os.path.join(self.data_dir, "weighted shortest path length.json")):
+                    self.weighted_shortest_path_length = dict(nx.shortest_path_length(self.G, weight="weight"))
+                    with open(os.path.join(self.data_dir, "weighted shortest path length.json"), "w") as f:
+                        log.info("保存至文件")
+                        f.write(json.dumps(self.weighted_shortest_path_length))
 
                 with open(os.path.join(self.data_dir, "weighted shortest path length.json"), ) as f:
                     log.info("加载文件")
@@ -1587,6 +1581,7 @@ class ProConNetwork:
             except:
                 log.error("保存或加载文件失败")
             log.debug("初始化完成")
+
 
 if __name__ == '__main__':
     start_time = time.time()
