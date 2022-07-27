@@ -36,6 +36,7 @@ def read_result(result_file="./data/result.txt"):
 
 if __name__ == '__main__':
     bfe = read_result("./data/result 2022年7月20日.txt")
+    bfe = bfe.sort_values("score")
 
     fig: plt.Figure
     ax: plt.Axes

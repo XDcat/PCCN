@@ -43,6 +43,7 @@ def read_deep_ddg(result_file="./result-QHD43416.ddg"):
 
 if __name__ == '__main__':
     fdata = read_deep_ddg()
+    fdata = fdata.sort_values("ddG")
     print(fdata)
 
     fig: plt.Figure

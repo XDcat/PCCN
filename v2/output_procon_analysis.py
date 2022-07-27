@@ -61,16 +61,17 @@ class AnalysisMutationGroup:
         # 氨基酸序列以及所有位点
         self.fasta = next(SeqIO.parse(fasta_file, "fasta")).seq
         self.positions = [f"{i + 1}{aa.upper()}" for i, aa in enumerate(self.fasta)]  # 所有可能的位点
-        # 变异组以及对应位点
-        self.aa_groups, self.aa_groups_info = self.get_aa_groups()
-        self.aa_groups_position = self.get_aa_groups_position()
-        # 根据变异的数目采样: 直接使用 group sample 中的数据
-        self.group_count_sample = self.resample_groups()
 
         # 不重复变异以及对应位点
         self.non_duplicated_aas = self.get_non_duplicated_aas()
         self.non_duplicated_aas_positions = self.get_non_duplicated_aas_position()
         self.non_duplicated_aas_sample = self.resample_aas(self.non_duplicated_aas_positions)
+
+        # 变异组以及对应位点
+        self.aa_groups, self.aa_groups_info = self.get_aa_groups()
+        self.aa_groups_position = self.get_aa_groups_position()
+        # 根据变异的数目采样: 直接使用 group sample 中的数据
+        self.group_count_sample = self.resample_groups()
 
         self.display_seq_and_aa()
 
@@ -126,7 +127,8 @@ class AnalysisMutationGroup:
         positions = list(set(self.positions) - set(aas))
         positions = pd.Series(positions)
         log.debug("开始采样，采样数目为%s", N)
-        sample_aas = [positions.sample(n=len(aas), random_state=self.seed + i).tolist() for i in range(N)]
+        # sample_aas = [positions.sample(n=len(aas), random_state=self.seed + i).tolist() for i in range(N)]
+        sample_aas = [positions.sample(n=1, random_state=self.seed + i).tolist() for i in range(N)]
         return sample_aas
 
     def resample_groups(self, N=1000):
@@ -214,6 +216,7 @@ class ProConNetwork:
         # 计算中心性
         log.info("确定中心性...")
         self.degree_c, self.betweenness_c, self.closeness_c, self.edge_betweenness_c = self._get_centralities()
+        self.degree = self.calculate_degree()
 
         # page ranke
         log.info("page rank ...")
@@ -838,15 +841,21 @@ class ProConNetwork:
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
         # self._plot_2D()  # 二维坐标图
+
+        # 以 substitution 为单位的图
+        # self._boxplot_for_all_kinds()
+
+        # 以毒株为单位的图
+        self._group_plot_with_node()
+
+        # 废弃
         #
         # self._plot_procon_distribution()  # 分数分布图
         # self._plot_degree_distribuition()  # 度分布
         # self._plot_node_centraility_box()  # 箱线图：中心性
         # self._plot_conservation_box()  # 保守性
         # self.calculate_average_shortest_path_length()
-        #
-        # # # 以组为单位的图
-        self._group_plot_with_node()
+
 
     def output_for_gephi(self):
         # 边
@@ -1046,6 +1055,53 @@ class ProConNetwork:
                 .render(os.path.join(self.data_dir, "mutation relationship.html"))
         )
 
+    def _boxplot_for_all_kinds(self):
+        def _func_boxplot(variant, sample, ax, func, name):
+            variant_scores = func(variant)
+            sample_scores = func(sample)
+
+            # 绘制箱线图
+            _plot_data = pd.DataFrame(
+                {"score": variant_scores + sample_scores,
+                 "label": ["variant"] * len(variant_scores) + ["sample"] * len(sample_scores)}
+            )
+            sns.boxplot(data=_plot_data, x="label", y="score", ax=ax, fliersize=1)
+            p_value = mannwhitneyu(variant_scores, sample_scores).pvalue
+            ax.set_title(f"p = {p_value:.3f}", y=0.9)
+            ax.set_xlabel("")
+            ax.set_ylabel(name)
+
+        # init figure
+        fig: plt.Figure
+        axes: List[plt.Axes]
+        fig, axes = plt.subplots(3, 3, figsize=(14, 14), constrained_layout=True)
+        axes = [j for i in axes for j in i]
+        # init func
+        funcs = self.get_functions()
+
+        # init data
+        variant = self.analysis_mutation_group.non_duplicated_aas_positions
+        sample = [j for i in self.analysis_mutation_group.non_duplicated_aas_sample for j in i]
+        for idx, (key, func) in enumerate(funcs.items()):
+            ax = axes[idx]
+            _func_boxplot(variant, sample, ax, func, key)
+        fig.show()
+        fig.savefig(os.path.join(self.data_dir, "boxplot_of_all.png"))
+
+    def get_functions(self):
+        funcs = {
+            "degree": self.calculate_avg_weighted_degree,
+            "conservation": self.calculate_conservation,
+            "page rank": self.calculate_page_rank,
+            "degree centrality": self.calculate_degree_centrality,
+            "betweenness centrality": self.calculate_betweenness_centrality,
+            "closeness centrality": self.calculate_closeness_centrality,
+            "average shortest length": self.calculate_weighted_shortest_path,
+            "co-conservation": self.calculate_co_conservation,
+            "edge betweenness centrality": self.calculate_edge_betweenness_centrality,
+        }
+        return funcs
+
     def _group_plot_with_node(self):
         groups = self.analysis_mutation_group.aa_groups_position
         groups_names = self.analysis_mutation_group.aa_groups_info["name"]
@@ -1053,32 +1109,31 @@ class ProConNetwork:
         group_count_sample = self.analysis_mutation_group.group_count_sample
 
         def calculate_group_and_sample_score(grp, grp_sample, func, fig_name, kind="distribution", excel_writer=None):
+            # 计算分数
             grp_scores = [func(i) for i in grp]
             grp_mean_score = [np.mean(i) for i in grp_scores]
             grp_sample_scores = {}
             for count, sample_group in grp_sample.items():
                 sample_scores = [func(group) for group in sample_group]
-                sample_mean_score = np.mean(sample_scores, axis=1)
+                sample_mean_score = [np.mean(group) for group in sample_scores]
                 sample_mean_score = sorted(sample_mean_score)  # 排序
                 grp_sample_scores[count] = sample_mean_score
 
-            # log.debug("grp_sample_scores = %s", grp_sample_scores)
             grp_info = pd.DataFrame({"name": groups_names, "score": grp_mean_score, "color": groups_colors})
             grp_info["length"] = [len(g) for g in grp]
             grp_info["index"] = np.arange(len(grp_info)) + 1
-            log.debug("np.unique(grp_info.length) = %s", np.unique(grp_info.length))
 
             # 绘制图表
             if kind == "distribution":
                 """绘制采样分数的分布图，并将毒株标注在图中"""
                 count_plot = len(grp_sample_scores)
-                fig: plt.Figure = plt.figure(figsize=(20, 20))
+                fig: plt.Figure = plt.figure(figsize=(20, 20), )
                 axes: List[plt.Axes] = fig.subplots(math.ceil(count_plot / 3), 3, )
                 colors = sns.color_palette(n_colors=len(grp_sample_scores))
                 axes = [j for i in axes for j in i]
                 ax_all_in_one = axes[count_plot]  # 总图
                 ax_box_plot = axes[count_plot + 1]  # 箱线图
-                [ax.clear() for ax in axes[count_plot + 2:]] # 其余图删除
+                [ax.clear() for ax in axes[count_plot + 2:]]  # 其余图删除
 
                 statistic_table = []
                 for i, N in enumerate(grp_sample_scores.keys()):
@@ -1142,23 +1197,28 @@ class ProConNetwork:
                 )
                 sns.boxplot(data=_plot_data, x="label", y="score", ax=ax_box_plot, fliersize=1)
                 p_value = mannwhitneyu(_s1, _s2).pvalue
-                ax_box_plot.set_title(f"p = {p_value:.3f}", y=-0.1)
+                ax_box_plot.set_title(f"p = {p_value:.3f}", y=0.9)
                 ax_box_plot.set_xlabel("")
+                ax_box_plot.set_ylabel(fig_name)
 
                 # 给global加上箱线图
                 global_axes = self.group_global_axes[self.group_global_ax_count]
                 self.group_global_ax_count += 1
                 sns.boxplot(data=_plot_data, x="label", y="score", ax=global_axes, fliersize=1)
                 # global_axes.set_xlabel(f"{fig_name} (p={p_value:.3f})", y=-0.1)
-                global_axes.set_title(f"p={p_value:.3f}", )
-                global_axes.set_xlabel(f"{fig_name}", )
+                global_axes.set_title(f"p = {p_value:.3f}", y=0.9)
+                global_axes.set_xlabel("")
+                global_axes.set_ylabel(fig_name)
                 # global valid
                 if p_value <= 0.05:
                     global_axes = self.group_global_valid_axes[self.group_global_valid_ax_count]
                     self.group_global_valid_ax_count += 1
                     sns.boxplot(data=_plot_data, x="label", y="score", ax=global_axes, fliersize=1)
                     # self.group_global_valid_fig.show()
-                    global_axes.set_xlabel(f"{fig_name} (p={p_value:.3f})", y=-0.1)
+                    # global_axes.set_xlabel(f"{fig_name} (p={p_value:.3f})", y=-0.1)
+                    global_axes.set_title(f"p = {p_value:.3f}", y=0.9)
+                    global_axes.set_xlabel("")
+                    global_axes.set_ylabel(fig_name)
 
                 # 输出结果
                 fig.suptitle(fig_name, )
@@ -1215,151 +1275,9 @@ class ProConNetwork:
                 fig.show()
                 fig.savefig(os.path.join(self.data_dir, f"group {fig_name}.png"), dpi=300)
 
-        def calculate_degree_centrality(grp):
-            dc = scaler(self.degree_c)
-            return [dc[aa] for aa in grp]
-
-        def calculate_betweenness_centrality(grp):
-            bc = scaler(self.betweenness_c)
-            return [bc[aa] for aa in grp]
-
-        def calculate_closeness_centrality(grp):
-            cc = scaler(self.closeness_c)
-            return [cc[aa] for aa in grp]
-
-        def calculate_avg_weighted_degree(grp):
-            """计算一组位点的平均度"""
-            result = []
-            for aa in grp:
-                # 计算单个位点的加权平均度
-                weighted_degrees = []
-                for nbr, datadict in self.G.adj[aa].items():
-                    weighted_degrees.append(datadict.get("weight", 0))
-
-                if weighted_degrees:
-                    avg_weighted_degree = np.mean(weighted_degrees)
-                else:
-                    avg_weighted_degree = 0
-                result.append(avg_weighted_degree)
-            return result
-
-        def calculate_page_rank(grp):
-            pr = scaler(self.page_rank)
-            return [pr[aa] for aa in grp]
-
-        def calculate_conservation(grp):
-            return [self.G.nodes[aa]["size"] for aa in grp]
-
-        def calculate_weighted_shortest_path(grp):
-            res = []
-            if not hasattr(self, "weighted_shortest_path_length"):
-                log.info("没有 self.weighted_shortest_path_length, 初始化")
-                # log.debug(" = %s", dict(nx.shortest_path_length(self.G, weight="weight")))
-                # log.debug(" = %s", dict(nx.shortest_path_length(self.G, )))
-                if not os.path.exists(os.path.join(self.data_dir, "weighted shortest path length.json")):
-                    self.weighted_shortest_path_length = dict(nx.shortest_path_length(self.G, weight="weight"))
-                    with open(os.path.join(self.data_dir, "weighted shortest path length.json"), "w") as f:
-                        log.info("保存至文件")
-                        f.write(json.dumps(self.weighted_shortest_path_length))
-
-                with open(os.path.join(self.data_dir, "weighted shortest path length.json"), ) as f:
-                    log.info("加载文件")
-                    self.weighted_shortest_path_length = json.loads(f.read())
-
-                log.debug("初始化完成")
-            # 归一器
-            if not hasattr(self, "scaler_for_weighted_shortest_path_length"):
-                all_values = []
-                for v1 in self.weighted_shortest_path_length.values():
-                    for v2 in v1.values():
-                        all_values.append(v2)
-                all_values = np.array(all_values).reshape((-1, 1))
-                self.scaler_for_weighted_shortest_path_length = preprocessing.MinMaxScaler().fit(all_values)
-
-            wspl = self.weighted_shortest_path_length
-            for n1, n2 in combinations(grp, 2):
-                res.append(
-                    self.scaler_for_weighted_shortest_path_length.transform([[wspl[n1][n2]]])[0][0])
-            return res
-
-        def calculate_edge_betweenness_centrality(grp):
-            res = []
-            # if not hasattr(self, "edge_betweenness_centrality"):
-            #     try:
-            #         # 保存至 json 文件
-            #         if not os.path.exists(os.path.join(self.data_dir, "edge betweenness centrality.json")):
-            #             log.info("没有 self.edge_betweenness_centrality, 初始化")
-            #             self.edge_betweenness_centrality = dict(nx.edge_betweenness_centrality(self.G, weight="weight"))
-            #             # 重新建立索引
-            #             info_map = defaultdict(dict)
-            #             for (n1, n2), value in self.edge_betweenness_centrality.items():
-            #                 info_map[n1][n2] = value
-            #                 info_map[n2][n1] = value
-            #
-            #             with open(os.path.join(self.data_dir, "edge betweenness centrality.json"), "w") as f:
-            #                 log.info("保存至文件")
-            #                 f.write(json.dumps(info_map))
-            #
-            #         with open(os.path.join(self.data_dir, "edge betweenness centrality.json"), ) as f:
-            #             log.info("加载文件")
-            #             self.edge_betweenness_centrality = json.loads(f.read())
-            #     except:
-            #         log.error("保存或加载文件失败")
-            #     log.debug("初始化完成")
-            #
-            # ebc = self.edge_betweenness_centrality
-            # # ebc_values = []
-            # # for k1, v1 in ebc.items():
-            # #     for k2, v2 in v1.items():
-            # #         ebc_values.append(v2)
-            # # scaler = preprocessing.MinMaxScaler().fit(np.array(ebc_values))
-            #
-            # for n1, n2 in combinations(grp, 2):
-            #     if n1 in ebc and n2 in ebc[n1]:
-            #         res.append(ebc[n1][n2])
-            #     elif n2 in ebc and n1 in ebc[n2]:
-            #         res.append(ebc[n2][n1])
-            #     else:
-            #         res.append(0)
-            if not hasattr(self, "edge_betweenness_centrality_scaler"):
-                self.edge_betweenness_centrality_scaler = scaler(self.edge_betweenness_c)
-
-            ebc = self.edge_betweenness_centrality_scaler
-            for n1, n2 in combinations(grp, 2):
-                if (n1, n2) in self.edge_betweenness_c:
-                    res.append(ebc[(n1, n2)])
-                elif (n2, n1) in self.edge_betweenness_c:
-                    res.append(ebc[(n2, n1)])
-                else:
-                    res.append(0)
-            return res
-
-        def calculate_co_conservation_rate():
-            """使用闭包将索引放置在函数内"""
-            # 找到共保守性 pairwise，并建立索引
-            # type2 = self.type2[self.type2["info"] >= self.threshold]
-            type2 = self.type2
-            idx = defaultdict(list)
-            for i, row in type2.iterrows():
-                idx[row.site1].append(row.site2)
-                idx[row.site2].append(row.site1)
-
-            def _cal(grp):
-                # 较强共共保守性占的比例
-                rns = len(grp)  # 氨基酸个数
-                rnp = comb(rns, 2)  # pairwise 个数
-                rpc = 0  # 共保守性 pairwise 个数
-                for p1, p2 in combinations(grp, 2):
-                    if p2 in idx[p1]:
-                        rpc += 1
-                res = [rpc / rnp, ] * len(grp)
-                return res
-
-            return _cal
-
         # 单独将箱线图拿出
-        self.group_global_fig: plt.Figure = plt.figure(figsize=(14, 9.6))
-        self.group_global_axes = [j for i in self.group_global_fig.subplots(2, 4) for j in i]
+        self.group_global_fig: plt.Figure = plt.figure(figsize=(14, 14))
+        self.group_global_axes = [j for i in self.group_global_fig.subplots(3, 3) for j in i]
         self.group_global_ax_count = 0
         # 只绘制 p < 0.05 的图
         self.group_global_valid_fig: plt.Figure = plt.figure(figsize=(16, 8))
@@ -1369,36 +1287,18 @@ class ProConNetwork:
         # 统计信息表
         excel_writer = pd.ExcelWriter(os.path.join(self.data_dir, "group distribution statistic information.xlsx"))
 
-        # 关于节点
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_degree_centrality, "degree centrality",
-                                         excel_writer=excel_writer)
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_betweenness_centrality,
-                                         "betweenness centrality", excel_writer=excel_writer)
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_closeness_centrality,
-                                         "closeness centrality", excel_writer=excel_writer)
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_avg_weighted_degree,
-                                         "average weighted degree", excel_writer=excel_writer)
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_page_rank, "page rank",
-                                         excel_writer=excel_writer)
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_conservation, "conservation",
-                                         excel_writer=excel_writer)
+        funcs = self.get_functions()
+        for name, func in funcs.items():
+            calculate_group_and_sample_score(groups, group_count_sample, func, name, excel_writer=excel_writer)
 
-        # 关于边
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_weighted_shortest_path,
-                                         "shortest weighted path length", excel_writer=excel_writer)
-        calculate_group_and_sample_score(groups, group_count_sample, calculate_edge_betweenness_centrality,
-                                         "edge betweenness centrality", excel_writer=excel_writer)
-        # # 关于 高保守性
-        # calculate_group_and_sample_score(groups, group_count_sample, calculate_co_conservation_rate(),
-        #                                  "rate of co-pairwise", excel_writer=excel_writer)
 
         # 调整 global 图
         # title 为 xlabel; 删除 xlabel ylabel
-        for axes in [self.group_global_axes, self.group_global_valid_axes]:
-            axes: List[plt.Axes]
+        # for axes in [self.group_global_axes, self.group_global_valid_axes]:
+        #     axes: List[plt.Axes]
             # [ax.set_title(ax.get_xlabel()) for ax in axes]
             # [ax.set_xlabel("") for ax in axes]
-            [ax.set_ylabel("") for ax in axes]
+            # [ax.set_ylabel("") for ax in axes]
         self.group_global_fig.tight_layout()
         self.group_global_fig.savefig(os.path.join(self.data_dir, "group distribution global.png"), dpi=300)
         [i.set_visible(False) for i in self.group_global_valid_axes[self.group_global_valid_ax_count:]]  # 删除多余子图
@@ -1406,6 +1306,159 @@ class ProConNetwork:
         self.group_global_valid_fig.savefig(os.path.join(self.data_dir, "group distribution global valid.png"), dpi=300)
 
         excel_writer.close()
+
+    def calculate_degree_centrality(self, grp):
+        dc = scaler(self.degree_c)
+        return [dc[aa] for aa in grp]
+
+    def calculate_betweenness_centrality(self, grp):
+        bc = scaler(self.betweenness_c)
+        return [bc[aa] for aa in grp]
+
+    def calculate_closeness_centrality(self, grp):
+        cc = scaler(self.closeness_c)
+        return [cc[aa] for aa in grp]
+
+    def calculate_degree(self):
+        result = {}
+        for node in self.G.nodes:
+            # 计算单个位点的加权平均度
+            weighted_degrees = []
+            for nbr, datadict in self.G.adj[node].items():
+                weighted_degrees.append(datadict.get("weight", 0))
+
+            if weighted_degrees:
+                avg_weighted_degree = np.mean(weighted_degrees)
+            else:
+                avg_weighted_degree = 0
+            result[node] = avg_weighted_degree
+        return result
+
+    def calculate_avg_weighted_degree(self, grp):
+        """计算一组位点的平均度"""
+        degree = scaler(self.degree)
+        return [degree[aa] for aa in grp]
+
+    def calculate_page_rank(self, grp):
+        pr = scaler(self.page_rank)
+        return [pr[aa] for aa in grp]
+
+    def calculate_conservation(self, grp):
+        return [self.G.nodes[aa]["size"] for aa in grp]
+
+    def calculate_weighted_shortest_path(self, grp):
+        res = []
+        if not hasattr(self, "weighted_shortest_path_length"):
+            log.info("没有 self.weighted_shortest_path_length, 初始化")
+            # log.debug(" = %s", dict(nx.shortest_path_length(self.G, weight="weight")))
+            # log.debug(" = %s", dict(nx.shortest_path_length(self.G, )))
+            if not os.path.exists(os.path.join(self.data_dir, "weighted shortest path length.json")):
+                self.weighted_shortest_path_length = dict(nx.shortest_path_length(self.G, weight="weight"))
+                with open(os.path.join(self.data_dir, "weighted shortest path length.json"), "w") as f:
+                    log.info("保存至文件")
+                    f.write(json.dumps(self.weighted_shortest_path_length))
+
+            with open(os.path.join(self.data_dir, "weighted shortest path length.json"), ) as f:
+                log.info("加载文件")
+                self.weighted_shortest_path_length = json.loads(f.read())
+
+            log.debug("初始化完成")
+        # 归一器
+        if not hasattr(self, "scaler_for_weighted_shortest_path_length"):
+            all_values = []
+            for v1 in self.weighted_shortest_path_length.values():
+                for v2 in v1.values():
+                    all_values.append(v2)
+            all_values = np.array(all_values).reshape((-1, 1))
+            self.scaler_for_weighted_shortest_path_length = preprocessing.MinMaxScaler().fit(all_values)
+
+        wspl = self.weighted_shortest_path_length
+        for n1, n2 in combinations(grp, 2):
+            res.append(
+                self.scaler_for_weighted_shortest_path_length.transform([[wspl[n1][n2]]])[0][0])
+        return res
+
+    def calculate_co_conservation(self, grp):
+        res = []
+        for n1, n2 in combinations(grp, 2):
+            if self.G.has_edge(n1, n2):
+                res.append(self.G.edges[n1, n2]["weight"])
+        return res
+
+    def calculate_edge_betweenness_centrality(self, grp):
+        res = []
+        # if not hasattr(self, "edge_betweenness_centrality"):
+        #     try:
+        #         # 保存至 json 文件
+        #         if not os.path.exists(os.path.join(self.data_dir, "edge betweenness centrality.json")):
+        #             log.info("没有 self.edge_betweenness_centrality, 初始化")
+        #             self.edge_betweenness_centrality = dict(nx.edge_betweenness_centrality(self.G, weight="weight"))
+        #             # 重新建立索引
+        #             info_map = defaultdict(dict)
+        #             for (n1, n2), value in self.edge_betweenness_centrality.items():
+        #                 info_map[n1][n2] = value
+        #                 info_map[n2][n1] = value
+        #
+        #             with open(os.path.join(self.data_dir, "edge betweenness centrality.json"), "w") as f:
+        #                 log.info("保存至文件")
+        #                 f.write(json.dumps(info_map))
+        #
+        #         with open(os.path.join(self.data_dir, "edge betweenness centrality.json"), ) as f:
+        #             log.info("加载文件")
+        #             self.edge_betweenness_centrality = json.loads(f.read())
+        #     except:
+        #         log.error("保存或加载文件失败")
+        #     log.debug("初始化完成")
+        #
+        # ebc = self.edge_betweenness_centrality
+        # # ebc_values = []
+        # # for k1, v1 in ebc.items():
+        # #     for k2, v2 in v1.items():
+        # #         ebc_values.append(v2)
+        # # scaler = preprocessing.MinMaxScaler().fit(np.array(ebc_values))
+        #
+        # for n1, n2 in combinations(grp, 2):
+        #     if n1 in ebc and n2 in ebc[n1]:
+        #         res.append(ebc[n1][n2])
+        #     elif n2 in ebc and n1 in ebc[n2]:
+        #         res.append(ebc[n2][n1])
+        #     else:
+        #         res.append(0)
+        if not hasattr(self, "edge_betweenness_centrality_scaler"):
+            self.edge_betweenness_centrality_scaler = scaler(self.edge_betweenness_c)
+
+        ebc = self.edge_betweenness_centrality_scaler
+        for n1, n2 in combinations(grp, 2):
+            if (n1, n2) in self.edge_betweenness_c:
+                res.append(ebc[(n1, n2)])
+            elif (n2, n1) in self.edge_betweenness_c:
+                res.append(ebc[(n2, n1)])
+            # else:
+            #     res.append(0)
+        return res
+
+    def calculate_co_conservation_rate(self):
+        """使用闭包将索引放置在函数内"""
+        # 找到共保守性 pairwise，并建立索引
+        # type2 = self.type2[self.type2["info"] >= self.threshold]
+        type2 = self.type2
+        idx = defaultdict(list)
+        for i, row in type2.iterrows():
+            idx[row.site1].append(row.site2)
+            idx[row.site2].append(row.site1)
+
+        def _cal(grp):
+            # 较强共共保守性占的比例
+            rns = len(grp)  # 氨基酸个数
+            rnp = comb(rns, 2)  # pairwise 个数
+            rpc = 0  # 共保守性 pairwise 个数
+            for p1, p2 in combinations(grp, 2):
+                if p2 in idx[p1]:
+                    rpc += 1
+            res = [rpc / rnp, ] * len(grp)
+            return res
+
+        return _cal
 
     def _plot_2D(self, font_size="x-large", txt_rotation=0, x_rotation=90):
         analysis = self.analysis_mutation_group.analysis
@@ -1591,7 +1644,7 @@ if __name__ == '__main__':
     mutation_groups.display_seq_and_aa()
     pcn = ProConNetwork(mutation_groups, threshold=100)
     log.debug("len(pcn.type2) = %s", len(pcn.type2))
-    # pcn.analysisG()
+    pcn.analysisG()
     # pcn.generate_ebc()
     # print(pd.value_counts([len(i) for i in pcn.analysis_mutation_group.aa_groups]))  # 统计变体中变异数量
     # pcn.output_for_gephi()
