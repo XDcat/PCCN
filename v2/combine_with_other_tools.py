@@ -82,9 +82,6 @@ class CombineResult:
         aa_info = aa_info.sort_values("conservation", ascending=True)
         aa_info.to_csv(os.path.join(data_dir, "combine_with_other_tools - single.csv"))
 
-
-
-
         # 相关性分析
         c1_columns = ["stability", "BFE"]  # 比较对象 1
         c2_columns = conservation_data_columns  # 比较对象 2
@@ -376,7 +373,7 @@ class CombineResult:
         all_cor = all_cor.rename(
             {"co-substitution": "substitution", "variant (single)": "variant", "variant (co)": "variant"}, level=0,
             axis=0)
-        all_cor = all_cor.drop(["degree", "average weighted degree", "conservation"], level=2, axis=0)
+        all_cor = all_cor.drop(["degree", "average weighted degree", "conservation", "average shortest length in sampled data"], level=2, axis=0)
         all_cor = all_cor.rename({"weighted degree": "degree", "normalized conservation": "conservation"})
 
         # 统计两种相关性的个数
@@ -430,7 +427,12 @@ class CombineResult:
         # 格式化
         valid_cor = valid_cor[target_columns + ["top3"]]
         valid_cor.index.names = map(lambda x: x[0].upper() + x[1:], ["#", "kind", "network characteristic"])
-        valid_cor.columns = ["Spearman correlation", "P value", "Top3"]
+        valid_cor.columns = ["Correlation", "P value", "Top3"]
+        # top3 放在前面
+        valid_cor = valid_cor.reset_index()
+        valid_cor.insert(2, "Top3", valid_cor.pop("Top3"))
+        valid_cor = valid_cor.sort_values(valid_cor.columns.to_list()[:4])
+        valid_cor = valid_cor.set_index(valid_cor.columns.to_list()[:4])
         # 保存
         valid_cor.to_excel(os.path.join(data_dir, "combine_with_other_tools - parse.xlsx"))
 
@@ -473,12 +475,23 @@ class CombineResult:
             all_cor_sorted_valid["spearmanr correlation"].astype(int).abs() != 1]
 
         # 格式化结果
-        all_cor_sorted_valid = all_cor_sorted_valid.drop(["degree", "average weighted degree", "conservation"], level=1,
+        all_cor_sorted_valid = all_cor_sorted_valid.drop(["degree", "average weighted degree", "conservation", "average shortest length in sampled data"], level=1,
                                                          axis=0)
         all_cor_sorted_valid = all_cor_sorted_valid.rename(
-            {"weighted degree": "degree", "normalized conservation": "conservation"})
-        all_cor_sorted_valid.index.names = ["#", "Network characteristic"]
+            {"weighted degree": "degree", "normalized conservation": "conservation", "average shortest length in variant": "average shortest length"})
+        all_cor_sorted_valid.index.names = ["Kind", "Network characteristic"]
         all_cor_sorted_valid.columns = map(lambda x: x[0].upper() + x[1:], all_cor_sorted_valid.columns)
+
+        # 毒株作为第一列
+        all_cor_sorted_valid = all_cor_sorted_valid.reset_index()
+        all_cor_sorted_valid.insert(0, "Variant", all_cor_sorted_valid.pop("Variant"))
+        all_cor_sorted_valid.insert(2, "Top3", all_cor_sorted_valid.pop("Top3"))
+        all_cor_sorted_valid = all_cor_sorted_valid.sort_values("Variant")
+        all_cor_sorted_valid = all_cor_sorted_valid.set_index(all_cor_sorted_valid.columns.to_list()[:4])
+        # 格式化
+        all_cor_sorted_valid = all_cor_sorted_valid.iloc[:, :-2]
+        all_cor_sorted_valid = all_cor_sorted_valid.rename(
+            {"Spearmanr correlation": "Correlation", "Spearmanr p": "P value"}, axis=1)
 
         # 保存
         all_cor_sorted_valid.to_excel(os.path.join(data_dir, "combine_with_other_tools - parse - variant.xlsx"))
@@ -528,14 +541,16 @@ class CombineResult:
             top3 = co_info_sorted.iloc[:3]
             top3 = top3.apply(lambda x: f"{x.a1}-{x.a2}", axis=1).to_list()
             top3 = ",".join(top3)
-            co_res.append( {"Network characteristic": n, "Top3": top3})
+            co_res.append({"Network characteristic": n, "Top3": top3})
 
         # single
         single_info: pd.DataFrame = pd.read_csv(single_info_path)
         single_info["conservation"] = single_info["normalized conservation"]
         single_info["degree"] = single_info["average weighted degree"]
         print(single_info.columns.to_list())
-        single_target_names = ['degree', 'conservation', 'closeness centrality', 'betweenness centrality', 'degree centrality', 'page rank', 'average shortest length in variant', 'average shortest length in sampled data']
+        single_target_names = ['degree', 'conservation', 'closeness centrality', 'betweenness centrality',
+                               'degree centrality', 'page rank', 'average shortest length in variant',
+                               'average shortest length in sampled data']
         single_res = []
         for n in single_target_names:
             single_info_sorted = single_info.sort_values(n, ascending=False)
@@ -590,14 +605,14 @@ if __name__ == '__main__':
     # cr.analysis_variant()
 
     # 解析结果
-    CombineResult.parse_result()
-    CombineResult.parse_variant_result()
+    # CombineResult.parse_result()
+    # CombineResult.parse_variant_result()
 
     # 绘制散点图
     # CombineResult.plot_correlation_scatter()
 
     # 网络参数前几
-    # CombineResult.get_graph_top3()
+    CombineResult.get_graph_top3()
 
     # 绘制分布图
     # CombineResult.plot_for_stability_bfe()

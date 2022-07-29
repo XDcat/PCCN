@@ -843,10 +843,12 @@ class ProConNetwork:
         # self._plot_2D()  # 二维坐标图
 
         # 以 substitution 为单位的图
-        # self._boxplot_for_all_kinds()
+        self._boxplot_for_all_kinds()
+        self._boxplot_for_all_kinds("BA.4(Omicron)")
+        self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
-        self._group_plot_with_node()
+        # self._group_plot_with_node()
 
         # 废弃
         #
@@ -1055,15 +1057,15 @@ class ProConNetwork:
                 .render(os.path.join(self.data_dir, "mutation relationship.html"))
         )
 
-    def _boxplot_for_all_kinds(self):
-        def _func_boxplot(variant, sample, ax, func, name):
+    def _boxplot_for_all_kinds(self, target_variant=None):
+        def _func_boxplot(variant, sample, ax, func, name, target_variant):
             variant_scores = func(variant)
             sample_scores = func(sample)
 
             # 绘制箱线图
             _plot_data = pd.DataFrame(
                 {"score": variant_scores + sample_scores,
-                 "label": ["variant"] * len(variant_scores) + ["sample"] * len(sample_scores)}
+                 "label": ["variant" if target_variant is None else target_variant] * len(variant_scores) + ["sample"] * len(sample_scores)}
             )
             sns.boxplot(data=_plot_data, x="label", y="score", ax=ax, fliersize=1)
             p_value = mannwhitneyu(variant_scores, sample_scores).pvalue
@@ -1080,13 +1082,29 @@ class ProConNetwork:
         funcs = self.get_functions()
 
         # init data
-        variant = self.analysis_mutation_group.non_duplicated_aas_positions
+        if target_variant is None:
+            variant = self.analysis_mutation_group.non_duplicated_aas_positions
+        else:
+            variant_name = self.analysis_mutation_group.aa_groups_info["name"].to_list()
+            variant_index = variant_name.index(target_variant)
+            variant = self.analysis_mutation_group.aa_groups[variant_index]
+            variant = [self._aa2position(i) for i in variant]
+
         sample = [j for i in self.analysis_mutation_group.non_duplicated_aas_sample for j in i]
         for idx, (key, func) in enumerate(funcs.items()):
             ax = axes[idx]
-            _func_boxplot(variant, sample, ax, func, key)
+            _func_boxplot(variant, sample, ax, func, key, target_variant=target_variant)
         fig.show()
-        fig.savefig(os.path.join(self.data_dir, "boxplot_of_all.png"))
+
+        # save fig
+        if target_variant is None:
+            fig_file_name = os.path.join(self.data_dir, "boxplot_of_all.png")
+        else:
+            fig_file_name = os.path.join(self.data_dir, target_variant,  "boxplot_of_all.png")
+            if not os.path.exists(os.path.dirname(fig_file_name)):
+                os.mkdir(os.path.dirname(fig_file_name))
+
+        fig.savefig(fig_file_name)
 
     def get_functions(self):
         funcs = {
