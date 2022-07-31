@@ -127,6 +127,7 @@ class AnalysisMutationGroup:
     def resample_aas(self, aas, N=1000):
         # 重采样
         positions = list(set(self.positions) - set(aas))
+        positions = sorted(positions)
         positions = pd.Series(positions)
         log.debug("开始采样，采样数目为%s", N)
         # sample_aas = [positions.sample(n=len(aas), random_state=self.seed + i).tolist() for i in range(N)]
@@ -141,6 +142,7 @@ class AnalysisMutationGroup:
         """
         groups = self.aa_groups
         positions = list(set(self.positions) - set(self.non_duplicated_aas_positions))
+        positions = sorted(positions)
         positions = pd.Series(positions)
 
         # 重采样
@@ -877,7 +879,7 @@ class ProConNetwork:
         # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
-        self._group_plot_with_node()
+        # self._group_plot_with_node()
 
         # 废弃
         #
