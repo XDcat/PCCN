@@ -6,6 +6,7 @@ import os
 import pickle
 import time
 from collections import defaultdict
+from functools import reduce
 from itertools import combinations, permutations
 from typing import List
 
@@ -160,9 +161,36 @@ class AnalysisMutationGroup:
         count = [len(group) for group in self.aa_groups_position]
         log.debug("pd.value_counts(count).sort_index() = %s", pd.value_counts(count).sort_index())
 
+        all_aa = reduce(lambda x, y: x + y, self.aa_groups_position)
+        log.debug("all aa count = %s", pd.value_counts(all_aa))
+
         log.info("number of variation: %s", len(self.aa_groups))
         log.info("number of aas: %s", len(self.non_duplicated_aas))
         log.info("number of site: %s", len(self.non_duplicated_aas_positions))
+    def count_aa(self):
+        group = self.aa_groups
+        group_info = self.aa_groups_info
+        names = group_info["name"].to_list()
+
+        result = {}
+        for i in range(len(group)):
+            name = names[i]
+            N = len(group[i])
+            if N not in result:
+                result[N] = {"Count": 0, "Variant": []}
+            result[N]["Count"] += 1
+            result[N]["Variant"].append(name)
+
+        for k in result.keys():
+            result[k]["Variant"] = ", ".join(result[k]["Variant"])
+
+        result = pd.DataFrame(result).T
+        result = result.sort_index()
+        result.index.name = "Number of substitutions"
+        result = result.rename(columns={"Count": "Number of variants"})
+        print(result)
+        result.to_excel(os.path.join("../data/procon", "aa count.xlsx"))
+
 
 
 class ProConNetwork:
@@ -838,14 +866,14 @@ class ProConNetwork:
     def analysisG(self, ):
         """绘制相关图表"""
         # self._plot_origin_distribution()  # 绘制所有节点的保守性的分布情况
-        # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
+        self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
         # self._plot_2D()  # 二维坐标图
 
         # 以 substitution 为单位的图
-        self._boxplot_for_all_kinds()
-        self._boxplot_for_all_kinds("BA.4(Omicron)")
-        self._boxplot_for_all_kinds("B.1.617.2(Delta)")
+        # self._boxplot_for_all_kinds()
+        # self._boxplot_for_all_kinds("BA.4(Omicron)")
+        # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
         # self._group_plot_with_node()
@@ -1660,9 +1688,10 @@ if __name__ == '__main__':
     # 需要关注的变异
     mutation_groups = AnalysisMutationGroup()
     mutation_groups.display_seq_and_aa()
-    pcn = ProConNetwork(mutation_groups, threshold=100)
-    log.debug("len(pcn.type2) = %s", len(pcn.type2))
-    pcn.analysisG()
+    mutation_groups.count_aa()
+    # pcn = ProConNetwork(mutation_groups, threshold=100)
+    # log.debug("len(pcn.type2) = %s", len(pcn.type2))
+    # pcn.analysisG()
     # pcn.generate_ebc()
     # print(pd.value_counts([len(i) for i in pcn.analysis_mutation_group.aa_groups]))  # 统计变体中变异数量
     # pcn.output_for_gephi()
