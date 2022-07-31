@@ -25,6 +25,7 @@ from pyecharts.charts import Graph
 from scipy.special import comb
 from scipy.stats import mannwhitneyu, ttest_1samp
 from sklearn import preprocessing
+from statannotations.Annotator import Annotator
 
 import logconfig
 
@@ -167,6 +168,7 @@ class AnalysisMutationGroup:
         log.info("number of variation: %s", len(self.aa_groups))
         log.info("number of aas: %s", len(self.non_duplicated_aas))
         log.info("number of site: %s", len(self.non_duplicated_aas_positions))
+
     def count_aa(self):
         group = self.aa_groups
         group_info = self.aa_groups_info
@@ -190,7 +192,6 @@ class AnalysisMutationGroup:
         result = result.rename(columns={"Count": "Number of variants"})
         print(result)
         result.to_excel(os.path.join("../data/procon", "aa count.xlsx"))
-
 
 
 class ProConNetwork:
@@ -866,17 +867,17 @@ class ProConNetwork:
     def analysisG(self, ):
         """绘制相关图表"""
         # self._plot_origin_distribution()  # 绘制所有节点的保守性的分布情况
-        self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
+        # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
         # self._plot_2D()  # 二维坐标图
 
         # 以 substitution 为单位的图
-        # self._boxplot_for_all_kinds()
+        self._boxplot_for_all_kinds()
         # self._boxplot_for_all_kinds("BA.4(Omicron)")
         # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
-        # self._group_plot_with_node()
+        self._group_plot_with_node()
 
         # 废弃
         #
@@ -885,7 +886,6 @@ class ProConNetwork:
         # self._plot_node_centraility_box()  # 箱线图：中心性
         # self._plot_conservation_box()  # 保守性
         # self.calculate_average_shortest_path_length()
-
 
     def output_for_gephi(self):
         # 边
@@ -1093,11 +1093,18 @@ class ProConNetwork:
             # 绘制箱线图
             _plot_data = pd.DataFrame(
                 {"score": variant_scores + sample_scores,
-                 "label": ["variant" if target_variant is None else target_variant] * len(variant_scores) + ["sample"] * len(sample_scores)}
+                 "label": ["variant" if target_variant is None else target_variant] * len(variant_scores) + [
+                     "sample"] * len(sample_scores)}
             )
-            sns.boxplot(data=_plot_data, x="label", y="score", ax=ax, fliersize=1)
+            x = "label"
+            y = "score"
+            order = ["variant", "sample"]
+            sns.boxplot(data=_plot_data, x=x, y=y, ax=ax, order=order, fliersize=1)
+            # 标注 p value
             p_value = mannwhitneyu(variant_scores, sample_scores).pvalue
-            ax.set_title(f"p = {p_value:.3f}", y=0.9)
+            # ax.set_title(f"p = {p_value:.3f}", y=0.9)
+            self.boxplot_add_p_value(_plot_data, ax, x, y, order, "Mann-Whitney")
+
             ax.set_xlabel("")
             ax.set_ylabel(name)
 
@@ -1128,7 +1135,7 @@ class ProConNetwork:
         if target_variant is None:
             fig_file_name = os.path.join(self.data_dir, "boxplot_of_all.png")
         else:
-            fig_file_name = os.path.join(self.data_dir, target_variant,  "boxplot_of_all.png")
+            fig_file_name = os.path.join(self.data_dir, target_variant, "boxplot_of_all.png")
             if not os.path.exists(os.path.dirname(fig_file_name)):
                 os.mkdir(os.path.dirname(fig_file_name))
 
@@ -1236,35 +1243,38 @@ class ProConNetwork:
                 # ax_all_in_one.get_legend().remove()
 
                 # 箱线图
+                x = "label"
+                y = "score"
+                order = ["variant", "sample"]
+
                 _s1 = grp_mean_score  # 每一组的分数
                 _s2 = np.array(list(grp_sample_scores.values())).reshape(-1).tolist()  # 采样的分数
                 _plot_data = pd.DataFrame(
                     {"score": _s1 + _s2, "label": ["variant"] * len(_s1) + ["sample"] * len(_s2)},
                 )
-                sns.boxplot(data=_plot_data, x="label", y="score", ax=ax_box_plot, fliersize=1)
-                p_value = mannwhitneyu(_s1, _s2).pvalue
-                ax_box_plot.set_title(f"p = {p_value:.3f}", y=0.9)
+                sns.boxplot(data=_plot_data, x=x, y=y, ax=ax_box_plot, order=order, fliersize=1)
+                self.boxplot_add_p_value(_plot_data, ax_box_plot, x, y, order, )
                 ax_box_plot.set_xlabel("")
                 ax_box_plot.set_ylabel(fig_name)
 
                 # 给global加上箱线图
                 global_axes = self.group_global_axes[self.group_global_ax_count]
-                self.group_global_ax_count += 1
-                sns.boxplot(data=_plot_data, x="label", y="score", ax=global_axes, fliersize=1)
-                # global_axes.set_xlabel(f"{fig_name} (p={p_value:.3f})", y=-0.1)
-                global_axes.set_title(f"p = {p_value:.3f}", y=0.9)
+                sns.boxplot(data=_plot_data, x=x, y=y, order=order, ax=global_axes, fliersize=1)
+                self.boxplot_add_p_value(_plot_data, global_axes, x, y, order, "t-test_ind")
                 global_axes.set_xlabel("")
                 global_axes.set_ylabel(fig_name)
-                # global valid
-                if p_value <= 0.05:
-                    global_axes = self.group_global_valid_axes[self.group_global_valid_ax_count]
-                    self.group_global_valid_ax_count += 1
-                    sns.boxplot(data=_plot_data, x="label", y="score", ax=global_axes, fliersize=1)
-                    # self.group_global_valid_fig.show()
-                    # global_axes.set_xlabel(f"{fig_name} (p={p_value:.3f})", y=-0.1)
-                    global_axes.set_title(f"p = {p_value:.3f}", y=0.9)
-                    global_axes.set_xlabel("")
-                    global_axes.set_ylabel(fig_name)
+                self.group_global_ax_count += 1
+
+                # # global valid
+                # if p_value <= 0.05:
+                #     global_axes = self.group_global_valid_axes[self.group_global_valid_ax_count]
+                #     self.group_global_valid_ax_count += 1
+                #     sns.boxplot(data=_plot_data, x="label", y="score", ax=global_axes, fliersize=1)
+                #     # self.group_global_valid_fig.show()
+                #     # global_axes.set_xlabel(f"{fig_name} (p={p_value:.3f})", y=-0.1)
+                #     global_axes.set_title(f"p = {p_value:.3f}", y=0.9)
+                #     global_axes.set_xlabel("")
+                #     global_axes.set_ylabel(fig_name)
 
                 # 输出结果
                 fig.suptitle(fig_name, )
@@ -1337,14 +1347,13 @@ class ProConNetwork:
         for name, func in funcs.items():
             calculate_group_and_sample_score(groups, group_count_sample, func, name, excel_writer=excel_writer)
 
-
         # 调整 global 图
         # title 为 xlabel; 删除 xlabel ylabel
         # for axes in [self.group_global_axes, self.group_global_valid_axes]:
         #     axes: List[plt.Axes]
-            # [ax.set_title(ax.get_xlabel()) for ax in axes]
-            # [ax.set_xlabel("") for ax in axes]
-            # [ax.set_ylabel("") for ax in axes]
+        # [ax.set_title(ax.get_xlabel()) for ax in axes]
+        # [ax.set_xlabel("") for ax in axes]
+        # [ax.set_ylabel("") for ax in axes]
         self.group_global_fig.tight_layout()
         self.group_global_fig.savefig(os.path.join(self.data_dir, "group distribution global.png"), dpi=300)
         [i.set_visible(False) for i in self.group_global_valid_axes[self.group_global_valid_ax_count:]]  # 删除多余子图
@@ -1681,6 +1690,13 @@ class ProConNetwork:
                 log.error("保存或加载文件失败")
             log.debug("初始化完成")
 
+    def boxplot_add_p_value(self, df, ax, x, y, order, test='Mann-Whitney'):
+        annot = Annotator(ax, [order, ], data=df, x=x, y=y, order=order)
+        annot.configure(test=test, text_format='star', loc='inside', verbose=2)
+        annot.apply_test().annotate()
+        ax.set_title("")
+        return ax
+
 
 if __name__ == '__main__':
     start_time = time.time()
@@ -1689,9 +1705,9 @@ if __name__ == '__main__':
     mutation_groups = AnalysisMutationGroup()
     mutation_groups.display_seq_and_aa()
     mutation_groups.count_aa()
-    # pcn = ProConNetwork(mutation_groups, threshold=100)
+    pcn = ProConNetwork(mutation_groups, threshold=100)
     # log.debug("len(pcn.type2) = %s", len(pcn.type2))
-    # pcn.analysisG()
+    pcn.analysisG()
     # pcn.generate_ebc()
     # print(pd.value_counts([len(i) for i in pcn.analysis_mutation_group.aa_groups]))  # 统计变体中变异数量
     # pcn.output_for_gephi()
