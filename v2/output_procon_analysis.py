@@ -1087,7 +1087,8 @@ class ProConNetwork:
     def _boxplot_for_all_kinds(self, target_variant=None):
         def _func_boxplot(variant, sample, ax, func, name, target_variant):
             variant_scores = func(variant)
-            sample_scores = [np.mean(func(i)) for i in sample]  # 分组求平均
+            # sample_scores = [np.mean(func(i)) for i in sample]  # 分组求平均
+            sample_scores = [j for i in sample for j in func(i)]  # 分组求平均
 
             # 绘制箱线图
             _plot_data = pd.DataFrame(
