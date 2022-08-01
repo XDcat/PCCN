@@ -154,7 +154,7 @@ class AnalysisMutationGroup:
             one_sample = [positions.sample(n=count, random_state=self.seed + j + count * 1000).tolist() for j in
                           range(N)]
             sample_groups[count] = one_sample
-            log.info(f"采样完成 group len =  {count}")
+            log.debug(f"采样完成 group len =  {count}")
         return sample_groups
 
     def display_seq_and_aa(self):
@@ -192,7 +192,6 @@ class AnalysisMutationGroup:
         result = result.sort_index()
         result.index.name = "Number of substitutions"
         result = result.rename(columns={"Count": "Number of variants"})
-        print(result)
         result.to_excel(os.path.join("../data/procon", "aa count.xlsx"))
 
 
@@ -874,12 +873,12 @@ class ProConNetwork:
         # self._plot_2D()  # 二维坐标图
 
         # 以 substitution 为单位的图
-        self._boxplot_for_all_kinds()
+        # self._boxplot_for_all_kinds()
         # self._boxplot_for_all_kinds("BA.4(Omicron)")
         # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
-        # self._group_plot_with_node()
+        self._group_plot_with_node()
 
         # 废弃
         #
@@ -1101,7 +1100,7 @@ class ProConNetwork:
             x = "label"
             y = "score"
             order = ["variant", "sample"]
-            sns.boxplot(data=_plot_data, x=x, y=y, ax=ax, order=order, fliersize=1)
+            sns.boxplot(data=_plot_data, x=x, y=y, ax=ax, order=order, fliersize=1, width=.5)
             # 标注 p value
             p_value = mannwhitneyu(variant_scores, sample_scores).pvalue
             # ax.set_title(f"p = {p_value:.3f}", y=0.9)
@@ -1254,15 +1253,15 @@ class ProConNetwork:
                 _plot_data = pd.DataFrame(
                     {"score": _s1 + _s2, "label": ["variant"] * len(_s1) + ["sample"] * len(_s2)},
                 )
-                sns.boxplot(data=_plot_data, x=x, y=y, ax=ax_box_plot, order=order, fliersize=1)
+                sns.boxplot(data=_plot_data, x=x, y=y, ax=ax_box_plot, order=order, fliersize=1, width=0.5)
                 self.boxplot_add_p_value(_plot_data, ax_box_plot, x, y, order, )
                 ax_box_plot.set_xlabel("")
                 ax_box_plot.set_ylabel(fig_name)
 
                 # 给global加上箱线图
                 global_axes = self.group_global_axes[self.group_global_ax_count]
-                sns.boxplot(data=_plot_data, x=x, y=y, order=order, ax=global_axes, fliersize=1)
-                self.boxplot_add_p_value(_plot_data, global_axes, x, y, order, "t-test_ind")
+                sns.boxplot(data=_plot_data, x=x, y=y, order=order, ax=global_axes, fliersize=1, width=0.5)
+                self.boxplot_add_p_value(_plot_data, global_axes, x, y, order, )
                 global_axes.set_xlabel("")
                 global_axes.set_ylabel(fig_name)
                 self.group_global_ax_count += 1
