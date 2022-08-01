@@ -75,8 +75,6 @@ class AnalysisMutationGroup:
         # 根据变异的数目采样: 直接使用 group sample 中的数据
         self.group_count_sample = self.resample_groups()
 
-        self.display_seq_and_aa()
-
     @staticmethod
     def aa2position(aa: str):
         if aa[0] in AA and aa[-1] in aa and aa[1:-1].isdigit():
@@ -131,7 +129,7 @@ class AnalysisMutationGroup:
         positions = pd.Series(positions)
         log.debug("开始采样，采样数目为%s", N)
         # sample_aas = [positions.sample(n=len(aas), random_state=self.seed + i).tolist() for i in range(N)]
-        sample_aas = [positions.sample(n=1, random_state=self.seed + i).tolist() for i in range(N)]
+        sample_aas = [positions.sample(n=len(aas), random_state=self.seed + i).tolist() for i in range(N)]
         return sample_aas
 
     def resample_groups(self, N=1000):
@@ -873,12 +871,12 @@ class ProConNetwork:
         # self._plot_2D()  # 二维坐标图
 
         # 以 substitution 为单位的图
-        # self._boxplot_for_all_kinds()
+        self._boxplot_for_all_kinds()
         # self._boxplot_for_all_kinds("BA.4(Omicron)")
         # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
-        self._group_plot_with_node()
+        # self._group_plot_with_node()
 
         # 废弃
         #
@@ -1089,7 +1087,7 @@ class ProConNetwork:
     def _boxplot_for_all_kinds(self, target_variant=None):
         def _func_boxplot(variant, sample, ax, func, name, target_variant):
             variant_scores = func(variant)
-            sample_scores = func(sample)
+            sample_scores = [np.mean(func(i)) for i in sample]  # 分组求平均
 
             # 绘制箱线图
             _plot_data = pd.DataFrame(
@@ -1125,8 +1123,8 @@ class ProConNetwork:
             variant_index = variant_name.index(target_variant)
             variant = self.analysis_mutation_group.aa_groups[variant_index]
             variant = [self._aa2position(i) for i in variant]
+        sample = self.analysis_mutation_group.non_duplicated_aas_sample
 
-        sample = [j for i in self.analysis_mutation_group.non_duplicated_aas_sample for j in i]
         for idx, (key, func) in enumerate(funcs.items()):
             ax = axes[idx]
             _func_boxplot(variant, sample, ax, func, key, target_variant=target_variant)
@@ -1404,35 +1402,28 @@ class ProConNetwork:
 
     def calculate_weighted_shortest_path(self, grp):
         res = []
-        if not hasattr(self, "weighted_shortest_path_length"):
-            log.info("没有 self.weighted_shortest_path_length, 初始化")
-            # log.debug(" = %s", dict(nx.shortest_path_length(self.G, weight="weight")))
-            # log.debug(" = %s", dict(nx.shortest_path_length(self.G, )))
+        if not hasattr(self, "avg_shortest_path_length"):
+            log.info("没有 self.avg_shortest_path_length, 初始化")
             if not os.path.exists(os.path.join(self.data_dir, "weighted shortest path length.json")):
-                self.weighted_shortest_path_length = dict(nx.shortest_path_length(self.G, weight="weight"))
+                weighted_shortest_path_length = dict(nx.shortest_path_length(self.G, weight="weight"))
                 with open(os.path.join(self.data_dir, "weighted shortest path length.json"), "w") as f:
                     log.info("保存至文件")
-                    f.write(json.dumps(self.weighted_shortest_path_length))
+                    f.write(json.dumps(weighted_shortest_path_length))
+            else:
+                with open(os.path.join(self.data_dir, "weighted shortest path length.json"), ) as f:
+                    log.info("加载文件")
+                    weighted_shortest_path_length = json.loads(f.read())
 
-            with open(os.path.join(self.data_dir, "weighted shortest path length.json"), ) as f:
-                log.info("加载文件")
-                self.weighted_shortest_path_length = json.loads(f.read())
+            avg_shortest_path_length = {}
+            for node in self.analysis_mutation_group.positions:
+                assert len(weighted_shortest_path_length[node]) == len(self.analysis_mutation_group.positions)
+                avg_shortest_path_length[node] = np.mean(list(weighted_shortest_path_length[node].values()))
 
+            self.avg_shortest_path_length = avg_shortest_path_length
             log.debug("初始化完成")
-        # 归一器
-        if not hasattr(self, "scaler_for_weighted_shortest_path_length"):
-            all_values = []
-            for v1 in self.weighted_shortest_path_length.values():
-                for v2 in v1.values():
-                    all_values.append(v2)
-            all_values = np.array(all_values).reshape((-1, 1))
-            self.scaler_for_weighted_shortest_path_length = preprocessing.MinMaxScaler().fit(all_values)
 
-        wspl = self.weighted_shortest_path_length
-        for n1, n2 in combinations(grp, 2):
-            res.append(
-                self.scaler_for_weighted_shortest_path_length.transform([[wspl[n1][n2]]])[0][0])
-        return res
+        aspl = scaler(self.avg_shortest_path_length)
+        return [aspl[aa] for aa in grp]
 
     def calculate_co_conservation(self, grp):
         res = []
