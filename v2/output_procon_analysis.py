@@ -871,12 +871,12 @@ class ProConNetwork:
         # self._plot_2D()  # 二维坐标图
 
         # 以 substitution 为单位的图
-        self._boxplot_for_all_kinds()
-        # self._boxplot_for_all_kinds("BA.4(Omicron)")
-        # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
+        # self._boxplot_for_all_kinds()
+        self._boxplot_for_all_kinds("BA.4(Omicron)")
+        self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
-        # self._group_plot_with_node()
+        self._group_plot_with_node()
 
         # 废弃
         #
@@ -1087,22 +1087,20 @@ class ProConNetwork:
     def _boxplot_for_all_kinds(self, target_variant=None):
         def _func_boxplot(variant, sample, ax, func, name, target_variant):
             variant_scores = func(variant)
-            # sample_scores = [np.mean(func(i)) for i in sample]  # 分组求平均
             sample_scores = [j for i in sample for j in func(i)]  # 分组求平均
 
+            variant_name = "variant" if target_variant is None else target_variant
             # 绘制箱线图
             _plot_data = pd.DataFrame(
                 {"score": variant_scores + sample_scores,
-                 "label": ["variant" if target_variant is None else target_variant] * len(variant_scores) + [
+                 "label": [variant_name] * len(variant_scores) + [
                      "sample"] * len(sample_scores)}
             )
             x = "label"
             y = "score"
-            order = ["variant", "sample"]
+            order = [variant_name, "sample"]
             sns.boxplot(data=_plot_data, x=x, y=y, ax=ax, order=order, fliersize=1, width=.5)
             # 标注 p value
-            p_value = mannwhitneyu(variant_scores, sample_scores).pvalue
-            # ax.set_title(f"p = {p_value:.3f}", y=0.9)
             self.boxplot_add_p_value(_plot_data, ax, x, y, order, "Mann-Whitney")
 
             ax.set_xlabel("")
@@ -1111,7 +1109,7 @@ class ProConNetwork:
         # init figure
         fig: plt.Figure
         axes: List[plt.Axes]
-        fig, axes = plt.subplots(3, 3, figsize=(14, 14), constrained_layout=True)
+        fig, axes = plt.subplots(2, 4, figsize=(14, 8), constrained_layout=True)
         axes = [j for i in axes for j in i]
         # init func
         funcs = self.get_functions()
@@ -1151,7 +1149,6 @@ class ProConNetwork:
             "closeness centrality": self.calculate_closeness_centrality,
             "average shortest length": self.calculate_weighted_shortest_path,
             "co-conservation": self.calculate_co_conservation,
-            "edge betweenness centrality": self.calculate_edge_betweenness_centrality,
         }
         return funcs
 
@@ -1332,8 +1329,8 @@ class ProConNetwork:
                 fig.savefig(os.path.join(self.data_dir, f"group {fig_name}.png"), dpi=300)
 
         # 单独将箱线图拿出
-        self.group_global_fig: plt.Figure = plt.figure(figsize=(14, 14))
-        self.group_global_axes = [j for i in self.group_global_fig.subplots(3, 3) for j in i]
+        self.group_global_fig: plt.Figure = plt.figure(figsize=(14, 8))
+        self.group_global_axes = [j for i in self.group_global_fig.subplots(2, 4) for j in i]
         self.group_global_ax_count = 0
         # 只绘制 p < 0.05 的图
         self.group_global_valid_fig: plt.Figure = plt.figure(figsize=(16, 8))
@@ -1434,7 +1431,6 @@ class ProConNetwork:
         return res
 
     def calculate_edge_betweenness_centrality(self, grp):
-        res = []
         # if not hasattr(self, "edge_betweenness_centrality"):
         #     try:
         #         # 保存至 json 文件
@@ -1476,6 +1472,7 @@ class ProConNetwork:
             self.edge_betweenness_centrality_scaler = scaler(self.edge_betweenness_c)
 
         ebc = self.edge_betweenness_centrality_scaler
+        res = []
         for n1, n2 in combinations(grp, 2):
             if (n1, n2) in self.edge_betweenness_c:
                 res.append(ebc[(n1, n2)])
