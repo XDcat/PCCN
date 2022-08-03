@@ -233,7 +233,7 @@ class CombineResult:
         )
 
         # co
-        co_data_columns = co_info.columns[-4:].tolist()
+        co_data_columns = co_info.columns[-3:].tolist()
         variant_co = []
         for i, grp in enumerate(aa_groups):
             name = aa_groups_info.iloc[i]["name"]
@@ -249,8 +249,8 @@ class CombineResult:
         # mean
         variant_co_grp = variant_co.groupby("name").mean()
         single_correlation.to_csv(os.path.join(data_dir, "combine_with_other_tools - variant - co.csv"))
-        c1_columns = co_data_columns[2:]
-        c2_columns = co_data_columns[:2]
+        c1_columns = co_data_columns[1:]
+        c2_columns = co_data_columns[:1]
         single_correlation = self.cal_correlation(variant_co_grp, c1_columns, c2_columns, "variant-co",
                                                   variant_co_grp.index.to_list())
         single_correlation.to_csv(os.path.join(data_dir, "combine_with_other_tools - variant - co - correlation.csv"))
@@ -575,10 +575,10 @@ if __name__ == '__main__':
     # singe_info = cr.analysis_single_mutation()
     #
     # 分析两个位点
-    co_info = cr.analysis_co_mutations()
+    # co_info = cr.analysis_co_mutations()
 
     # 分析毒株
-    # cr.analysis_variant()
+    cr.analysis_variant()
 
     # 解析结果
     # CombineResult.parse_result()
