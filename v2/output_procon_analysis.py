@@ -719,42 +719,10 @@ class ProConNetwork:
     def _collect_mutation_info(self, save=True):
         """收集变异节点信息"""
         aas = self.analysis_mutation_group.non_duplicated_aas_positions
-        weighted_degrees = self.get_weighted_degree()
-        avg_weighted_degrees = self.get_avg_weighted_degree()
-
-        data = []
-        for aa in aas:
-            # 度
-            degree = self.G.degree[aa]
-            # 加权度
-            w_degree = weighted_degrees[aa]
-            # 加权平均度
-            avg_w_degrees = avg_weighted_degrees[aa]
-            # page rank
-            page_rank = self.page_rank[aa]
-            # conservation
-            if aa in self.type1.position.to_list():
-                conservation = self.type1["information"][self.type1.position == aa].to_list()[0]
-                norm_conservation = self.type1["info_norm"][self.type1.position == aa].to_list()[0]
-            else:
-                log.debug("%s 不在列表中", aa)
-                conservation = 0
-                norm_conservation = 0
-
-            # 中心性
-            # self.closeness_c[]
-            # self.betweenness_c[]
-            # self.closeness_c[]
-
-            data.append(
-                {"aa": aa, "degree": degree, "weighted degree": w_degree, "average weighted degree": avg_w_degrees,
-                 "conservation": conservation, "normalized conservation": norm_conservation,
-                 "closeness centrality": self.closeness_c[aa],
-                 "betweenness centrality": self.betweenness_c[aa],
-                 "degree centrality": self.degree_c[aa],
-                 "page rank": page_rank
-                 })
-
+        funcs: dict = self.get_functions()
+        funcs.pop("co-conservation")
+        data = {n: f(aas) for n, f in funcs.items()}
+        data["aa"] = aas
         data = pd.DataFrame(data)
         data = data.set_index("aa", drop=False).sort_index()
         if save:
@@ -1696,10 +1664,11 @@ if __name__ == '__main__':
     mutation_groups.display_seq_and_aa()
     mutation_groups.count_aa()
     pcn = ProConNetwork(mutation_groups, threshold=100)
-    # log.debug("len(pcn.type2) = %s", len(pcn.type2))
-    pcn.analysisG()
+    # pcn.analysisG()  # 绘制图片
+    pcn._collect_mutation_info()  # 保存网络参数
+
+    # 为其他程序提供数据
     # pcn.generate_ebc()
-    # print(pd.value_counts([len(i) for i in pcn.analysis_mutation_group.aa_groups]))  # 统计变体中变异数量
     # pcn.output_for_gephi()
     # pcn.output_for_DynaMut2()
     # pcn.output_for_topnettree()
