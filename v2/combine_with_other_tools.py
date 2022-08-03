@@ -43,13 +43,6 @@ class CombineResult:
         self.pcn = ProConNetwork(self.mutation_groups, threshold=100)
 
     def read_procon_single_mutation(self, ):
-        def read_avg_shortest_length(file="../data/procon/threshold_100/averrage shortest length.csv"):
-            asl = pd.read_csv(file)
-            asl["sample avg"] = asl.apply(lambda x: np.mean(json.loads(x.sample_avg_shortest_length)), axis=1)
-            asl = asl.loc[:, ["aa", "aas_avg_shortest_length", "sample avg"]]
-            asl.columns = ["aa", "average shortest length in variant", "average shortest length in sampled data"]
-            return asl
-
         pcn = self.pcn
         mutation_group = self.mutation_groups
         type1 = pcn.type1
@@ -58,9 +51,6 @@ class CombineResult:
         # 默认的数据
         pst_info = pcn._collect_mutation_info(save=False)
         pst_info = pst_info.reset_index(drop=True)
-        # average shortest length
-        asl = read_avg_shortest_length()
-        pst_info = pd.merge(pst_info, asl, left_on="aa", right_on="aa")
 
         aas_info = pd.DataFrame({"name": nd_aas})
         aas_info["aa"] = aas_info["name"].apply(mutation_group.aa2position)
@@ -100,10 +90,6 @@ class CombineResult:
         aa_groups = mutation_group.aa_groups
         aa_groups_info = mutation_group.aa_groups_info
 
-        # edge centrality
-        with open(os.path.join("../data/procon/threshold_100", "edge betweenness centrality.json"), ) as f:
-            log.info("加载文件")
-            edge_betweenness_centrality = json.loads(f.read())
 
         co_info = []
         for i, grp in enumerate(aa_groups):
@@ -113,16 +99,8 @@ class CombineResult:
                 p2 = mutation_group.aa2position(a2)
                 if G.has_edge(p1, p2):
                     coconservation = G.edges[p1, p2]["weight"]
-                    if p1 in edge_betweenness_centrality and p2 in edge_betweenness_centrality[p1]:
-                        ebc = edge_betweenness_centrality[p1][p2]
-                    elif p2 in edge_betweenness_centrality and p1 in edge_betweenness_centrality[p2]:
-                        ebc = edge_betweenness_centrality[p2][p1]
-                    else:
-                        print("{} {}无 edge centrality".format(a1, a2))
-                        ebc = 0
-
-                    co_info.append([name, a1, a2, coconservation, ebc])
-        co_info = pd.DataFrame(co_info, columns=["name", "a1", "a2", "co-conservation", "edge centrality"])
+                    co_info.append([name, a1, a2, coconservation])
+        co_info = pd.DataFrame(co_info, columns=["name", "a1", "a2", "co-conservation"])
         return co_info
 
     def analysis_co_mutations(self):
@@ -154,17 +132,15 @@ class CombineResult:
         info["stability"] = info.apply(cal_ddg, axis=1)
 
         # 检查是否为空
-        data_columns = ["co-conservation", "edge centrality", "BFE", "stability"]
+        data_columns = ["co-conservation",  "BFE", "stability"]
         info = info.drop(["name"], axis=1)  # 不保留毒株名
         info = info.drop_duplicates(["a1", "a2"])  # 删除重复
         info = info.reset_index(drop=True)  # 重设索引
 
-        # info = info[info.loc[:, data_columns].notnull().all(axis=1)]
-        # info = info[info.loc[:, data_columns].notnull().all(axis=1)]
 
         # 相关性分析
-        c1_columns = data_columns[2:]
-        c2_columns = data_columns[:2]
+        c1_columns = data_columns[1:]
+        c2_columns = data_columns[:1]
         top_names = []
         for i, row in info.iterrows():
             # n = "{}-{}".format(row.a1[1:-1] + row.a1[0], row.a2[1:-1] + row.a2[0])
@@ -599,7 +575,7 @@ if __name__ == '__main__':
     # singe_info = cr.analysis_single_mutation()
     #
     # 分析两个位点
-    # co_info = cr.analysis_co_mutations()
+    co_info = cr.analysis_co_mutations()
 
     # 分析毒株
     # cr.analysis_variant()
@@ -612,7 +588,7 @@ if __name__ == '__main__':
     # CombineResult.plot_correlation_scatter()
 
     # 网络参数前几
-    CombineResult.get_graph_top3()
+    # CombineResult.get_graph_top3()
 
     # 绘制分布图
     # CombineResult.plot_for_stability_bfe()
