@@ -507,10 +507,9 @@ class CombineResult:
                        co_info_path="../data/procon/combine_with_other_tools - co.csv"):
         # co
         co_info: pd.DataFrame = pd.read_csv(co_info_path, index_col=0)
-        co_info = co_info.rename({"edge centrality": "edge betweenness centrality"}, axis=1)
         co_info["a1"] = co_info["a1"].apply(lambda x: x[1:-1] + x[0])
         co_info["a2"] = co_info["a2"].apply(lambda x: x[1:-1] + x[0])
-        co_target_names = ["co-conservation", "edge betweenness centrality"]
+        co_target_names = ["co-conservation", ]
         co_res = []
         for n in co_target_names:
             co_info_sorted = co_info.sort_values(n, ascending=False)
@@ -521,12 +520,7 @@ class CombineResult:
 
         # single
         single_info: pd.DataFrame = pd.read_csv(single_info_path)
-        single_info["conservation"] = single_info["normalized conservation"]
-        single_info["degree"] = single_info["average weighted degree"]
-        print(single_info.columns.to_list())
-        single_target_names = ['degree', 'conservation', 'closeness centrality', 'betweenness centrality',
-                               'degree centrality', 'page rank', 'average shortest length in variant',
-                               'average shortest length in sampled data']
+        single_target_names = single_info.columns.tolist()[2:-2]
         single_res = []
         for n in single_target_names:
             single_info_sorted = single_info.sort_values(n, ascending=False)
@@ -581,14 +575,14 @@ if __name__ == '__main__':
     # cr.analysis_variant()
 
     # 解析结果
-    CombineResult.parse_result()
-    CombineResult.parse_variant_result()
+    # CombineResult.parse_result()
+    # CombineResult.parse_variant_result()
 
     # 绘制散点图
     # CombineResult.plot_correlation_scatter()
 
     # 网络参数前几
-    # CombineResult.get_graph_top3()
+    CombineResult.get_graph_top3()
 
     # 绘制分布图
     # CombineResult.plot_for_stability_bfe()
