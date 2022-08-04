@@ -246,9 +246,11 @@ class ProConNetwork:
         self.degree_c, self.betweenness_c, self.closeness_c, self.edge_betweenness_c = self._get_centralities()
         self.degree = self.calculate_degree()
 
-        # page ranke
+        # page rank
         log.info("page rank ...")
         self.page_rank = nx.pagerank(self.G)
+        log.info("shortest path length ...")
+        self.shortest_path_length = self.get_shortest_path_length()
 
     @staticmethod
     def _normalize_info(info: np.ndarray):
@@ -721,6 +723,7 @@ class ProConNetwork:
         aas = self.analysis_mutation_group.non_duplicated_aas_positions
         funcs: dict = self.get_functions()
         funcs.pop("co-conservation")
+        funcs.pop("average shortest length")
         data = {n: f(aas) for n, f in funcs.items()}
         data["aa"] = aas
         data = pd.DataFrame(data)
@@ -839,7 +842,7 @@ class ProConNetwork:
         # self._plot_2D()  # 二维坐标图
 
         # 以 substitution 为单位的图
-        # self._boxplot_for_all_kinds()
+        self._boxplot_for_all_kinds()
         self._boxplot_for_all_kinds("BA.4(Omicron)")
         self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
@@ -1115,7 +1118,7 @@ class ProConNetwork:
             "degree centrality": self.calculate_degree_centrality,
             "betweenness centrality": self.calculate_betweenness_centrality,
             "closeness centrality": self.calculate_closeness_centrality,
-            "average shortest length": self.calculate_weighted_shortest_path,
+            "shortest path length": self.calculate_weighted_shortest_path,
             "co-conservation": self.calculate_co_conservation,
         }
         return funcs
@@ -1366,30 +1369,23 @@ class ProConNetwork:
     def calculate_conservation(self, grp):
         return [self.G.nodes[aa]["size"] for aa in grp]
 
+    def get_shortest_path_length(self):
+        if not os.path.exists(os.path.join(self.data_dir, "weighted shortest path length.json")):
+            weighted_shortest_path_length = dict(nx.shortest_path_length(self.G, weight="weight"))
+            with open(os.path.join(self.data_dir, "weighted shortest path length.json"), "w") as f:
+                log.info("保存至文件")
+                f.write(json.dumps(weighted_shortest_path_length))
+        else:
+            with open(os.path.join(self.data_dir, "weighted shortest path length.json"), ) as f:
+                log.info("加载文件")
+                weighted_shortest_path_length = json.loads(f.read())
+        return weighted_shortest_path_length
+
     def calculate_weighted_shortest_path(self, grp):
         res = []
-        if not hasattr(self, "avg_shortest_path_length"):
-            log.info("没有 self.avg_shortest_path_length, 初始化")
-            if not os.path.exists(os.path.join(self.data_dir, "weighted shortest path length.json")):
-                weighted_shortest_path_length = dict(nx.shortest_path_length(self.G, weight="weight"))
-                with open(os.path.join(self.data_dir, "weighted shortest path length.json"), "w") as f:
-                    log.info("保存至文件")
-                    f.write(json.dumps(weighted_shortest_path_length))
-            else:
-                with open(os.path.join(self.data_dir, "weighted shortest path length.json"), ) as f:
-                    log.info("加载文件")
-                    weighted_shortest_path_length = json.loads(f.read())
-
-            avg_shortest_path_length = {}
-            for node in self.analysis_mutation_group.positions:
-                assert len(weighted_shortest_path_length[node]) == len(self.analysis_mutation_group.positions)
-                avg_shortest_path_length[node] = np.mean(list(weighted_shortest_path_length[node].values()))
-
-            self.avg_shortest_path_length = avg_shortest_path_length
-            log.debug("初始化完成")
-
-        aspl = scaler(self.avg_shortest_path_length)
-        return [aspl[aa] for aa in grp]
+        for n1, n2 in combinations(grp, 2):
+            res.append(self.shortest_path_length[n1][n2])
+        return res
 
     def calculate_co_conservation(self, grp):
         res = []
@@ -1664,8 +1660,8 @@ if __name__ == '__main__':
     mutation_groups.display_seq_and_aa()
     mutation_groups.count_aa()
     pcn = ProConNetwork(mutation_groups, threshold=100)
-    # pcn.analysisG()  # 绘制图片
-    pcn._collect_mutation_info()  # 保存网络参数
+    pcn.analysisG()  # 绘制图片
+    # pcn._collect_mutation_info()  # 保存网络参数
 
     # 为其他程序提供数据
     # pcn.generate_ebc()

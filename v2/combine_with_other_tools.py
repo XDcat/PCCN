@@ -1,4 +1,3 @@
-import json
 # 组合数
 # 日志
 import logging
@@ -90,7 +89,6 @@ class CombineResult:
         aa_groups = mutation_group.aa_groups
         aa_groups_info = mutation_group.aa_groups_info
 
-
         co_info = []
         for i, grp in enumerate(aa_groups):
             name = aa_groups_info.iloc[i]["name"]
@@ -99,8 +97,12 @@ class CombineResult:
                 p2 = mutation_group.aa2position(a2)
                 if G.has_edge(p1, p2):
                     coconservation = G.edges[p1, p2]["weight"]
-                    co_info.append([name, a1, a2, coconservation])
-        co_info = pd.DataFrame(co_info, columns=["name", "a1", "a2", "co-conservation"])
+                else:
+                    coconservation = None
+                path_length = pcn.shortest_path_length[p1][p2]
+                co_info.append([name, a1, a2, coconservation, path_length])
+
+        co_info = pd.DataFrame(co_info, columns=["name", "a1", "a2", "co-conservation", "shortest path length"])
         return co_info
 
     def analysis_co_mutations(self):
@@ -132,15 +134,14 @@ class CombineResult:
         info["stability"] = info.apply(cal_ddg, axis=1)
 
         # 检查是否为空
-        data_columns = ["co-conservation",  "BFE", "stability"]
+        data_columns = ["co-conservation", "shortest path length", "BFE", "stability"]
         info = info.drop(["name"], axis=1)  # 不保留毒株名
         info = info.drop_duplicates(["a1", "a2"])  # 删除重复
         info = info.reset_index(drop=True)  # 重设索引
 
-
         # 相关性分析
-        c1_columns = data_columns[1:]
-        c2_columns = data_columns[:1]
+        c1_columns = data_columns[2:]
+        c2_columns = data_columns[:2]
         top_names = []
         for i, row in info.iterrows():
             # n = "{}-{}".format(row.a1[1:-1] + row.a1[0], row.a2[1:-1] + row.a2[0])
@@ -201,7 +202,6 @@ class CombineResult:
         """
         # middle info
         single_info = pd.read_csv(f_single_info)
-        co_info = pd.read_csv(f_co_info, index_col=0)
         # variant info
         mutation_group = self.mutation_groups
         aa_groups = mutation_group.aa_groups
@@ -233,6 +233,7 @@ class CombineResult:
         )
 
         # co
+        co_info = pd.read_csv(f_co_info, index_col=0)
         co_data_columns = co_info.columns[-3:].tolist()
         variant_co = []
         for i, grp in enumerate(aa_groups):
@@ -473,43 +474,46 @@ class CombineResult:
         all_cor_sorted_valid.to_excel(os.path.join(data_dir, "combine_with_other_tools - parse - variant.xlsx"))
 
     @staticmethod
-    def plot_correlation_scatter(co_info_path="../data/procon/combine_with_other_tools - co.csv"):
+    def plot_correlation_scatter(
+            single_info_path="../data/procon/combine_with_other_tools - single.csv",
+            co_info_path="../data/procon/combine_with_other_tools - co.csv"
+    ):
+        # 读取源文件
+        single_info: pd.DataFrame = pd.read_csv(single_info_path, index_col=0)
         co_info: pd.DataFrame = pd.read_csv(co_info_path, index_col=0)
-        co_info = co_info.rename({"edge centrality": "edge betweenness centrality"}, axis=1)
-        # correlation
-        c1_columns = ["BFE", "stability"]
-        c2_columns = ["co-conservation", "edge betweenness centrality"]
-        correlation = CombineResult.cal_correlation(co_info, c1_columns, c2_columns, "co", )
-        print(correlation)
 
-        for c1 in c1_columns:
+        # 选定的绘图数据
+        plot_data = {
+            "BFE": [
+                {"type": "co", "name": "co-conservation"},
+                {"type": "co", "name": "shortest path length"},
+            ],
+            "stability": [
+                {"type": "single", "name": "degree"},
+                {"type": "single", "name": "page rank"},
+            ]
+        }
+
+        for name, targets in plot_data.items():
             fig: plt.Figure
             axes: List[plt.Axes]
-            fig, axes = plt.subplots(1, 2, figsize=(14, 4.8), constrained_layout=True)
-            sns.regplot(data=co_info, x=c1, y="co-conservation", ax=axes[0])
-            sns.regplot(data=co_info, x=c1, y="edge betweenness centrality", ax=axes[1])
-            # 设置 edge centrality 的区间
-            axes[1].set_ylim(axes[1].get_ylim()[0], 0.001)
-            # 设置相关性和 p 值
-            x = axes[0].get_xlim()[0]
-            y = axes[0].get_ylim()[1]
-            correlation_co_conservation = correlation[
-                (correlation.name1 == c1) & (correlation.name2 == "co-conservation")
-                ]
-            ccc = correlation_co_conservation["spearmanr correlation"].values[0]
-            pcc = correlation_co_conservation["spearmanr p"]
-            # axes[0].text(x, y, f"correlation={ccc:.3f}")
-            fig.show()
-            fig.savefig(os.path.join(data_dir, f"correlation_{c1}.png"))
+            fig, axes = plt.subplots(1, len(targets), figsize=(14, 4.8), constrained_layout=True)
+            for idx, target in enumerate(targets):
+                source = co_info if target["type"] == "co" else single_info
+                sns.regplot(data=source, x=name, y=target["name"], ax=axes[idx])
+
+            fig.savefig(os.path.join(data_dir, f"correlation_{name}.png"))
 
     @staticmethod
-    def get_graph_top3(single_info_path="../data/procon/combine_with_other_tools - single.csv",
-                       co_info_path="../data/procon/combine_with_other_tools - co.csv"):
+    def get_graph_top3(
+            single_info_path="../data/procon/combine_with_other_tools - single.csv",
+            co_info_path="../data/procon/combine_with_other_tools - co.csv"
+    ):
         # co
         co_info: pd.DataFrame = pd.read_csv(co_info_path, index_col=0)
         co_info["a1"] = co_info["a1"].apply(lambda x: x[1:-1] + x[0])
         co_info["a2"] = co_info["a2"].apply(lambda x: x[1:-1] + x[0])
-        co_target_names = ["co-conservation", ]
+        co_target_names = ["co-conservation", "shortest path length"]
         co_res = []
         for n in co_target_names:
             co_info_sorted = co_info.sort_values(n, ascending=False)
@@ -566,7 +570,7 @@ if __name__ == '__main__':
     cr = CombineResult()
 
     # 分析单个位点的数据
-    singe_info = cr.analysis_single_mutation()
+    # singe_info = cr.analysis_single_mutation()
     #
     # 分析两个位点
     # co_info = cr.analysis_co_mutations()
@@ -579,7 +583,7 @@ if __name__ == '__main__':
     # CombineResult.parse_variant_result()
 
     # 绘制散点图
-    # CombineResult.plot_correlation_scatter()
+    CombineResult.plot_correlation_scatter()
 
     # 网络参数前几
     # CombineResult.get_graph_top3()
