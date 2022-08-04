@@ -566,7 +566,7 @@ if __name__ == '__main__':
     cr = CombineResult()
 
     # 分析单个位点的数据
-    # singe_info = cr.analysis_single_mutation()
+    singe_info = cr.analysis_single_mutation()
     #
     # 分析两个位点
     # co_info = cr.analysis_co_mutations()
@@ -582,7 +582,7 @@ if __name__ == '__main__':
     # CombineResult.plot_correlation_scatter()
 
     # 网络参数前几
-    CombineResult.get_graph_top3()
+    # CombineResult.get_graph_top3()
 
     # 绘制分布图
     # CombineResult.plot_for_stability_bfe()
