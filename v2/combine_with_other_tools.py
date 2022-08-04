@@ -349,8 +349,8 @@ class CombineResult:
         all_cor = all_cor.rename(
             {"co-substitution": "substitution", "variant (single)": "variant", "variant (co)": "variant"}, level=0,
             axis=0)
-        all_cor = all_cor.drop(["degree", "average weighted degree", "conservation", "average shortest length in sampled data"], level=2, axis=0)
-        all_cor = all_cor.rename({"weighted degree": "degree", "normalized conservation": "conservation"})
+        # all_cor = all_cor.drop(["degree", "average weighted degree", "conservation", "average shortest length in sampled data"], level=2, axis=0)
+        # all_cor = all_cor.rename({"weighted degree": "degree", "normalized conservation": "conservation"})
 
         # 统计两种相关性的个数
         # spearmanr 比较多
@@ -451,10 +451,10 @@ class CombineResult:
             all_cor_sorted_valid["spearmanr correlation"].astype(int).abs() != 1]
 
         # 格式化结果
-        all_cor_sorted_valid = all_cor_sorted_valid.drop(["degree", "average weighted degree", "conservation", "average shortest length in sampled data"], level=1,
-                                                         axis=0)
-        all_cor_sorted_valid = all_cor_sorted_valid.rename(
-            {"weighted degree": "degree", "normalized conservation": "conservation", "average shortest length in variant": "average shortest length"})
+        # all_cor_sorted_valid = all_cor_sorted_valid.drop(["degree", "average weighted degree", "conservation", "average shortest length in sampled data"], level=1,
+        #                                                  axis=0)
+        # all_cor_sorted_valid = all_cor_sorted_valid.rename(
+        #     {"weighted degree": "degree", "normalized conservation": "conservation", "average shortest length in variant": "average shortest length"})
         all_cor_sorted_valid.index.names = ["Kind", "Network characteristic"]
         all_cor_sorted_valid.columns = map(lambda x: x[0].upper() + x[1:], all_cor_sorted_valid.columns)
 
@@ -578,11 +578,11 @@ if __name__ == '__main__':
     # co_info = cr.analysis_co_mutations()
 
     # 分析毒株
-    cr.analysis_variant()
+    # cr.analysis_variant()
 
     # 解析结果
-    # CombineResult.parse_result()
-    # CombineResult.parse_variant_result()
+    CombineResult.parse_result()
+    CombineResult.parse_variant_result()
 
     # 绘制散点图
     # CombineResult.plot_correlation_scatter()
