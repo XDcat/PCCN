@@ -842,9 +842,9 @@ class ProConNetwork:
         # self._plot_2D()  # 二维坐标图
 
         # 以 substitution 为单位的图
-        self._boxplot_for_all_kinds()
-        self._boxplot_for_all_kinds("BA.4(Omicron)")
-        self._boxplot_for_all_kinds("B.1.617.2(Delta)")
+        # self._boxplot_for_all_kinds()
+        # self._boxplot_for_all_kinds("BA.4(Omicron)")
+        # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
         self._group_plot_with_node()
@@ -1247,7 +1247,12 @@ class ProConNetwork:
                 fig.suptitle(fig_name, )
                 fig.tight_layout()
                 fig.show()
-                fig.savefig(os.path.join(self.data_dir, f"group distribution {fig_name}.png"), dpi=300)
+
+                # 保存
+                group_plot_basedir = os.path.join(self.data_dir, "group plot")
+                if not os.path.exists(group_plot_basedir):
+                    os.mkdir(group_plot_basedir)
+                fig.savefig(os.path.join(group_plot_basedir, f"Supplemental Figure {self.group_global_ax_count}. group distribution {fig_name}.png"), dpi=300)
 
                 # 存储统计信息
                 if excel_writer:
@@ -1659,7 +1664,7 @@ if __name__ == '__main__':
     mutation_groups.display_seq_and_aa()
     mutation_groups.count_aa()
     pcn = ProConNetwork(mutation_groups, threshold=100)
-    # pcn.analysisG()  # 绘制图片
+    pcn.analysisG()  # 绘制图片
     # pcn._collect_mutation_info()  # 保存网络参数
 
     # 为其他程序提供数据
