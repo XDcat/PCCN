@@ -864,14 +864,13 @@ class ProConNetwork:
             is_neighbour = abs(int(target[:-1]) - int(source[:-1])) == 1
             is_mutation = (source in self.analysis_mutation_group.non_duplicated_aas_positions) or (
                     target in self.analysis_mutation_group.non_duplicated_aas_positions)
-            tag = "normal"
-            if is_neighbour:
-                tag = "neighbour"
-            elif is_mutation:
+            if is_mutation:
                 tag = "mutation"
+            else:
+                tag = "normal"
 
             w = self.G.edges[source, target]['weight']
-            if tag == "neighbour" and w < 0.9:
+            if is_neighbour and w < 0.9:
                 w = 0.9
 
             rows.append([source, target, is_neighbour, is_mutation, tag, w])
@@ -882,11 +881,11 @@ class ProConNetwork:
         nodes = []
         for n in self.G.nodes:
             if n in self.analysis_mutation_group.non_duplicated_aas_positions:
-                node = [n, n, True, 20]
+                node = [n, n, True, 1 + self.G.nodes[n]["size"]]
             else:
-                node = [n, "", False, 10]
+                node = [n, "", False, 1]
             nodes.append(node)
-        nodes = pd.DataFrame(nodes, columns=["Id", "Label", "is_mutation", "size"])
+        nodes = pd.DataFrame(nodes, columns=["Id", "Label", "is_mutation", "new_size"])
         nodes.to_csv(os.path.join(self.data_dir, "network_node_info.csv"), index=None)
 
     def output_for_DynaMut2(self):
@@ -1660,7 +1659,7 @@ if __name__ == '__main__':
     mutation_groups.display_seq_and_aa()
     mutation_groups.count_aa()
     pcn = ProConNetwork(mutation_groups, threshold=100)
-    pcn.analysisG()  # 绘制图片
+    # pcn.analysisG()  # 绘制图片
     # pcn._collect_mutation_info()  # 保存网络参数
 
     # 为其他程序提供数据
