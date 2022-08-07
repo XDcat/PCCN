@@ -47,7 +47,7 @@ if __name__ == '__main__':
     ax.set_xlabel("BFE changes (kcal/mol)")
     fig.tight_layout()
     fig.show()
-    fig.savefig("./data/barplot.png")
+    fig.savefig("./data/Supplemental Figure 11. BFE of substitutions.png")
 
     print(bfe)
     bfe.to_csv("./data/result_precess.csv")

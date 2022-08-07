@@ -55,4 +55,4 @@ if __name__ == '__main__':
     ax.set_xlabel("Stability changes (kcal/mol)")
     fig.tight_layout()
     fig.show()
-    fig.savefig("barplot.png")
+    fig.savefig("Supplemental Figure 10. Stability of substitutions.png")
