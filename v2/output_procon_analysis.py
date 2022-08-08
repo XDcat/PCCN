@@ -4,6 +4,7 @@ import logging
 import math
 import os
 import pickle
+import re
 import time
 from collections import defaultdict
 from functools import reduce
@@ -842,9 +843,9 @@ class ProConNetwork:
         # self._plot_2D()  # 二维坐标图
 
         # 以 substitution 为单位的图
-        # self._boxplot_for_all_kinds()
-        # self._boxplot_for_all_kinds("BA.4(Omicron)")
-        # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
+        self._boxplot_for_all_kinds()
+        self._boxplot_for_all_kinds("BA.4(Omicron)")
+        self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
         self._group_plot_with_node()
@@ -1055,20 +1056,23 @@ class ProConNetwork:
         )
 
     def _boxplot_for_all_kinds(self, target_variant=None):
-        def _func_boxplot(variant, sample, ax, func, name, target_variant):
+        def _func_boxplot(variant, sample, ax, func, name, target_variant=None):
+            if not target_variant is None:
+                target_variant = re.findall("\((.*?)\)", target_variant)[0]
             variant_scores = func(variant)
             sample_scores = [j for i in sample for j in func(i)]  # 分组求平均
 
-            variant_name = "variant" if target_variant is None else target_variant
+            variant_name = "mutation" if target_variant is None else target_variant
+            no_variant_name = "non-mutation"
             # 绘制箱线图
             _plot_data = pd.DataFrame(
                 {"score": variant_scores + sample_scores,
                  "label": [variant_name] * len(variant_scores) + [
-                     "sample"] * len(sample_scores)}
+                     no_variant_name] * len(sample_scores)}
             )
             x = "label"
             y = "score"
-            order = [variant_name, "sample"]
+            order = [variant_name, no_variant_name]
             sns.boxplot(data=_plot_data, x=x, y=y, ax=ax, order=order, fliersize=1, width=.5)
             # 标注 p value
             self.boxplot_add_p_value(_plot_data, ax, x, y, order, "Mann-Whitney")
@@ -1111,14 +1115,14 @@ class ProConNetwork:
 
     def get_functions(self):
         funcs = {
-            "degree": self.calculate_avg_weighted_degree,
-            "conservation": self.calculate_conservation,
-            "page rank": self.calculate_page_rank,
-            "degree centrality": self.calculate_degree_centrality,
-            "betweenness centrality": self.calculate_betweenness_centrality,
-            "closeness centrality": self.calculate_closeness_centrality,
-            "shortest path length": self.calculate_weighted_shortest_path,
-            "co-conservation": self.calculate_co_conservation,
+            "I": self.calculate_conservation,
+            "MI": self.calculate_co_conservation,
+            "K": self.calculate_avg_weighted_degree,
+            "P": self.calculate_page_rank,
+            "D": self.calculate_degree_centrality,
+            "B": self.calculate_betweenness_centrality,
+            "C": self.calculate_closeness_centrality,
+            "L": self.calculate_weighted_shortest_path,
         }
         return funcs
 
