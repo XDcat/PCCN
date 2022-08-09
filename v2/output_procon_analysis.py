@@ -710,8 +710,8 @@ class ProConNetwork:
                              "kind": ["CR"] * len(type1_info) + ["CCR"] * len(type2_info)})
         axes: List[plt.Axes]
         fig, axes = plt.subplots(1, 2, sharex=True, sharey=True, constrained_layout=True, figsize=(6.4, 4.8))
-        sns.histplot(data=data[data["kind"] == "CR"], x="score", stat="probability", bins=10, ax=axes[0], )
-        sns.histplot(data=data[data["kind"] == "CCR"], x="score", stat="probability", bins=10, ax=axes[1], )
+        sns.histplot(data=data[data["kind"] == "CR"], x="score", stat="probability", bins=30, ax=axes[0], )
+        sns.histplot(data=data[data["kind"] == "CCR"], x="score", stat="probability", bins=30, ax=axes[1], )
         # axes[0].set_xlabel("")
         # axes[1].set_xlabel("")
         axes[0].set_xlabel("conservation")
@@ -838,21 +838,21 @@ class ProConNetwork:
     def analysisG(self, ):
         """绘制相关图表"""
         # self._plot_origin_distribution()  # 绘制所有节点的保守性的分布情况
+        self._plot_procon_distribution()  # 分数分布图
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
         # self._plot_2D()  # 二维坐标图
 
         # 以 substitution 为单位的图
-        self._boxplot_for_all_kinds()
-        self._boxplot_for_all_kinds("BA.4(Omicron)")
-        self._boxplot_for_all_kinds("B.1.617.2(Delta)")
+        # self._boxplot_for_all_kinds()
+        # self._boxplot_for_all_kinds("BA.4(Omicron)")
+        # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
-        self._group_plot_with_node()
+        # self._group_plot_with_node()
 
         # 废弃
         #
-        # self._plot_procon_distribution()  # 分数分布图
         # self._plot_degree_distribuition()  # 度分布
         # self._plot_node_centraility_box()  # 箱线图：中心性
         # self._plot_conservation_box()  # 保守性
