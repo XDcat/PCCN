@@ -841,7 +841,7 @@ class ProConNetwork:
         # self._plot_procon_distribution()  # 分数分布图
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
-        # self._plot_2D()  # 二维坐标图
+        self._plot_2D()  # 二维坐标图
 
         # 以 substitution 为单位的图
         # self._boxplot_for_all_kinds()
@@ -849,7 +849,7 @@ class ProConNetwork:
         # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
-        self._group_plot_with_node()
+        # self._group_plot_with_node()
 
         # 废弃
         #
@@ -1508,21 +1508,22 @@ class ProConNetwork:
             # 较强共共保守性占的比例
             rns = len(t1)
             rnp = comb(rns, 2)
-            rpc = len(t2)
+            # rpc = len(t2)
+            rpc = (t2["info"] >= self.threshold).sum() if "info" in t2.columns else 0
             rr = rpc / rnp
             co_conservation_rate.append(
                 {
-                    "name": name,
-                    "N(substitution)": rns,
-                    "N(pairwise)": rnp,
-                    "N(pairwise with co-conservation)": rpc,
-                    "rate": rr
+                    "Name": name,
+                    "Count(substitution)": rns,
+                    "Count(pairwise)": rnp,
+                    "Count(pairwise with co-conservation)": rpc,
+                    "Rate": rr
                 }
             )
         # 保存比例
         co_conservation_rate = pd.DataFrame(co_conservation_rate)
         co_conservation_rate.to_csv(
-            os.path.join(self.data_dir, "rate of pairwise with co-conservation.csv")
+            os.path.join(self.data_dir, "Supplemental Table 2. Rate of pairwise with co-conservation.csv")
         )
 
         # 原始数据
