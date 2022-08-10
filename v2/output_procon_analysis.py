@@ -838,10 +838,10 @@ class ProConNetwork:
     def analysisG(self, ):
         """绘制相关图表"""
         # self._plot_origin_distribution()  # 绘制所有节点的保守性的分布情况
-        self._plot_procon_distribution()  # 分数分布图
+        # self._plot_procon_distribution()  # 分数分布图
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
-        # self._plot_2D()  # 二维坐标图
+        self._plot_2D()  # 二维坐标图
 
         # 以 substitution 为单位的图
         # self._boxplot_for_all_kinds()
@@ -1526,6 +1526,7 @@ class ProConNetwork:
         # 原始数据
         type1 = pd.concat(type1)
         type2 = pd.concat(type2)
+        type2 = type2[type2["info"] >= self.threshold]
 
         """
         图片可以分为四个部分
@@ -1597,7 +1598,7 @@ class ProConNetwork:
             x_smooth, y_smooth = two_degree_bc(x, y)
             y_smooth += 0.15
             alpha = row["rate"] / 100
-            ax.plot(x_smooth, y_smooth, "C1", alpha=alpha * 1.5)
+            ax.plot(x_smooth, y_smooth, "C1", alpha=alpha * 2)
             # ax.plot(x_smooth, y_smooth, "C1",)
 
         flg.show()
