@@ -882,7 +882,9 @@ class ProConNetwork:
         nodes = []
         for n in self.G.nodes:
             if n in self.analysis_mutation_group.non_duplicated_aas_positions:
-                node = [n, n, True, 1 + self.G.nodes[n]["size"]]
+                size = self.G.nodes[n]["size"]
+                size = 0.001 if size == 0 else size
+                node = [n, n, True, 5 + 1 / size]
             else:
                 node = [n, "", False, 1]
             nodes.append(node)
@@ -1669,12 +1671,12 @@ if __name__ == '__main__':
     mutation_groups.display_seq_and_aa()
     mutation_groups.count_aa()
     pcn = ProConNetwork(mutation_groups, threshold=100)
-    pcn.analysisG()  # 绘制图片
+    # pcn.analysisG()  # 绘制图片
     # pcn._collect_mutation_info()  # 保存网络参数
 
     # 为其他程序提供数据
     # pcn.generate_ebc()
-    # pcn.output_for_gephi()
+    pcn.output_for_gephi()
     # pcn.output_for_DynaMut2()
     # pcn.output_for_topnettree()
     end_time = time.time()
