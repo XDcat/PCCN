@@ -841,7 +841,7 @@ class ProConNetwork:
         # self._plot_procon_distribution()  # 分数分布图
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
-        self._plot_2D()  # 二维坐标图
+        # self._plot_2D()  # 二维坐标图
 
         # 以 substitution 为单位的图
         # self._boxplot_for_all_kinds()
@@ -849,7 +849,7 @@ class ProConNetwork:
         # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
-        # self._group_plot_with_node()
+        self._group_plot_with_node()
 
         # 废弃
         #
@@ -1194,9 +1194,9 @@ class ProConNetwork:
                         t, pvalue = ttest_1samp(sample_mean_score, row["score"])
                         if pvalue < 0.05:
                             if t < 0:
-                                is_remarkable = "Yes. Left."
+                                is_remarkable = "Yes. Bigger."
                             else:
-                                is_remarkable = "Yes. Right."
+                                is_remarkable = "Yes. Smaller."
                         else:
                             is_remarkable = "No"
 
@@ -1671,12 +1671,12 @@ if __name__ == '__main__':
     mutation_groups.display_seq_and_aa()
     mutation_groups.count_aa()
     pcn = ProConNetwork(mutation_groups, threshold=100)
-    # pcn.analysisG()  # 绘制图片
+    pcn.analysisG()  # 绘制图片
     # pcn._collect_mutation_info()  # 保存网络参数
 
     # 为其他程序提供数据
     # pcn.generate_ebc()
-    pcn.output_for_gephi()
+    # pcn.output_for_gephi()
     # pcn.output_for_DynaMut2()
     # pcn.output_for_topnettree()
     end_time = time.time()
