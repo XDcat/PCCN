@@ -493,6 +493,12 @@ class CombineResult:
                 {"type": "single", "name": "page rank"},
             ]
         }
+        abbr_map = {
+            "co-conservation": "MI",
+            "shortest path length": "L",
+            "degree": "K",
+            "page rank": "P"
+        }
 
         for name, targets in plot_data.items():
             fig: plt.Figure
@@ -501,6 +507,8 @@ class CombineResult:
             for idx, target in enumerate(targets):
                 source = co_info if target["type"] == "co" else single_info
                 sns.regplot(data=source, x=name, y=target["name"], ax=axes[idx])
+                axes[idx].set_ylabel(abbr_map[target["name"]])
+
 
             fig.savefig(os.path.join(data_dir, f"correlation_{name}.png"))
 
