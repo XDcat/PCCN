@@ -841,7 +841,7 @@ class ProConNetwork:
         # self._plot_procon_distribution()  # 分数分布图
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
-        self._plot_2D()  # 二维坐标图
+        # self._plot_2D()  # 二维坐标图
 
         # 以 substitution 为单位的图
         # self._boxplot_for_all_kinds()
@@ -849,7 +849,7 @@ class ProConNetwork:
         # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
-        # self._group_plot_with_node()
+        self._group_plot_with_node()
 
         # 废弃
         #
@@ -1218,12 +1218,12 @@ class ProConNetwork:
                 # 箱线图
                 x = "label"
                 y = "score"
-                order = ["variant", "sample"]
+                order = ["variant", "non-variant"]
 
                 _s1 = grp_mean_score  # 每一组的分数
                 _s2 = np.array(list(grp_sample_scores.values())).reshape(-1).tolist()  # 采样的分数
                 _plot_data = pd.DataFrame(
-                    {"score": _s1 + _s2, "label": ["variant"] * len(_s1) + ["sample"] * len(_s2)},
+                    {"score": _s1 + _s2, "label": ["variant"] * len(_s1) + ["non-variant"] * len(_s2)},
                 )
                 sns.boxplot(data=_plot_data, x=x, y=y, ax=ax_box_plot, order=order, fliersize=1, width=0.5)
                 self.boxplot_add_p_value(_plot_data, ax_box_plot, x, y, order, )
@@ -1333,7 +1333,7 @@ class ProConNetwork:
         # [ax.set_xlabel("") for ax in axes]
         # [ax.set_ylabel("") for ax in axes]
         self.group_global_fig.tight_layout()
-        self.group_global_fig.savefig(os.path.join(self.data_dir, "group distribution global.png"), dpi=300)
+        self.group_global_fig.savefig(os.path.join(self.data_dir, "Figure 5 Comparison between variants and samples on network characteristics.png"), dpi=300)
         [i.set_visible(False) for i in self.group_global_valid_axes[self.group_global_valid_ax_count:]]  # 删除多余子图
         self.group_global_valid_fig.tight_layout()
         self.group_global_valid_fig.savefig(os.path.join(self.data_dir, "group distribution global valid.png"), dpi=300)
