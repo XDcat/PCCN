@@ -705,7 +705,7 @@ class ProConNetwork:
         log.debug("self.type2.min() = %s", self.type2["info"].min())
         log.debug("self.type2.max() = %s", self.type2["info"].max())
         type1_info = self.type1["info_norm"]
-        type2_info = self.type2["info_norm"][self.type2["info"] > self.threshold]
+        type2_info = self.type2["info_norm"]
         data = pd.DataFrame({"score": pd.concat([type1_info, type2_info]).reset_index(drop=True),
                              "kind": ["CR"] * len(type1_info) + ["CCR"] * len(type2_info)})
         axes: List[plt.Axes]
@@ -714,8 +714,8 @@ class ProConNetwork:
         sns.histplot(data=data[data["kind"] == "CCR"], x="score", stat="probability", bins=20, ax=axes[1], )
         # axes[0].set_xlabel("")
         # axes[1].set_xlabel("")
-        axes[0].set_xlabel("conservation")
-        axes[1].set_xlabel("co-conservation")
+        axes[0].set_xlabel("CS")
+        axes[1].set_xlabel("CCS")
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "Figure 1 Distribution of conservation.png"), dpi=500)
 
