@@ -494,9 +494,9 @@ class CombineResult:
             ]
         }
         abbr_map = {
-            "co-conservation": "MI",
+            "co-conservation": "CCS",
             "shortest path length": "L",
-            "degree": "K",
+            "degree": "Kw",
             "page rank": "P"
         }
 
