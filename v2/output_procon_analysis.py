@@ -1119,7 +1119,7 @@ class ProConNetwork:
         funcs = {
             "CS": self.calculate_conservation,
             "CCS": self.calculate_co_conservation,
-            "K": self.calculate_avg_weighted_degree,
+            "Kw": self.calculate_avg_weighted_degree,
             "P": self.calculate_page_rank,
             "D": self.calculate_degree_centrality,
             "B": self.calculate_betweenness_centrality,
@@ -1153,7 +1153,7 @@ class ProConNetwork:
             if kind == "distribution":
                 """绘制采样分数的分布图，并将毒株标注在图中"""
                 count_plot = len(grp_sample_scores)
-                fig: plt.Figure = plt.figure(figsize=(20, 20), )
+                fig: plt.Figure = plt.figure(figsize=(20, 30), )
                 axes: List[plt.Axes] = fig.subplots(math.ceil(count_plot / 3), 3, )
                 colors = sns.color_palette(n_colors=len(grp_sample_scores))
                 axes = [j for i in axes for j in i]
@@ -1250,7 +1250,7 @@ class ProConNetwork:
                 #     global_axes.set_ylabel(fig_name)
 
                 # 输出结果
-                fig.suptitle(fig_name, )
+                # fig.suptitle(fig_name, )
                 fig.tight_layout()
                 fig.show()
 
