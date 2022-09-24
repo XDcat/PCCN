@@ -844,12 +844,12 @@ class ProConNetwork:
         # self._plot_2D()  # 二维坐标图
 
         # 以 substitution 为单位的图
-        # self._boxplot_for_all_kinds()
-        # self._boxplot_for_all_kinds("BA.4(Omicron)")
-        # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
+        self._boxplot_for_all_kinds()
+        self._boxplot_for_all_kinds("BA.4(Omicron)")
+        self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
-        self._group_plot_with_node()
+        # self._group_plot_with_node()
 
         # 废弃
         #
