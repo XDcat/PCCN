@@ -838,7 +838,7 @@ class ProConNetwork:
     def analysisG(self, ):
         """绘制相关图表"""
         # self._plot_origin_distribution()  # 绘制所有节点的保守性的分布情况
-        self._plot_procon_distribution()  # 分数分布图
+        # self._plot_procon_distribution()  # 分数分布图
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
         # self._plot_2D()  # 二维坐标图
@@ -849,7 +849,7 @@ class ProConNetwork:
         # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
-        # self._group_plot_with_node()
+        self._group_plot_with_node()
 
         # 废弃
         #
@@ -1107,7 +1107,7 @@ class ProConNetwork:
 
         # save fig
         if target_variant is None:
-            fig_file_name = os.path.join(self.data_dir, "boxplot_of_all.png")
+            fig_file_name = os.path.join(self.data_dir, "Figure 4 Comparison between variant nodes and sampled nodes on network characteristics.png")
         else:
             fig_file_name = os.path.join(self.data_dir, target_variant, "boxplot_of_all.png")
             if not os.path.exists(os.path.dirname(fig_file_name)):
@@ -1117,8 +1117,8 @@ class ProConNetwork:
 
     def get_functions(self):
         funcs = {
-            "I": self.calculate_conservation,
-            "MI": self.calculate_co_conservation,
+            "CS": self.calculate_conservation,
+            "CCS": self.calculate_co_conservation,
             "K": self.calculate_avg_weighted_degree,
             "P": self.calculate_page_rank,
             "D": self.calculate_degree_centrality,
@@ -1268,7 +1268,7 @@ class ProConNetwork:
 
             elif kind == "score_sorted":
                 """ 直接绘制排序后的分数（废弃，只做备份）"""
-                fig: plt.Figure = plt.figure(figsize=(20, 20))
+                fig: plt.Figure = plt.figure(figsize=(20, 25))
                 axes: List[plt.Axes] = fig.subplots(3, 3, )
                 axes = [j for i in axes for j in i]
                 ax_all_in_one = axes[7]  # 重叠子图
