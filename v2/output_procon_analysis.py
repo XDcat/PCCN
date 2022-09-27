@@ -705,7 +705,7 @@ class ProConNetwork:
         log.debug("self.type2.min() = %s", self.type2["info"].min())
         log.debug("self.type2.max() = %s", self.type2["info"].max())
         type1_info = self.type1["info_norm"]
-        type2_info = self.type2["info_norm"][self.type2["info"] > self.threshold]
+        type2_info = self.type2["info_norm"]
         data = pd.DataFrame({"score": pd.concat([type1_info, type2_info]).reset_index(drop=True),
                              "kind": ["CR"] * len(type1_info) + ["CCR"] * len(type2_info)})
         axes: List[plt.Axes]
@@ -714,8 +714,8 @@ class ProConNetwork:
         sns.histplot(data=data[data["kind"] == "CCR"], x="score", stat="probability", bins=20, ax=axes[1], )
         # axes[0].set_xlabel("")
         # axes[1].set_xlabel("")
-        axes[0].set_xlabel("conservation")
-        axes[1].set_xlabel("co-conservation")
+        axes[0].set_xlabel("CS")
+        axes[1].set_xlabel("CCS")
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "Figure 1 Distribution of conservation.png"), dpi=500)
 
@@ -838,15 +838,15 @@ class ProConNetwork:
     def analysisG(self, ):
         """绘制相关图表"""
         # self._plot_origin_distribution()  # 绘制所有节点的保守性的分布情况
-        self._plot_procon_distribution()  # 分数分布图
+        # self._plot_procon_distribution()  # 分数分布图
         # self._plot_mutations_relationship()  # 绘制变异位点的关系图: 节点-变异位点，节点大小-出现的次数，边-是否存在共保守性
         # self._collect_mutation_info()  # 收集变异位点的消息，生成表格
         # self._plot_2D()  # 二维坐标图
 
         # 以 substitution 为单位的图
-        # self._boxplot_for_all_kinds()
-        # self._boxplot_for_all_kinds("BA.4(Omicron)")
-        # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
+        self._boxplot_for_all_kinds()
+        self._boxplot_for_all_kinds("BA.4(Omicron)")
+        self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
         # self._group_plot_with_node()
@@ -1107,7 +1107,7 @@ class ProConNetwork:
 
         # save fig
         if target_variant is None:
-            fig_file_name = os.path.join(self.data_dir, "boxplot_of_all.png")
+            fig_file_name = os.path.join(self.data_dir, "Figure 4 Comparison between variant nodes and sampled nodes on network characteristics.png")
         else:
             fig_file_name = os.path.join(self.data_dir, target_variant, "boxplot_of_all.png")
             if not os.path.exists(os.path.dirname(fig_file_name)):
@@ -1117,9 +1117,9 @@ class ProConNetwork:
 
     def get_functions(self):
         funcs = {
-            "I": self.calculate_conservation,
-            "MI": self.calculate_co_conservation,
-            "K": self.calculate_avg_weighted_degree,
+            "CS": self.calculate_conservation,
+            "CCS": self.calculate_co_conservation,
+            "Kw": self.calculate_avg_weighted_degree,
             "P": self.calculate_page_rank,
             "D": self.calculate_degree_centrality,
             "B": self.calculate_betweenness_centrality,
@@ -1153,7 +1153,7 @@ class ProConNetwork:
             if kind == "distribution":
                 """绘制采样分数的分布图，并将毒株标注在图中"""
                 count_plot = len(grp_sample_scores)
-                fig: plt.Figure = plt.figure(figsize=(20, 20), )
+                fig: plt.Figure = plt.figure(figsize=(20, 30), )
                 axes: List[plt.Axes] = fig.subplots(math.ceil(count_plot / 3), 3, )
                 colors = sns.color_palette(n_colors=len(grp_sample_scores))
                 axes = [j for i in axes for j in i]
@@ -1250,7 +1250,7 @@ class ProConNetwork:
                 #     global_axes.set_ylabel(fig_name)
 
                 # 输出结果
-                fig.suptitle(fig_name, )
+                # fig.suptitle(fig_name, )
                 fig.tight_layout()
                 fig.show()
 
@@ -1268,7 +1268,7 @@ class ProConNetwork:
 
             elif kind == "score_sorted":
                 """ 直接绘制排序后的分数（废弃，只做备份）"""
-                fig: plt.Figure = plt.figure(figsize=(20, 20))
+                fig: plt.Figure = plt.figure(figsize=(20, 25))
                 axes: List[plt.Axes] = fig.subplots(3, 3, )
                 axes = [j for i in axes for j in i]
                 ax_all_in_one = axes[7]  # 重叠子图
