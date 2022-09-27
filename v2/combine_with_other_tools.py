@@ -501,16 +501,13 @@ class CombineResult:
         }
 
         for name, targets in plot_data.items():
-            fig: plt.Figure
-            axes: List[plt.Axes]
-            fig, axes = plt.subplots(1, len(targets), figsize=(14, 4.8), constrained_layout=True)
             for idx, target in enumerate(targets):
+                fig: plt.Figure
+                fig, ax = plt.subplots(figsize=(7, 4.8), constrained_layout=True)
                 source = co_info if target["type"] == "co" else single_info
-                sns.regplot(data=source, x=name, y=target["name"], ax=axes[idx])
-                axes[idx].set_ylabel(abbr_map[target["name"]])
-
-
-            fig.savefig(os.path.join(data_dir, f"correlation_{name}.png"))
+                sns.regplot(data=source, x=name, y=target["name"], ax=ax)
+                ax.set_ylabel(abbr_map[target["name"]])
+                fig.savefig(os.path.join(data_dir, f"correlation_{name} {idx}.png"))
 
     @staticmethod
     def get_graph_top3(
