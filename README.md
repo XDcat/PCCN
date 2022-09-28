@@ -73,3 +73,10 @@ Network color
      * path and not path
      * ♥ mutation and no-mutation
    * position size: conservation score
+
+---
+...
+
+---
+2022.9.28
+Update network in Gephi
