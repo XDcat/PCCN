@@ -177,22 +177,25 @@ class CombineResult:
         return bfe
 
     def read_deep_ddg(self, result_file="../tools/try DeepDDG/result-QHD43416.ddg"):
-        data = pd.read_csv(result_file, delimiter="\s+", skiprows=[0, ], header=None)
-        data.columns = "#chain WT ResID Mut ddG".split()
-        data["name"] = data.apply(lambda x: "{}{}{}".format(x["WT"], x["ResID"], x["Mut"]), axis=1)
-        data.index = data["name"]
-        # for i in origin_aas:
-        #     if i not in data["name"]:
-        #         print(i)
-        # print(data)
-        # print(data[data["ResID"] == 452])
-        # print(data.columns)
-        # print(data.dtypes)
-        fdata = data.loc[list(filter(lambda x: x[-1] != "X", origin_aas)), :]
-        fdata = fdata.sort_values("ResID")
-        fdata = fdata.reset_index(drop=True)
-
-        return fdata
+        if "result-QHD43416.ddg" in result_file:
+            data = pd.read_csv(result_file, delimiter="\s+", skiprows=[0, ], header=None)
+            data.columns = "#chain WT ResID Mut ddG".split()
+            data["name"] = data.apply(lambda x: "{}{}{}".format(x["WT"], x["ResID"], x["Mut"]), axis=1)
+            data.index = data["name"]
+            fdata = data.loc[list(filter(lambda x: x[-1] != "X", origin_aas)), :]
+            fdata = fdata.sort_values("ResID")
+            fdata = fdata.reset_index(drop=True)
+            return fdata
+        elif "6vxx.ddg" in result_file or "6vyb.ddg" in result_file:
+            data = pd.read_csv(result_file, delimiter="\s+", skiprows=[0, ], header=None)
+            data.columns = "#chain WT ResID Mut ddG".split()
+            data["name"] = data.apply(lambda x: "{}{}{}".format(x["WT"], x["ResID"], x["Mut"]), axis=1)
+            data.index = data["name"]
+            data = data.sort_values("ResID")
+            data = data[data.iloc[:, 0] == "A"]
+            fdata = data.loc[list(filter(lambda x: x in data.index.to_list(), origin_aas)), :]
+            fdata = fdata.sort_values("ResID")
+            return fdata
 
     def analysis_variant(self, f_single_info=os.path.join(data_dir, "combine_with_other_tools - single.csv"),
                          f_co_info=os.path.join(data_dir, "combine_with_other_tools - co.csv")):
