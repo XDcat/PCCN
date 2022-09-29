@@ -28,28 +28,23 @@ def read_deep_ddg(result_file="./6vyb.ddg"):
     data.index = data["name"]
     data = data.sort_values("ResID")
     data = data[data.iloc[:, 0] == "A"]
-    return data
+    fdata = data.loc[list(filter(lambda x: x in data.index.to_list(), aas)), :]
+    fdata = fdata.sort_values("ResID")
+    return fdata
 
 
 if __name__ == '__main__':
-    start = 31 -12
     fdata = read_deep_ddg()
-    # fdata["targetID"] = fdata["ResID"] - start
-    # fdata["targetName"] = fdata.apply(lambda x: "{}{}{}".format(x["WT"], x["targetID"], x["Mut"]), axis=1)
-    not_in_count = 0
-    for aa in aas:
-        if aa in fdata.index.to_list():
-            pass
-        else:
-            print(f"{aa} not in list")
-            not_in_count += 1
-    print("Total {} but {} not in it".format(len(aas), not_in_count))
+    fdata = fdata.sort_values("ddG")
     print(fdata)
 
-    print(fdata.drop_duplicates("ResID"))
-    res_ids = fdata.drop_duplicates("ResID")["ResID"].to_list()
-    print(res_ids)
-
-    for i in range(1, len(res_ids)):
-        if res_ids[i] - res_ids[i - 1] != 1:
-            print("No data {} ~ {}, count = {}".format(res_ids[i-1], res_ids[i], res_ids[i] - res_ids[i - 1]))
+    fig: plt.Figure
+    ax: plt.Axes
+    fig, ax = plt.subplots(figsize=(4.8, 24))
+    sns.barplot(data=fdata, y="name", x="ddG", ax=ax, color="C0")
+    # [i.set_rotation(90) for i in ax.get_xticklabels()]
+    ax.set_ylabel("")
+    ax.set_xlabel("Stability changes (kcal/mol)")
+    fig.tight_layout()
+    fig.show()
+    fig.savefig("Supplemental Figure 10. Stability of substitutions.png")
