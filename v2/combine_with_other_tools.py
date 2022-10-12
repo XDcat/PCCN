@@ -176,7 +176,8 @@ class CombineResult:
         bfe = bfe.rename(columns={"score": "BFE"})
         return bfe
 
-    def read_deep_ddg(self, result_file="../tools/try DeepDDG/result-QHD43416.ddg"):
+    def read_deep_ddg(self, result_file="../tools/try DeepDDG/v2/6vxx.ddg"):
+    # def read_deep_ddg(self, result_file="../tools/try DeepDDG/result-QHD43416.ddg"):
         if "result-QHD43416.ddg" in result_file:
             data = pd.read_csv(result_file, delimiter="\s+", skiprows=[0, ], header=None)
             data.columns = "#chain WT ResID Mut ddG".split()
@@ -578,23 +579,21 @@ if __name__ == '__main__':
     cr = CombineResult()
 
     # 分析单个位点的数据
-    # singe_info = cr.analysis_single_mutation()
-    #
+    singe_info = cr.analysis_single_mutation()
     # 分析两个位点
-    # co_info = cr.analysis_co_mutations()
-
+    co_info = cr.analysis_co_mutations()
     # 分析毒株
-    # cr.analysis_variant()
+    cr.analysis_variant()
 
     # 解析结果
-    # CombineResult.parse_result()
-    # CombineResult.parse_variant_result()
+    CombineResult.parse_result()
+    CombineResult.parse_variant_result()
 
     # 绘制散点图
     CombineResult.plot_correlation_scatter()
 
     # 网络参数前几
-    # CombineResult.get_graph_top3()
+    CombineResult.get_graph_top3()
 
     # 绘制分布图
-    # CombineResult.plot_for_stability_bfe()
+    CombineResult.plot_for_stability_bfe()
