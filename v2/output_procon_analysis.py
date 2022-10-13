@@ -1396,18 +1396,31 @@ class ProConNetwork:
                 weighted_shortest_path_length = json.loads(f.read())
         return weighted_shortest_path_length
 
-    def calculate_weighted_shortest_path(self, grp):
+    def calculate_weighted_shortest_path(self, grp, is_dict=False):
         res = []
+        names = []
         for n1, n2 in combinations(grp, 2):
             res.append(self.shortest_path_length[n1][n2])
-        return res
+            if is_dict:
+                names.append(f"{n1}-{n2}")
 
-    def calculate_co_conservation(self, grp):
+        if is_dict:
+            return dict(zip(names, res))
+        else:
+            return res
+
+    def calculate_co_conservation(self, grp, is_dict=False):
         res = []
+        names = []
         for n1, n2 in combinations(grp, 2):
             if self.G.has_edge(n1, n2):
                 res.append(self.G.edges[n1, n2]["weight"])
-        return res
+                if is_dict:
+                    names.append(f"{n1}-{n2}")
+        if is_dict:
+            return dict(zip(names, res))
+        else:
+            return res
 
     def calculate_edge_betweenness_centrality(self, grp):
         # if not hasattr(self, "edge_betweenness_centrality"):
@@ -1668,7 +1681,7 @@ class ProConNetwork:
         ax.set_title("")
         return ax
 
-    def generate_all_node_info(self):
+    def generate_all_node_top_info(self, top=10):
         seq = self.analysis_mutation_group.fasta
         aas = []
         for i, aa in enumerate(seq):
@@ -1679,16 +1692,33 @@ class ProConNetwork:
         # cal
         funcs = self.get_functions()
         node_info = {"aas": aas}
+        pair_info = {}
         for fname, func in funcs.items():
             if fname in ["CCS", "L"]:
-                # TODO: Add pair info
-                pass
+                pair_info[fname] = func(aas, is_dict=True)
             else:
                 node_info[fname] = func(aas)
+
+        # node info
         node_info = pd.DataFrame(node_info)
+        node_info = node_info.set_index("aas")
         node_info.to_csv(os.path.join(self.data_dir, "node_info.csv"))
+        # find top
+        node_info_top = {}
+        for label, content in node_info.iteritems():
+            content_sorted = content.sort_values(ascending=False)
+            node_info_top[label] = content_sorted.index.to_list()[:top]
+        node_info_top = pd.DataFrame(node_info_top)
+        node_info_top.to_csv(os.path.join(self.data_dir, "node_info_top.csv"))
 
-
+        # pair info
+        pair_info_top = {}
+        for lable, content in pair_info.items():
+            content = pd.Series(content)
+            content_sorted = content.sort_values(ascending=False)
+            pair_info_top[lable] = content_sorted.index.to_list()[:top]
+        pair_info_top = pd.DataFrame(pair_info_top)
+        pair_info_top.to_csv(os.path.join(self.data_dir, "pair_info_top.csv"))
 
 
 
@@ -1703,9 +1733,7 @@ if __name__ == '__main__':
     pcn = ProConNetwork(mutation_groups, threshold=100)
     # pcn.analysisG()  # 绘制图片
 
-    pcn.generate_all_node_info()
-
-
+    pcn.generate_all_node_top_info()
 
     # pcn._collect_mutation_info()  # 保存网络参数
 
