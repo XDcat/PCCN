@@ -1107,7 +1107,8 @@ class ProConNetwork:
 
         # save fig
         if target_variant is None:
-            fig_file_name = os.path.join(self.data_dir, "Figure 4 Comparison between variant nodes and sampled nodes on network characteristics.png")
+            fig_file_name = os.path.join(self.data_dir,
+                                         "Figure 4 Comparison between variant nodes and sampled nodes on network characteristics.png")
         else:
             fig_file_name = os.path.join(self.data_dir, target_variant, "boxplot_of_all.png")
             if not os.path.exists(os.path.dirname(fig_file_name)):
@@ -1258,7 +1259,9 @@ class ProConNetwork:
                 group_plot_basedir = os.path.join(self.data_dir, "group plot")
                 if not os.path.exists(group_plot_basedir):
                     os.mkdir(group_plot_basedir)
-                fig.savefig(os.path.join(group_plot_basedir, f"Supplemental Figure {self.group_global_ax_count}. group distribution {fig_name}.png"), dpi=300)
+                fig.savefig(os.path.join(group_plot_basedir,
+                                         f"Supplemental Figure {self.group_global_ax_count}. group distribution {fig_name}.png"),
+                            dpi=300)
 
                 # 存储统计信息
                 if excel_writer:
@@ -1333,7 +1336,9 @@ class ProConNetwork:
         # [ax.set_xlabel("") for ax in axes]
         # [ax.set_ylabel("") for ax in axes]
         self.group_global_fig.tight_layout()
-        self.group_global_fig.savefig(os.path.join(self.data_dir, "Figure 5 Comparison between variants and samples on network characteristics.png"), dpi=300)
+        self.group_global_fig.savefig(os.path.join(self.data_dir,
+                                                   "Figure 5 Comparison between variants and samples on network characteristics.png"),
+                                      dpi=300)
         [i.set_visible(False) for i in self.group_global_valid_axes[self.group_global_valid_ax_count:]]  # 删除多余子图
         self.group_global_valid_fig.tight_layout()
         self.group_global_valid_fig.savefig(os.path.join(self.data_dir, "group distribution global valid.png"), dpi=300)
@@ -1664,6 +1669,7 @@ class ProConNetwork:
         return ax
 
 
+
 if __name__ == '__main__':
     start_time = time.time()
     # 保守性网络
@@ -1672,7 +1678,10 @@ if __name__ == '__main__':
     mutation_groups.display_seq_and_aa()
     mutation_groups.count_aa()
     pcn = ProConNetwork(mutation_groups, threshold=100)
-    pcn.analysisG()  # 绘制图片
+    # pcn.analysisG()  # 绘制图片
+
+
+
     # pcn._collect_mutation_info()  # 保存网络参数
 
     # 为其他程序提供数据
@@ -1682,7 +1691,7 @@ if __name__ == '__main__':
     # pcn.output_for_topnettree()
     end_time = time.time()
     log.info(f"程序运行时间: {end_time - start_time}")
-    print(mutation_groups.non_duplicated_aas)
+    # print(mutation_groups.non_duplicated_aas)
 
     # thresholds = [50, 100, 150, 200, 250, 300]
     # for t in thresholds:
