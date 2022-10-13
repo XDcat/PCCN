@@ -1668,6 +1668,29 @@ class ProConNetwork:
         ax.set_title("")
         return ax
 
+    def generate_all_node_info(self):
+        seq = self.analysis_mutation_group.fasta
+        aas = []
+        for i, aa in enumerate(seq):
+            i = i + 1
+            aa = f"{i}{aa}"
+            aas.append(aa)
+
+        # cal
+        funcs = self.get_functions()
+        node_info = {"aas": aas}
+        for fname, func in funcs.items():
+            if fname in ["CCS", "L"]:
+                # TODO: Add pair info
+                pass
+            else:
+                node_info[fname] = func(aas)
+        node_info = pd.DataFrame(node_info)
+        node_info.to_csv(os.path.join(self.data_dir, "node_info.csv"))
+
+
+
+
 
 
 if __name__ == '__main__':
@@ -1679,6 +1702,8 @@ if __name__ == '__main__':
     mutation_groups.count_aa()
     pcn = ProConNetwork(mutation_groups, threshold=100)
     # pcn.analysisG()  # 绘制图片
+
+    pcn.generate_all_node_info()
 
 
 
