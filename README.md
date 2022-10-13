@@ -79,4 +79,9 @@ Network color
 
 ---
 2022.9.28
-Update network in Gephi
+* Update network in Gephi
+* Calculate DeepDGG for 6VXX and 6VYB
+  * Try to submit part of mutation, but failed
+  * So, calculate all possible mutations
+      * 6VXX: http://protein.org.cn/jobstat.php?type=ddg&id=47029479
+      * 6VYB: http://protein.org.cn/jobstat.php?type=ddg&id=87342993
