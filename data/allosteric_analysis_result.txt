@@ -1,0 +1,10 @@
+find overlap between top sites and mutations for different properties
+CS: []
+Kw: ['516E']
+P: ['969N']
+D: ['95T']
+B: ['405D']
+C: ['440N']
+CCS: []
+L: ['253D', '190R']
+

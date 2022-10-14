@@ -15,6 +15,11 @@ class AllostericAnalysis():
     def __init__(self, G):
         self.G = G
         self.allosteric_sites = self.load_allosteric_sites()
+        self.result_path = "../data/allosteric_analysis_result.txt"
+        self.result = open(self.result_path, "w")
+
+    def close(self):
+        self.result.close()
 
     @staticmethod
     def load_mutation_positions(path="../data/procon/threshold_100/mutation positions.csv"):
@@ -22,7 +27,6 @@ class AllostericAnalysis():
         mutations = mutations.iloc[:, 1]
         res = mutations.to_list()
         return res
-
 
     @staticmethod
     def load_network_top_positions(
@@ -45,13 +49,21 @@ class AllostericAnalysis():
         return res
 
     def analysis_top_site(self):
-        pass
+        top_info = self.load_network_top_positions()
+        mutations = self.load_mutation_positions()
         # top sites
-        # TODO: find overlap between top sites and mutations for different properties
-
+        # find overlap between top sites and mutations for different properties
+        self.result.write("find overlap between top sites and mutations for different properties\n")
+        for label, content in top_info.items():
+            set1 = set(content)
+            set2 = set(mutations)
+            intersection = list(set1 & set2)
+            msg = "{}: {}".format(label, intersection)
+            self.result.write(msg + "\n")
+        self.result.write("\n")
         # TODO: find overlap between top sites and alloteric sites
-        # TODO: find overlap between top sites neighbour and alloteric sites
 
+        # TODO: find overlap between top sites neighbour and alloteric sites
 
     @staticmethod
     def load_paper_sites(path="../data/PaperSite.txt", ):
@@ -128,9 +140,9 @@ if __name__ == '__main__':
     # AllostericAnalysis.dump_G()
     g = AllostericAnalysis.load_G()
 
-    print(AllostericAnalysis.load_network_top_positions())
     # 寻找平均最短路径
     analysis = AllostericAnalysis(g)
+    analysis.analysis_top_site()
     analysis.find_common_site_paper_important_site_and_allosteric_site()
     # BEF L
     bfe_l = [("493Q", "547T"), ("478T", "493Q"), ("213V", "493Q")]
