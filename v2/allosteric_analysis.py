@@ -58,6 +58,7 @@ class AllostericAnalysis():
             set1 = set(content)
             set2 = set(mutations)
             intersection = list(set1 & set2)
+            intersection = sorted(intersection, key=lambda x: int(x[:-1]))
             msg = "{}: {}".format(label, intersection)
             self.result.write(msg + "\n")
         self.result.write("\n")
@@ -130,6 +131,11 @@ class AllostericAnalysis():
     def find_node_in_allosteric_sites(self, nodes):
         sp_site = [int(i[:-1]) for i in nodes]
         exit_site = list(set(sp_site) & set(self.allosteric_sites))
+        exit_site = sorted(exit_site)
+        seq = SeqIO.read(AllostericAnalysis.fasta_path, "fasta").seq
+        psts = {i + 1: f"{i + 1}{j}" for i, j in enumerate(seq)}
+        exit_site = [psts[i] for i in exit_site]
+
         log.info("相交位点 %s", exit_site)
         return exit_site
 
