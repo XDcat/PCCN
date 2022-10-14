@@ -61,9 +61,29 @@ class AllostericAnalysis():
             msg = "{}: {}".format(label, intersection)
             self.result.write(msg + "\n")
         self.result.write("\n")
-        # TODO: find overlap between top sites and alloteric sites
 
-        # TODO: find overlap between top sites neighbour and alloteric sites
+        # find overlap between top sites and alloteric sites
+        self.result.write("find overlap between top sites and alloteric sites\n")
+        for label, content in top_info.items():
+            intersection = self.find_node_in_allosteric_sites(content)
+            msg = "{}: {}".format(label, intersection)
+            self.result.write(msg + "\n")
+        self.result.write("\n")
+
+        # find overlap between top sites neighbour and alloteric sites
+        self.result.write("find overlap between top sites neighbour and allosteric sites\n")
+        for label, content in top_info.items():
+            neighbor = []
+            for site in content:
+                neighbor += list(nx.neighbors(self.G, site))
+            neighbor = list(set(neighbor))
+            log.info("%s neighbours count %s", label, len(neighbor))
+            intersection = self.find_node_in_allosteric_sites(neighbor)
+            msg = "{}(neighour count={}): {}".format(label, len(neighbor), intersection)
+            self.result.write(msg + "\n")
+        self.result.write("\n")
+
+
 
     @staticmethod
     def load_paper_sites(path="../data/PaperSite.txt", ):
@@ -111,6 +131,7 @@ class AllostericAnalysis():
         sp_site = [int(i[:-1]) for i in nodes]
         exit_site = list(set(sp_site) & set(self.allosteric_sites))
         log.info("相交位点 %s", exit_site)
+        return exit_site
 
     def find_shortest_path(self, pst1, pst2):
         G = self.G
@@ -133,8 +154,17 @@ class AllostericAnalysis():
         log.info("allo sites: %s", allosteric_sites)
         log.info("paper sites: %s", paper_sites)
         log.info("全文相交节点 ")
-        self.find_node_in_allosteric_sites(paper_sites)
+        res = self.find_node_in_allosteric_sites(paper_sites)
+        self.result.write("paper important sites & allosteric sites\n")
+        self.result.write("{}\n".format(res))
+        self.result.write("\n")
 
+        # mutations
+        mutations = self.load_mutation_positions()
+        res = self.find_node_in_allosteric_sites(mutations)
+        self.result.write("all mutation sites & allosteric sites\n")
+        self.result.write("{}\n".format(res))
+        self.result.write("\n")
 
 if __name__ == '__main__':
     # AllostericAnalysis.dump_G()
@@ -155,3 +185,5 @@ if __name__ == '__main__':
         analysis.find_neighbour(pst1)
         log.info("邻居节点 %s", pst2)
         analysis.find_neighbour(pst2)
+
+    analysis.close()
