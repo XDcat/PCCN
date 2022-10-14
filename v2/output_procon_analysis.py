@@ -1720,6 +1720,11 @@ class ProConNetwork:
         pair_info_top = pd.DataFrame(pair_info_top)
         pair_info_top.to_csv(os.path.join(self.data_dir, "pair_info_top.csv"))
 
+        # variation node
+        mutations = self.analysis_mutation_group.non_duplicated_aas_positions
+        mutations = pd.Series(mutations)
+        mutations.to_csv(os.path.join(self.data_dir, "mutation positions.csv"), header=None)
+
 
 
 
