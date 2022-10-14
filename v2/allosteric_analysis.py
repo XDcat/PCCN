@@ -1,8 +1,11 @@
+from functools import reduce
+
 import networkx as nx
 from Bio import SeqIO
 from output_procon_analysis import *
 import pickle
 import re
+import pandas as pd
 
 
 class AllostericAnalysis():
@@ -12,6 +15,43 @@ class AllostericAnalysis():
     def __init__(self, G):
         self.G = G
         self.allosteric_sites = self.load_allosteric_sites()
+
+    @staticmethod
+    def load_mutation_positions(path="../data/procon/threshold_100/mutation positions.csv"):
+        mutations = pd.read_csv(path, header=None)
+        mutations = mutations.iloc[:, 1]
+        res = mutations.to_list()
+        return res
+
+
+    @staticmethod
+    def load_network_top_positions(
+            node_path="../data/procon/threshold_100/node_info_top.csv",
+            pair_path="../data/procon/threshold_100/pair_info_top.csv"
+    ):
+        res = {}
+        # node
+        node_info = pd.read_csv(node_path, index_col=0)
+        for label, content in node_info.iteritems():
+            res[label] = content.to_list()
+
+        # pair
+        pair_info = pd.read_csv(pair_path, index_col=0)
+        for label, content in pair_info.iteritems():
+            pair = content.to_list()
+            sites_of_pair = [i.split("-") for i in pair]
+            sites_of_pair = list(reduce(lambda a, b: a + b, sites_of_pair))
+            res[label] = sites_of_pair
+        return res
+
+    def analysis_top_site(self):
+        pass
+        # top sites
+        # TODO: find overlap between top sites and mutations for different properties
+
+        # TODO: find overlap between top sites and alloteric sites
+        # TODO: find overlap between top sites neighbour and alloteric sites
+
 
     @staticmethod
     def load_paper_sites(path="../data/PaperSite.txt", ):
@@ -75,7 +115,7 @@ class AllostericAnalysis():
         log.info("%s neighbour: %s", n, neighbours)
         self.find_node_in_allosteric_sites(neighbours)
 
-    def find_common_site(self):
+    def find_common_site_paper_important_site_and_allosteric_site(self):
         allosteric_sites = self.allosteric_sites
         paper_sites = self.load_paper_sites()
         log.info("allo sites: %s", allosteric_sites)
@@ -84,19 +124,19 @@ class AllostericAnalysis():
         self.find_node_in_allosteric_sites(paper_sites)
 
 
-
 if __name__ == '__main__':
     # AllostericAnalysis.dump_G()
     g = AllostericAnalysis.load_G()
 
+    print(AllostericAnalysis.load_network_top_positions())
     # 寻找平均最短路径
     analysis = AllostericAnalysis(g)
-    analysis.find_common_site()
+    analysis.find_common_site_paper_important_site_and_allosteric_site()
     # BEF L
     bfe_l = [("493Q", "547T"), ("478T", "493Q"), ("213V", "493Q")]
-    # for pst1, pst2 in bfe_l:
-    #     log.info("最短路径上的节点 %s-%s", pst1, pst2)
-    #     analysis.find_shortest_path(pst1, pst2)
+    for pst1, pst2 in bfe_l:
+        log.info("最短路径上的节点 %s-%s", pst1, pst2)
+        analysis.find_shortest_path(pst1, pst2)
 
     for pst1, pst2 in bfe_l:
         log.info("邻居节点 %s", pst1)
