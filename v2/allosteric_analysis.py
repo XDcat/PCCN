@@ -74,14 +74,13 @@ class AllostericAnalysis():
         # find overlap between top sites neighbour and alloteric sites
         self.result.write("find overlap between top sites neighbour and allosteric sites\n")
         for label, content in top_info.items():
-            neighbor = []
+            self.result.write(label + "\n")
             for site in content:
-                neighbor += list(nx.neighbors(self.G, site))
-            neighbor = list(set(neighbor))
-            log.info("%s neighbours count %s", label, len(neighbor))
-            intersection = self.find_node_in_allosteric_sites(neighbor)
-            msg = "{}(neighour count={}): {}".format(label, len(neighbor), intersection)
-            self.result.write(msg + "\n")
+                neighbor = list(nx.neighbors(self.G, site))
+                intersection = self.find_node_in_allosteric_sites(neighbor)
+                msg = "{}: {}\n".format(site, ", ".join(intersection))
+                self.result.write(msg)
+            self.result.write("\n")
         self.result.write("\n")
 
 
