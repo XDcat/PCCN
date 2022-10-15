@@ -1107,7 +1107,8 @@ class ProConNetwork:
 
         # save fig
         if target_variant is None:
-            fig_file_name = os.path.join(self.data_dir, "Figure 4 Comparison between variant nodes and sampled nodes on network characteristics.png")
+            fig_file_name = os.path.join(self.data_dir,
+                                         "Figure 4 Comparison between variant nodes and sampled nodes on network characteristics.png")
         else:
             fig_file_name = os.path.join(self.data_dir, target_variant, "boxplot_of_all.png")
             if not os.path.exists(os.path.dirname(fig_file_name)):
@@ -1258,7 +1259,9 @@ class ProConNetwork:
                 group_plot_basedir = os.path.join(self.data_dir, "group plot")
                 if not os.path.exists(group_plot_basedir):
                     os.mkdir(group_plot_basedir)
-                fig.savefig(os.path.join(group_plot_basedir, f"Supplemental Figure {self.group_global_ax_count}. group distribution {fig_name}.png"), dpi=300)
+                fig.savefig(os.path.join(group_plot_basedir,
+                                         f"Supplemental Figure {self.group_global_ax_count}. group distribution {fig_name}.png"),
+                            dpi=300)
 
                 # 存储统计信息
                 if excel_writer:
@@ -1333,7 +1336,9 @@ class ProConNetwork:
         # [ax.set_xlabel("") for ax in axes]
         # [ax.set_ylabel("") for ax in axes]
         self.group_global_fig.tight_layout()
-        self.group_global_fig.savefig(os.path.join(self.data_dir, "Figure 5 Comparison between variants and samples on network characteristics.png"), dpi=300)
+        self.group_global_fig.savefig(os.path.join(self.data_dir,
+                                                   "Figure 5 Comparison between variants and samples on network characteristics.png"),
+                                      dpi=300)
         [i.set_visible(False) for i in self.group_global_valid_axes[self.group_global_valid_ax_count:]]  # 删除多余子图
         self.group_global_valid_fig.tight_layout()
         self.group_global_valid_fig.savefig(os.path.join(self.data_dir, "group distribution global valid.png"), dpi=300)
@@ -1391,18 +1396,31 @@ class ProConNetwork:
                 weighted_shortest_path_length = json.loads(f.read())
         return weighted_shortest_path_length
 
-    def calculate_weighted_shortest_path(self, grp):
+    def calculate_weighted_shortest_path(self, grp, is_dict=False):
         res = []
+        names = []
         for n1, n2 in combinations(grp, 2):
             res.append(self.shortest_path_length[n1][n2])
-        return res
+            if is_dict:
+                names.append(f"{n1}-{n2}")
 
-    def calculate_co_conservation(self, grp):
+        if is_dict:
+            return dict(zip(names, res))
+        else:
+            return res
+
+    def calculate_co_conservation(self, grp, is_dict=False):
         res = []
+        names = []
         for n1, n2 in combinations(grp, 2):
             if self.G.has_edge(n1, n2):
                 res.append(self.G.edges[n1, n2]["weight"])
-        return res
+                if is_dict:
+                    names.append(f"{n1}-{n2}")
+        if is_dict:
+            return dict(zip(names, res))
+        else:
+            return res
 
     def calculate_edge_betweenness_centrality(self, grp):
         # if not hasattr(self, "edge_betweenness_centrality"):
@@ -1663,6 +1681,52 @@ class ProConNetwork:
         ax.set_title("")
         return ax
 
+    def generate_all_node_top_info(self, top=10):
+        seq = self.analysis_mutation_group.fasta
+        aas = []
+        for i, aa in enumerate(seq):
+            i = i + 1
+            aa = f"{i}{aa}"
+            aas.append(aa)
+
+        # cal
+        funcs = self.get_functions()
+        node_info = {"aas": aas}
+        pair_info = {}
+        for fname, func in funcs.items():
+            if fname in ["CCS", "L"]:
+                pair_info[fname] = func(aas, is_dict=True)
+            else:
+                node_info[fname] = func(aas)
+
+        # node info
+        node_info = pd.DataFrame(node_info)
+        node_info = node_info.set_index("aas")
+        node_info.to_csv(os.path.join(self.data_dir, "node_info.csv"))
+        # find top
+        node_info_top = {}
+        for label, content in node_info.iteritems():
+            content_sorted = content.sort_values(ascending=False)
+            node_info_top[label] = content_sorted.index.to_list()[:top]
+        node_info_top = pd.DataFrame(node_info_top)
+        node_info_top.to_csv(os.path.join(self.data_dir, "node_info_top.csv"))
+
+        # pair info
+        pair_info_top = {}
+        for lable, content in pair_info.items():
+            content = pd.Series(content)
+            content_sorted = content.sort_values(ascending=False)
+            pair_info_top[lable] = content_sorted.index.to_list()[:top]
+        pair_info_top = pd.DataFrame(pair_info_top)
+        pair_info_top.to_csv(os.path.join(self.data_dir, "pair_info_top.csv"))
+
+        # variation node
+        mutations = self.analysis_mutation_group.non_duplicated_aas_positions
+        mutations = pd.Series(mutations)
+        mutations.to_csv(os.path.join(self.data_dir, "mutation positions.csv"), header=None)
+
+
+
 
 if __name__ == '__main__':
     start_time = time.time()
@@ -1672,7 +1736,10 @@ if __name__ == '__main__':
     mutation_groups.display_seq_and_aa()
     mutation_groups.count_aa()
     pcn = ProConNetwork(mutation_groups, threshold=100)
-    pcn.analysisG()  # 绘制图片
+    # pcn.analysisG()  # 绘制图片
+
+    pcn.generate_all_node_top_info()
+
     # pcn._collect_mutation_info()  # 保存网络参数
 
     # 为其他程序提供数据
@@ -1682,7 +1749,7 @@ if __name__ == '__main__':
     # pcn.output_for_topnettree()
     end_time = time.time()
     log.info(f"程序运行时间: {end_time - start_time}")
-    print(mutation_groups.non_duplicated_aas)
+    # print(mutation_groups.non_duplicated_aas)
 
     # thresholds = [50, 100, 150, 200, 250, 300]
     # for t in thresholds:
