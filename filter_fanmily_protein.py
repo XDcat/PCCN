@@ -1,13 +1,4 @@
 # -*- coding:utf-8 -*-
-'''
-__author__ = 'XD'
-__mtime__ = 2021/9/17
-__project__ = Cov2_protein
-Fix the Problem, Not the Blame.
-
-http://www.ebi.ac.uk/interpro/result/InterProScan/iprscan5-R20210917-073330-0879-28690888-p2m/
-从上述网站，找到了 s 蛋白的 protein family，但是蛋白质数目太多，除去同名的蛋白质，还剩下 261 条，并导出
-'''
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
@@ -51,15 +42,15 @@ if __name__ == '__main__':
     log.debug("fasta shape %s ", fasta.shape)
     log.debug("info columns: %s", info.columns)
     log.debug("info shape %s ", info.shape)
-    # 过滤重名
-    log.debug("info 中不重复的物种: %s", info.shape[0] - info.fullName.duplicated().sum())
+    # filter
+    log.debug("info no duplicated: %s", info.shape[0] - info.fullName.duplicated().sum())
     data = pd.merge(fasta, info, left_on="id", right_on="accession")
-    log.debug("合并结果:\n%s", data)
+    log.debug("merge:\n%s", data)
     # data = data[data.fullName.duplicated()]
     data = data.drop_duplicates("fullName")
-    log.debug("去重后结果:\n%s", data)
+    log.debug("drop duplicates:\n%s", data)
 
-    # 导出 csv 和 fasta 格式
+    # output csv and fasta
     data.to_csv("./data/protein-matching-IPR042578.filter.csv")
     res_fasta = list(SeqIO.parse(query_fasta_file, "fasta"))
     for i, row in data.iterrows():

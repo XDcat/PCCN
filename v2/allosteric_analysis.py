@@ -1,4 +1,4 @@
-from functools import reduce
+rrom functools import reduce
 
 import networkx as nx
 from Bio import SeqIO
@@ -135,7 +135,7 @@ class AllostericAnalysis():
         psts = {i + 1: f"{i + 1}{j}" for i, j in enumerate(seq)}
         exit_site = [psts[i] for i in exit_site]
 
-        log.info("相交位点 %s", exit_site)
+        log.info("site %s", exit_site)
         return exit_site
 
     def find_shortest_path(self, pst1, pst2):
@@ -158,7 +158,6 @@ class AllostericAnalysis():
         paper_sites = self.load_paper_sites()
         log.info("allo sites: %s", allosteric_sites)
         log.info("paper sites: %s", paper_sites)
-        log.info("全文相交节点 ")
         res = self.find_node_in_allosteric_sites(paper_sites)
         self.result.write("paper important sites & allosteric sites\n")
         self.result.write("{}\n".format(res))
@@ -175,20 +174,20 @@ if __name__ == '__main__':
     # AllostericAnalysis.dump_G()
     g = AllostericAnalysis.load_G()
 
-    # 寻找平均最短路径
+    # find average shortest path length
     analysis = AllostericAnalysis(g)
     analysis.analysis_top_site()
     analysis.find_common_site_paper_important_site_and_allosteric_site()
     # BEF L
     bfe_l = [("493Q", "547T"), ("478T", "493Q"), ("213V", "493Q")]
     for pst1, pst2 in bfe_l:
-        log.info("最短路径上的节点 %s-%s", pst1, pst2)
+        log.info("nodes in SP %s-%s", pst1, pst2)
         analysis.find_shortest_path(pst1, pst2)
 
     for pst1, pst2 in bfe_l:
-        log.info("邻居节点 %s", pst1)
+        log.info("neighbour %s", pst1)
         analysis.find_neighbour(pst1)
-        log.info("邻居节点 %s", pst2)
+        log.info("neighbour %s", pst2)
         analysis.find_neighbour(pst2)
 
     analysis.close()

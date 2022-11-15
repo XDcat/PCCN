@@ -7,7 +7,7 @@ from Bio import SeqIO
 
 
 def read_data(data_path="./data/总结 - 20220709.xlsx"):
-    """读取所有毒株"""
+    """read all variants"""
     data = pd.read_excel(data_path, sheet_name=1)
     variants = data["Lineage + additional mutations"].to_list()
     return variants
@@ -15,7 +15,6 @@ def read_data(data_path="./data/总结 - 20220709.xlsx"):
 
 @retry(tries=3, delay=10)
 def get_mutations(variant: str):
-    """需要区分类似B.1.617.2 + E484X (d) 的情况"""
     info_url = "https://outbreak.info/situation-reports?pango={}"
     data_url = "https://api.outbreak.info/genomics/lineage-mutations?pangolin_lineage={}&frequency=0.75"
     if "+" in variant:
@@ -33,10 +32,10 @@ def get_mutations(variant: str):
 
 def run():
     data = read_data()
-    print("读取到的毒株:", data)
+    print("variant:", data)
     mutations = {}
     for variant in data:
-        print("获取突变:", variant)
+        print("get all variant:", variant)
         mutations[variant] = get_mutations(variant)
     with open("./data/mutation_info.json", "w") as f:
         f.write(json.dumps(mutations))
@@ -81,12 +80,12 @@ def parse_result():
     variants = read_data()
     with open("./data/mutation_info.json", ) as f:
         data = json.load(f)
-    # 只保留 S 上的替换
+    # keep mutation from s
     for k, v in data.items():
         data[k] = list(filter(lambda x: (x["gene"] == "S") and (x["type"] == "substitution"), data[k]))  # S 上的替换
         data[k] = [i["mutation"][2:].upper() for i in data[k]]
         data[k] = list(sorted(data[k], key=lambda x: int(x[1:-1])))
-        # 添加补充的
+        # add
         if "+" in k:
             other_mutation = k.split("+")[1].strip()
             data[k].append(other_mutation)
@@ -104,5 +103,5 @@ def parse_result():
 
 
 if __name__ == '__main__':
-    # run()  # 爬虫获取突变
-    parse_result()  # 解析结果
+    # run()
+    parse_result()

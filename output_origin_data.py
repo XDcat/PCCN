@@ -1,10 +1,4 @@
 # -*- coding:utf-8 -*-
-'''
-__author__ = 'XD'
-__mtime__ = 2021/10/10
-__project__ = Cov2_protein
-Fix the Problem, Not the Blame.
-'''
 import json
 import math
 from Bio import SeqIO
@@ -32,7 +26,7 @@ if __name__ == '__main__':
     for i, item in analysis.items():
         all_exit_aa += item["aas"]
 
-    # 统计变异出现次数
+    # count occurrence number
     count_aa = pd.value_counts(all_exit_aa)
     log.debug("count_aa = %s", count_aa)
     flg, ax = plt.subplots()
@@ -50,7 +44,7 @@ if __name__ == '__main__':
     data["y"] = data["count"]
     log.debug("data = %s", data)
 
-    # 一维散点图
+    # scatter
     flg, ax = plt.subplots(figsize=(10, 5))
     x = data["x"].to_list()
     y = data["y"].to_list()

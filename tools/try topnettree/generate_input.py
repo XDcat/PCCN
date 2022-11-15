@@ -20,26 +20,26 @@ origin_aas = ['F486V', 'A222V', 'F888L', 'Q954H', 'R246N', 'F490S', 'E484Q', 'N7
 
 if __name__ == '__main__':
     print(len(origin_aas))
-    # 序列
+    # seq
     origin_fasta = SeqIO.read("../../data/YP_009724390.1.txt", "fasta")
     pdb_a_fasta = SeqIO.read("./data/7A98_A.fasta", "fasta")
     print(f"origin: \n{origin_fasta.seq}")
     print(f"pdf a:\n{pdb_a_fasta.seq}")
-    start_sep_count = 31  # origin 序列和 pdb_a 对齐后，pdb_a 前比 origin 多了 31 个
+    start_sep_count = 31  # seq
 
-    # 生成新的替代
+    # generate mutation
     run_format = "sh run_topnettree.sh 7a98.pdb A {w} {m} {idx} 1 >> out0.log 2>&1"
     pdb_a_aas = []
     run_sh = []
     for aa in origin_aas:
         w, idx, m = aa[0], int(aa[1:-1]), aa[-1]  # wild, index, mutation
         idx_to_pda_a = idx + 31
-        # 校验是否准确
+        # check
         flag = pdb_a_fasta.seq[idx_to_pda_a - 1] == w
         new_aa = "{}{}{}".format(w, idx_to_pda_a, m)
         print(aa, origin_fasta[idx - 1], pdb_a_fasta[idx_to_pda_a - 1], flag, "->", new_aa)
         if not flag:
-            raise RuntimeError("序列不匹配")
+            raise RuntimeError("not map")
         pdb_a_aas.append(new_aa)
         run_sh.append(run_format.format(w=w, idx=idx_to_pda_a, m=m))
 

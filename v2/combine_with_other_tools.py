@@ -31,7 +31,7 @@ analysisMutationGroup = AnalysisMutationGroup()
 origin_aas = analysisMutationGroup.non_duplicated_aas
 
 # sns.set()
-sns.set_style("ticks")  # 主题: 白色背景且有边框
+sns.set_style("ticks")
 
 data_dir = "../data/procon"
 
@@ -47,7 +47,6 @@ class CombineResult:
         type1 = pcn.type1
         nd_aas = mutation_group.non_duplicated_aas
 
-        # 默认的数据
         pst_info = pcn._collect_mutation_info(save=False)
         pst_info = pst_info.reset_index(drop=True)
 
@@ -63,7 +62,7 @@ class CombineResult:
         conservation_columns = conservation.columns.tolist()
         conservation_data_columns = conservation.columns[2:].tolist()
 
-        # 单 mutation 分析
+        # single mutation
         info_list = [conservation, bfe, ddg]
         aa_info: pd.DataFrame = pd.concat([i.set_index("name") for i in info_list], axis=1)
         aa_info = aa_info.loc[:, conservation_columns[1:] + ["BFE", "ddG"]]
@@ -71,9 +70,9 @@ class CombineResult:
         aa_info = aa_info.sort_values("conservation", ascending=True)
         aa_info.to_csv(os.path.join(data_dir, "combine_with_other_tools - single.csv"))
 
-        # 相关性分析
-        c1_columns = ["stability", "BFE"]  # 比较对象 1
-        c2_columns = conservation_data_columns  # 比较对象 2
+        # relationship
+        c1_columns = ["stability", "BFE"]
+        c2_columns = conservation_data_columns
         top_names = []
         for i in aa_info.index.values:
             # top_names.append("{}{}".format(i[1:-1], i[0]))
@@ -133,13 +132,13 @@ class CombineResult:
         info["BFE"] = info.apply(cal_bfe, axis=1)
         info["stability"] = info.apply(cal_ddg, axis=1)
 
-        # 检查是否为空
+        # check null
         data_columns = ["co-conservation", "shortest path length", "BFE", "stability"]
-        info = info.drop(["name"], axis=1)  # 不保留毒株名
-        info = info.drop_duplicates(["a1", "a2"])  # 删除重复
-        info = info.reset_index(drop=True)  # 重设索引
+        info = info.drop(["name"], axis=1)
+        info = info.drop_duplicates(["a1", "a2"])
+        info = info.reset_index(drop=True)
 
-        # 相关性分析
+        # relationship
         c1_columns = data_columns[2:]
         c2_columns = data_columns[:2]
         top_names = []
@@ -201,8 +200,7 @@ class CombineResult:
     def analysis_variant(self, f_single_info=os.path.join(data_dir, "combine_with_other_tools - single.csv"),
                          f_co_info=os.path.join(data_dir, "combine_with_other_tools - co.csv")):
         """
-        通过读取前两者的输出文件，计算 variant
-        :return:
+        read ouputs, calculate variant
         """
         # middle info
         single_info = pd.read_csv(f_single_info)
@@ -215,7 +213,7 @@ class CombineResult:
         # single
         variant_single = pd.merge(group_info, single_info)
 
-        # 取平均
+        # mean
         variant_single_group = variant_single.groupby("variant").mean()
         variant_single_group.to_csv(os.path.join(data_dir, "combine_with_other_tools - variant - single.csv"))
 
@@ -226,7 +224,7 @@ class CombineResult:
         single_correlation.to_csv(
             os.path.join(data_dir, "combine_with_other_tools - variant - single - correlation.csv"))
 
-        # 每一个 variant 的相关性
+        # relationship for each variant
         def aux(grp):
             res = self.cal_correlation(grp, c1_columns, c2_columns, "variant-single", grp["name"].to_list())
             return res
@@ -246,7 +244,6 @@ class CombineResult:
                 idx = (co_info[["a1", "a2"]] == [a1, a2]) | (co_info[["a1", "a2"]] == [a2, a1])
                 idx = idx.all(axis=1)
                 if sum(idx) > 0:
-                    # 存在数据
                     row = co_info[idx].iloc[0]
                     row["name"] = name
                     variant_co.append(row)
@@ -277,11 +274,11 @@ class CombineResult:
     @staticmethod
     def cal_correlation(info: pd.DataFrame, c1_columns: List, c2_columns: List, name: str, top_names=None):
         """
-        # 相关性分析
-        :param info:  数据源
-        :param c1_columns: 对比对象1
-        :param c2_columns: 对比对象2
-        :param name: 结果名称
+        correlation analysis
+        :param info: data source
+        :param c1_columns: target1
+        :param c2_columns: target2
+        :param name: reuslt name
         :return: pd.DataFrame
         """
 
@@ -304,17 +301,17 @@ class CombineResult:
         for c1 in c1_columns:
             for c2 in c2_columns:
                 compare_data = info.loc[:, [c1, c2, "top_names"]]
-                # 去除空数据（异常值）的影响
+                # remove empty
                 compare_data = compare_data[compare_data.notna().all(axis=1)]
                 c1_data = compare_data.loc[:, c1].to_list()
                 c2_data = compare_data.loc[:, c2].to_list()
-                print("总共数据量{}, 非空数据量{}".format(info.shape[0], compare_data.shape[0]))
+                print("total {}, not empty{}".format(info.shape[0], compare_data.shape[0]))
 
                 if len(c1_data) < 2 or len(c2_data) < 2:
                     p = [None, None]
                     sp = [None, None]
                 else:
-                    # 皮尔逊相关系数
+                    # pearsonr
                     p = pearsonr(c1_data, c2_data)
                     print(f"{c1} / {c2} : pearsonr={p[0]}, p={p[1]}")
                     # spear
@@ -323,7 +320,7 @@ class CombineResult:
                 # top 3
                 top_data = pd.Series(compare_data.loc[:, c1].values, index=compare_data.loc[:, "top_names"])
                 top3 = format_top(top_data)
-                # 结果
+                # result
                 correlation.append([c1, c2, p[0], p[1], sp[0], sp[1], info.shape[0], compare_data.shape[0], top3])
 
         correlation = pd.DataFrame(correlation,
@@ -343,28 +340,27 @@ class CombineResult:
                                                   "combine_with_other_tools - variant - co - correlation.csv")
 
     ):
-        """分析三种类别的结果文件，并绘制成表格和热力图"""
+        """analysis result files for three types, and draw table and heatmap"""
         names = ["substitution", "co-substitution", "variant (single)", "variant (co)"]
         correlations = [pd.read_csv(i, index_col=[1, 2]) for i in
                         [f_single_correlation, f_co_correlation, f_variant_s_correlation, f_variant_co_correlation]]
         all_cor = pd.concat(correlations, keys=names)
 
-        # 格式化数据
-        # 只保留加权度、归一化的保守性
+        # format
         all_cor = all_cor.rename(
             {"co-substitution": "substitution", "variant (single)": "variant", "variant (co)": "variant"}, level=0,
             axis=0)
         # all_cor = all_cor.drop(["degree", "average weighted degree", "conservation", "average shortest length in sampled data"], level=2, axis=0)
         # all_cor = all_cor.rename({"weighted degree": "degree", "normalized conservation": "conservation"})
 
-        # 统计两种相关性的个数
-        # spearmanr 比较多
+        # count
+        # spearmanr is more
         count_p = sum(all_cor["pearsonr p"] < 0.05)
         count_sp = sum(all_cor["spearmanr p"] < 0.05)
-        print(f"总个数{all_cor.shape[0]}, pearson 有效个数{count_p}, spearsanr 有效个数{count_sp}")
+        print(f"total {all_cor.shape[0]}, pearson valid {count_p}, spearsanr valid {count_sp}")
 
         def draw_heatmap(plot_cor):
-            # 热力图
+            # heatmap
             fig: plt.Figure
             axes: List[plt.Axes]
             fig, axes = plt.subplots(1, 2, sharey="row", figsize=(7, 7))
@@ -377,15 +373,15 @@ class CombineResult:
             # fig.show()
             return fig
 
-        # 找到对应数据
+        # find data
         target = "spearmanr"
         target_columns = [target + " correlation", target + " p"]
-        # 整体图
+        # total
         plot_cor = all_cor
         fig = draw_heatmap(plot_cor)
         fig.show()
         fig.savefig(os.path.join(data_dir, "combine_with_other_tools - parse - heatmap1.png"))
-        # 有显著性数据的图
+        # figure with difference
         plot_cor = all_cor.copy()
         idx_invalid = plot_cor[target_columns[-1]] >= 0.05
         plot_cor[target_columns[0]][idx_invalid] = pd.NA
@@ -394,27 +390,24 @@ class CombineResult:
         fig.show()
         fig.savefig(os.path.join(data_dir, "combine_with_other_tools - parse - heatmap2.png"))
 
-        # 找出有显著性的数据表格
-        # 单独为 BFE 和 stability 添加一个表格
-        # BFE 和  stability 的行数需要相同
+        # table with difference
         valid_cor = all_cor.copy()
-        # 找到 BFE 和 stability 其中一个 p 小于 0.05 的行
         valid_cor = valid_cor.unstack(level=1)
         idx_valid = (valid_cor.loc[:, "spearmanr p"] < 0.05).any(axis=1)
         valid_cor = valid_cor[idx_valid]
         valid_cor = valid_cor.stack()  # 变换回去
         valid_cor = valid_cor.swaplevel(0, 2).sort_index(level=0)
         valid_cor = valid_cor.swaplevel(1, 2).sort_index(level=0)
-        # 格式化
+        # format
         valid_cor = valid_cor[target_columns + ["top3"]]
         valid_cor.index.names = map(lambda x: x[0].upper() + x[1:], ["#", "kind", "network characteristic"])
         valid_cor.columns = ["Correlation", "P value", "Top3"]
-        # top3 放在前面
+        # top3
         valid_cor = valid_cor.reset_index()
         valid_cor.insert(2, "Top3", valid_cor.pop("Top3"))
         valid_cor = valid_cor.sort_values(valid_cor.columns.to_list()[:4])
         valid_cor = valid_cor.set_index(valid_cor.columns.to_list()[:4])
-        # 保存
+        # save
         valid_cor.to_excel(os.path.join(data_dir, "combine_with_other_tools - parse.xlsx"))
 
     @staticmethod
@@ -427,11 +420,10 @@ class CombineResult:
         correlations = [pd.read_csv(i, index_col=[0, 1, 2, 3]) for i in
                         [f_variant_s_correlation, f_variant_co_correlation]]
         all_cor = pd.concat(correlations)
-        all_cor = all_cor.iloc[:, 2:]  # 不需要 pearsonr 的结果
+        all_cor = all_cor.iloc[:, 2:]
         # all_cor[all_cor["not null data"] <= 2][["spearmanr correlation", "spearmanr p"]] = pd.NA
-        all_cor = all_cor.droplevel(1, axis=0)  # 删除多余索引
-        all_cor = all_cor.swaplevel(0, 1).swaplevel(1, 2).sort_index(axis=0)  # 调换索引并排序
-        # 组内排序
+        all_cor = all_cor.droplevel(1, axis=0)
+        all_cor = all_cor.swaplevel(0, 1).swaplevel(1, 2).sort_index(axis=0)
         all_cor_sorted = all_cor.reset_index()
         # t1 = all_cor_sorted[(all_cor_sorted.name1=="BFE") & (all_cor_sorted.name2=="co-conservation")]
         # t1_idx = t1["spearmanr correlation"].abs().argsort()
@@ -444,18 +436,17 @@ class CombineResult:
 
         all_cor_sorted = all_cor_sorted.groupby(["name1", "name2"]).apply(
             lambda x: x.iloc[x["spearmanr correlation"].abs().values.argsort()[::-1]])
-        all_cor_sorted = all_cor_sorted.droplevel(2)  # 去除多余的 level
-        all_cor_sorted = all_cor_sorted.iloc[:, 2:]  # 去除多余索引
+        all_cor_sorted = all_cor_sorted.droplevel(2)
+        all_cor_sorted = all_cor_sorted.iloc[:, 2:]
         all_cor_sorted.to_excel(os.path.join(data_dir, "combine_with_other_tools - parse - variant(all).xlsx"))
 
-        # 去除 p value > 0.05 或者 None
+        # filter
         all_cor_sorted_valid = all_cor_sorted[all_cor_sorted["spearmanr p"].notna()]
         all_cor_sorted_valid = all_cor_sorted_valid[all_cor_sorted_valid["spearmanr p"] <= 0.05]
-        # 去除等于 1 的
         all_cor_sorted_valid = all_cor_sorted_valid[
             all_cor_sorted_valid["spearmanr correlation"].astype(int).abs() != 1]
 
-        # 格式化结果
+        # format result
         # all_cor_sorted_valid = all_cor_sorted_valid.drop(["degree", "average weighted degree", "conservation", "average shortest length in sampled data"], level=1,
         #                                                  axis=0)
         # all_cor_sorted_valid = all_cor_sorted_valid.rename(
@@ -463,18 +454,17 @@ class CombineResult:
         all_cor_sorted_valid.index.names = ["Kind", "Network characteristic"]
         all_cor_sorted_valid.columns = map(lambda x: x[0].upper() + x[1:], all_cor_sorted_valid.columns)
 
-        # 毒株作为第一列
         all_cor_sorted_valid = all_cor_sorted_valid.reset_index()
         all_cor_sorted_valid.insert(0, "Variant", all_cor_sorted_valid.pop("Variant"))
         all_cor_sorted_valid.insert(2, "Top3", all_cor_sorted_valid.pop("Top3"))
         all_cor_sorted_valid = all_cor_sorted_valid.sort_values("Variant")
         all_cor_sorted_valid = all_cor_sorted_valid.set_index(all_cor_sorted_valid.columns.to_list()[:4])
-        # 格式化
+        # format
         all_cor_sorted_valid = all_cor_sorted_valid.iloc[:, :-2]
         all_cor_sorted_valid = all_cor_sorted_valid.rename(
             {"Spearmanr correlation": "Correlation", "Spearmanr p": "P value"}, axis=1)
 
-        # 保存
+        # save
         all_cor_sorted_valid.to_excel(os.path.join(data_dir, "combine_with_other_tools - parse - variant.xlsx"))
 
     @staticmethod
@@ -482,11 +472,11 @@ class CombineResult:
             single_info_path="../data/procon/combine_with_other_tools - single.csv",
             co_info_path="../data/procon/combine_with_other_tools - co.csv"
     ):
-        # 读取源文件
+        # read data
         single_info: pd.DataFrame = pd.read_csv(single_info_path, index_col=0)
         co_info: pd.DataFrame = pd.read_csv(co_info_path, index_col=0)
 
-        # 选定的绘图数据
+        # draw
         plot_data = {
             "BFE": [
                 {"type": "co", "name": "co-conservation"},
@@ -566,34 +556,31 @@ class CombineResult:
 
 
 if __name__ == '__main__':
-    # 显示所有列
     pd.set_option('display.max_columns', None)
-    # 显示所有行
     pd.set_option('display.max_rows', None)
-    # 不换行
     pd.set_option('display.width', 5000)
 
-    # 分析
+    # analysis
     mutation_groups = AnalysisMutationGroup()
     pcn = ProConNetwork(mutation_groups, threshold=100)
     cr = CombineResult()
 
-    # 分析单个位点的数据
+    # single mutation
     singe_info = cr.analysis_single_mutation()
-    # 分析两个位点
+    # co mutation
     co_info = cr.analysis_co_mutations()
-    # 分析毒株
+    # variant
     cr.analysis_variant()
 
-    # 解析结果
+    # parse result
     CombineResult.parse_result()
     CombineResult.parse_variant_result()
 
-    # 绘制散点图
+    # draw scatter
     CombineResult.plot_correlation_scatter()
 
-    # 网络参数前几
+    # top3
     CombineResult.get_graph_top3()
 
-    # 绘制分布图
+    # draw distribution
     CombineResult.plot_for_stability_bfe()

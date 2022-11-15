@@ -11,11 +11,9 @@ origin_aas = ['P681R', 'Q954H', 'Q613H', 'Y449H', 'Y505H', 'G446S', 'N764K', 'R4
 if __name__ == '__main__':
     old_result = "./v4/output/result total v1.csv"
     old_data = pd.read_csv(old_result)
-    # 生成所有的可能
     all_pairwise = list(combinations(origin_aas, 2))
     # print(all_pairwise)
 
-    # 排除已经在 old data 里面的
     done_pairwise = []
     for i in old_data["mutations"]:
         i = i.split(";")
@@ -34,7 +32,6 @@ if __name__ == '__main__':
         else:
             wait_pairwise.append((a1, a2))
 
-    # 生成输入文件（如果数量较多，需要分成几个文件）
     print(f"aa 个数:{len(origin_aas)}")
     print(f"pairwise: all done wait")
     print(f"pairwise: {len(all_pairwise)} {len(done_pairwise)} {len(wait_pairwise)}")
