@@ -1,5 +1,3 @@
-# 组合数
-# 日志
 import logging
 import os
 import re

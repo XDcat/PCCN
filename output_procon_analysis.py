@@ -26,10 +26,11 @@ def output_excel(analysis, outpath="./data/procon/analysis.xlsx"):
     keys = []
     for i, row in analysis.items():
         # k = "{}-{}-{} ({})".format(i, row["WHO label"], row["Lineage + additional mutations"], row["Spike mutations of interest"])
-        # k = "编号:{}\nWHO 标签:{}\nLineage:{}\n变异:{}".format(i, row["WHO label"], row["Lineage + additional mutations"], row["Spike mutations of interest"])
+        # k = "index:{}\nWHO tag:{}\nLineage:{}\n变异:{}".format(i, row["WHO label"], row["Lineage + additional mutations"], row["Spike mutations of interest"])
         k = "index:{}, WHO tag:{}, Lineage:{}, mutation:{}, type:{}".format(i, row["WHO label"],
-                                                                row["Lineage + additional mutations"],
-                                                                row["Spike mutations of interest"], row["type"])
+                                                                            row["Lineage + additional mutations"],
+                                                                            row["Spike mutations of interest"],
+                                                                            row["type"])
         if row["WHO label"]:
             k = "{}-{}({})".format(i, row["Lineage + additional mutations"], row["WHO label"], )
         else:
@@ -129,13 +130,13 @@ def plot_2D(type1, type2, pst_2_x, analysis, outpath, font_size):
 def plot_graph(nodes, links, name, layout="circular"):
     c = (
         Graph(init_opts=opts.InitOpts(width="100%", height="1000px"))
-            .add("", nodes, links, repulsion=8000, layout=layout, )
-            .set_global_opts(
+        .add("", nodes, links, repulsion=8000, layout=layout, )
+        .set_global_opts(
             title_opts=opts.TitleOpts(title="count"),
             toolbox_opts=opts.ToolboxOpts(
                 feature=opts.ToolBoxFeatureOpts(
                     save_as_image=opts.ToolBoxFeatureSaveAsImageOpts(pixel_ratio=3, background_color="white"))), )
-            .render(name)
+        .render(name)
     )
 
 
@@ -209,7 +210,8 @@ def output_picture(analysis, outpath="./data/procon/analysis.png", font_size="x-
     plot_graph(nodes, links, "./data/procon/count.html", None)
 
 
-def output_picture_global(fasta,analysis,  parse1="./data/procon/type1_parse.csv", parse2="./data/procon/type2_parse.csv"):
+def output_picture_global(fasta, analysis, parse1="./data/procon/type1_parse.csv",
+                          parse2="./data/procon/type2_parse.csv"):
     type1 = pd.read_csv(parse1)
     type2 = pd.read_csv(parse2)
     # node
@@ -233,8 +235,8 @@ def output_picture_global(fasta,analysis,  parse1="./data/procon/type1_parse.csv
     # draw relationship
     G = nx.Graph()
     for i, row in nodes.iterrows():
-        G.add_node(row["name"], name=nodes["name"],)
-        
+        G.add_node(row["name"], name=nodes["name"], )
+
     for i, row in links.iterrows():
         G.add_edge(row["source"], row["target"])
 
@@ -245,7 +247,7 @@ def output_picture_global(fasta,analysis,  parse1="./data/procon/type1_parse.csv
     # 1. all nodes
     flg = plt.figure(figsize=(20, 20))
     nx.draw_circular(G, node_size=1, width=1, with_labels=False)
-    nx.draw_networkx_labels(G, nx.drawing.circular_layout(G, scale=1.05), font_size=3, font_color="g",)
+    nx.draw_networkx_labels(G, nx.drawing.circular_layout(G, scale=1.05), font_size=3, font_color="g", )
     flg.show()
     flg.savefig("./data/procon/1. global_graph.png", dpi=300)
 
@@ -263,11 +265,9 @@ def output_picture_global(fasta,analysis,  parse1="./data/procon/type1_parse.csv
     node_colors = ["r" if n in psts else "#1f78b4" for n in G.nodes]
     flg = plt.figure(figsize=(20, 20))
     nx.draw_circular(G, node_size=1, width=1, with_labels=False, edge_color=edge_colors, node_color=node_colors)
-    nx.draw_networkx_labels(G_psts, nx.drawing.circular_layout(G, scale=1.01), font_size=3, font_color="r",)
+    nx.draw_networkx_labels(G_psts, nx.drawing.circular_layout(G, scale=1.01), font_size=3, font_color="r", )
     flg.show()
     flg.savefig("./data/procon/3. global_graph(only display part labels).png", dpi=300)
-
-
 
 
 def get_position_from_parse(analysis):
@@ -282,8 +282,6 @@ def get_position_from_parse(analysis):
     log.debug("aas = %s", aas)
     log.debug("len(aas) = %s", len(aas))
     return aas
-
-
 
 
 if __name__ == '__main__':

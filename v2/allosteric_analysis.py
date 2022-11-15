@@ -1,4 +1,4 @@
-rrom functools import reduce
+from functools import reduce
 
 import networkx as nx
 from Bio import SeqIO

@@ -56,7 +56,7 @@ if __name__ == '__main__':
     ax.set_ylim(0, )
     ax.set_xlabel("rank(%)")
     ax.set_ylabel("count")
-    # 添加文字
+    # text
     for i, row in data.iterrows():
         x, y, txt = row["x"], row["y"], row["position"]
         ax.text(x + 1, y, txt, fontsize="xx-small", )
