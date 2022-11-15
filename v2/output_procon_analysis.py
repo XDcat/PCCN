@@ -789,8 +789,8 @@ class ProConNetwork:
 
         # substitution
         self._boxplot_for_all_kinds()
-        self._boxplot_for_all_kinds("BA.4(Omicron)")
-        self._boxplot_for_all_kinds("B.1.617.2(Delta)")
+        # self._boxplot_for_all_kinds("BA.4(Omicron)")
+        # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # variant
         # self._group_plot_with_node()
@@ -1009,6 +1009,11 @@ class ProConNetwork:
             sns.boxplot(data=_plot_data, x=x, y=y, ax=ax, order=order, fliersize=1, width=.5)
             # tag p value
             self.boxplot_add_p_value(_plot_data, ax, x, y, order, "Mann-Whitney")
+            mwu_2 = mannwhitneyu(variant_scores, sample_scores, alternative="two-sided")
+            mwu_less = mannwhitneyu(variant_scores, sample_scores, alternative="less")
+            mwu_greader = mannwhitneyu(variant_scores, sample_scores, alternative="greater")
+            log.info("Mannwhitneyu result %s: for 2-side %s, for less %s, for greater %s",name, mwu_2, mwu_less, mwu_greader)
+
 
             ax.set_xlabel("")
             ax.set_ylabel(name)
@@ -1640,9 +1645,9 @@ if __name__ == '__main__':
     mutation_groups.display_seq_and_aa()
     mutation_groups.count_aa()
     pcn = ProConNetwork(mutation_groups, threshold=100)
-    # pcn.analysisG()  # draw
+    pcn.analysisG()  # draw
 
-    pcn.generate_all_node_top_info()
+    # pcn.generate_all_node_top_info()
 
     # pcn._collect_mutation_info()  # save info
 
