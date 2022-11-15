@@ -817,14 +817,13 @@ class ProConNetwork:
         for index, (name, func) in enumerate(funcs.items()):
             # score
             variant_scores = func(variant)
-            grp_sample_scores = {}
-            for count, sample_group in group_count_sample.items():
-                _sample_scores = [func(group) for group in sample_group]
-                sample_mean_score = [np.mean(group) for group in _sample_scores]
-                sample_mean_score = sorted(sample_mean_score)  # 排序
-                grp_sample_scores[count] = sample_mean_score
-            sample_scores = np.array(list(grp_sample_scores.values())).reshape(-1).tolist()
-            sample_scores = pd.Series(sample_scores).dropna().tolist()
+
+            log.info("length is %s", len(variant_scores))
+            grp_sample = group_count_sample[len(variant)]
+            _sample_scores = [func(group) for group in grp_sample]
+            sample_mean_score = [np.mean(group) for group in _sample_scores]
+            sample_mean_score = sorted(sample_mean_score)  # 排序
+            sample_scores = pd.Series(sample_mean_score).dropna().tolist()
 
             # draw
             variant_name = target_variant
@@ -840,6 +839,7 @@ class ProConNetwork:
             y = "score"
             order = [variant_name, no_variant_name]
             sns.boxplot(data=_plot_data, x=x, y=y, ax=ax, order=order, fliersize=1, width=.5)
+            log.debug("variant score: %s", sorted(variant_scores))
             # tag p value
             self.boxplot_add_p_value(_plot_data, ax, x, y, order, "Mann-Whitney")
             mwu_2 = mannwhitneyu(variant_scores, sample_scores, alternative="two-sided")
