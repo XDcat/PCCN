@@ -1,10 +1,4 @@
 # -*- coding:utf-8 -*-
-'''
-__author__ = 'XD'
-__mtime__ = 2021/9/21
-__project__ = Cov2_protein
-Fix the Problem, Not the Blame.
-'''
 import os
 import json
 import logging
@@ -48,65 +42,54 @@ def check_aa(seq, aa):
     if position.isdigit():
         position = int(position)
     else:
-        print("非法变异", aa)
+        print("error", aa)
         return False
     origin = aa[0].upper()
     if seq[position - 1].upper() == origin:
         return True
     else:
-        print("非法变异", aa)
+        print("error", aa)
         return False
 
 
 if __name__ == '__main__':
-    # 加载变异
+    # load
     variation_file = "./data/总结 - 20220709 - filter.xlsx"
-    log.info("加载变异")
+    log.info("load")
     variation = pd.read_excel(variation_file, sheet_name=1, index_col=0)
     variation["Year and month first detected"] = pd.to_datetime(variation["Year and month first detected"])
     variation["Year and month first detected"] = variation["Year and month first detected"].dt.strftime('%B %d, %Y')
     log.debug("columns: %s", variation.columns)
     log.debug(variation)
 
-    # 去除没有证据或者不清楚的数据，在这些列中: Impact on transmissibility	Impact on immunity	Impact on severity
+    # remove no clear: Impact on transmissibility	Impact on immunity	Impact on severity
     evidence_columns = ["Impact on transmissibility", "Impact on immunity", "Impact on severity"]
     # print(np.unique(variation[evidence_columns].values.reshape((1, -1))))
     is_vital = variation[evidence_columns].applymap(lambda x: "increase" in x.lower()).any(axis=1)
     variation = variation[is_vital]
-    log.debug(f"剩余数量{variation.shape}")
+    log.debug(f"count {variation.shape}")
 
-    # 检查变异是否合法
+    # check
     fasta_file = "./data/YP_009724390.1.txt"
     fasta = next(SeqIO.parse(fasta_file, "fasta")).seq
     t_fasta = {}
     for i, row in variation.iterrows():
         aas = row.loc["Spike mutations of interest"].split(" ")
         aas = map(lambda x: x.strip(), aas)
-        # 过滤无效的变异
+        # filter
         aas = filter(lambda x: check_aa(fasta, x), aas)
         aas = list(aas)
-        # print(aas)
-
-        # # aas = [i.strip() for i in aas]
-        # for aa in aas:
-        #     if check_aa(fasta, aa):
-        #         # log.debug("%s: %s 合法", i, aa)
-        #         pass
-        #     else:
-        #         log.debug("%s: %s 不合法", i, aa)
-        #         # raise RuntimeError("变异不合法")
         t_fasta[i] = row.to_dict()
         t_fasta[i]["aas"] = aas
     fasta = t_fasta
-    # 0 / 0
 
-    # 加载 procon 结果
+    # load procon result
     result_dir = "./data/procon"
     result_files = [os.path.join(result_dir, "type{}_parse.csv".format(i)) for i in range(1, 4)]
-    log.debug("将 procon 结果解析为字典")
+    log.debug("parse to dict")
     pr = load_procon_res(result_files)
 
-    log.info("解析 type1")
+    log.info("parse type1")
     pr1 = next(pr)
     log.debug("type1: %s", pr1)
     for i, row in fasta.items():
@@ -123,7 +106,7 @@ if __name__ == '__main__':
             # fasta[i]["t1"][aa] = res
     log.debug("type1 result: %s", fasta)
 
-    log.info("解析 type2")
+    log.info("parse type2")
     pr2 = next(pr)
     log.debug("type2: %s", pr2)
     for i, row in fasta.items():
@@ -138,7 +121,7 @@ if __name__ == '__main__':
             # fasta[i]["t2"][tuple(aa2)] = res
     log.debug("type2 result: %s", fasta)
 
-    log.info("解析 type3")
+    log.info("parse type3")
     pr3 = next(pr)
     for i, row in fasta.items():
         aas = row["aas"]
@@ -152,7 +135,7 @@ if __name__ == '__main__':
             # fasta[i]["t3"][pst3] = res
     log.debug("type3 result: %s", fasta)
 
-    log.info("保存解析结果")
+    log.info("save")
     analysis_res_path = "./data/procon/analysis.json"
     with open(analysis_res_path, "w") as f:
         f.write(json.dumps(fasta, indent="\t"))

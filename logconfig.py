@@ -1,13 +1,4 @@
 # -*- coding:utf-8 -*-
-'''
-__author__ = 'XD'
-__mtime__ = 2021/9/18
-__project__ = Cov2_protein
-Fix the Problem, Not the Blame.
-'''
-# -*- coding:utf-8 -*-
-# 文件写法参考：https://github.com/dls-controls/python-logging-configuration/blob/master/logconfig.py
-# 具体配置自写
 import json
 import yaml
 import logging
@@ -15,10 +6,10 @@ import logging.config
 import os
 
 default_config = {
-    "version": 1,  # 目前只有 1 有效，用于以后兼容性
-    "incremental": False,  # 是否在运行中时修改配置, 默认 False
-    "disable_existing_loggers": True,  # 是否禁用任何非根的所有 Logger, 默认 False
-    "formatters": {  # 格式化生成器(格式器)
+    "version": 1,
+    "incremental": False,
+    "disable_existing_loggers": True,
+    "formatters": {
         "default": {
             "format": "%(name)s %(asctime)s [%(filename)s %(funcName)s()] <%(levelname)s>: %(message)s",
         },
@@ -26,38 +17,38 @@ default_config = {
             "format": "%(name)s %(asctime)s [%(funcName)s() %(lineno)d] <%(levelname)s>: %(message)s",
         }
     },
-    "filters": {},  # 过滤器，需要自定义类，一般不会用到
+    "filters": {},
     "handlers": {
-        "console": {  # 控制台
+        "console": {
             "class": "logging.StreamHandler",
             "formatter": "brief",
             "level": "DEBUG",
             "stream": "ext://sys.stdout",
         },
-        "file_detail": {  # 输出到文件
+        "file_detail": {
             "class": "logging.handlers.RotatingFileHandler",
             "formatter": "default",
             "level": "DEBUG",
-            "filename": "./log/detail_logger.log",  # 必选, 文件名称
+            "filename": "./log/detail_logger.log",
             "encoding": "utf8",
-            "maxBytes": 10485760,  # 日志文件最大个数 1024B * 1024 * 10 = 10MB
-            "backupCount": 10,  # 日志文件最大个数
+            "maxBytes": 10485760,
+            "backupCount": 10,
         },
-        "file_info": {  # 输出到文件
+        "file_info": {
             "class": "logging.handlers.RotatingFileHandler",
             "formatter": "default",
             "level": "INFO",
-            "filename": "./log/info_logger.log",  # 必选, 文件名称
+            "filename": "./log/info_logger.log",
             "encoding": "utf8",
-            "maxBytes": 10485760,  # 日志文件最大个数 1024B * 1024 * 10 = 10MB
-            "backupCount": 10,  # 日志文件最大个数
+            "maxBytes": 10485760,
+            "backupCount": 10,
         }
     },
     "loggers": {
         "cov2": {
             "level": "DEBUG",
             "handlers": ["console", "file_detail", "file_info"],
-            "propagate": False,  # 是否传给父级
+            "propagate": False,
         }
     },
     "root": {

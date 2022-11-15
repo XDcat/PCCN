@@ -1,4 +1,4 @@
-### Working Flow
+r## Working Flow
 1. Data Preparation.
    * S protein FASTA seq`data/YP_009724390.1.txt`.
    * Variant of concern `data/总结 - 20211201.xlsx`.

@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 
 class AnalysisMutationGroup:
     def __init__(self, analysis="./data/procon/analysis.json"):
-        # 关注的变异组的相关数据
+        # find important variants
         with open(analysis) as f:
             self.analysis: dict = json.load(f)
 
@@ -40,10 +40,10 @@ class AnalysisMutationGroup:
 
 
 if __name__ == '__main__':
-    # 不重复的变异
+    # find no duplicated mutations
     aas = AnalysisMutationGroup().get_non_duplicated_aas()
     aas = list(set([i[1:-1] + i[0] for i in aas]))
-    # 路径
+    # path
     type1_file = "./data/procon/type1_parse.csv"
     type1_file_out = "./tools/gephi/type1_parse.csv"
     type2_file = "./data/procon/type2_parse.csv"

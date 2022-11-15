@@ -5,8 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # sns.set()
-sns.set_style("ticks")  # 主题: 白色背景且有边框
-# 更新字体大小
+sns.set_style("ticks")
 plt.rcParams.update({'font.size': 16})
 plt.rcParams["axes.titlesize"] = "medium"
 

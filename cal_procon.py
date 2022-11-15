@@ -1,10 +1,4 @@
 # -*- coding:utf-8 -*-
-'''
-__author__ = 'XD'
-__mtime__ = 2021/9/20
-__project__ = Cov2_protein
-Fix the Problem, Not the Blame.
-'''
 from ProCon.myProCon import ProbabilityCalculator, MutualInformation, TripletFinder
 from Bio import AlignIO, SeqIO
 import os
@@ -23,19 +17,18 @@ if __name__ == '__main__':
     result_dir = "./data/procon"
     result_files = [os.path.join(result_dir, "type{}.txt".format(i)) for i in range(1, 4)]
 
-    # 原始 fasta 序列
+    # get fasta
     origin_fasta = SeqIO.parse(origin_fasta_file, "fasta")
     origin_fasta = next(origin_fasta)
     origin_fasta_len = len(origin_fasta.seq)
-    log.debug("原始序列长度: %s", origin_fasta_len)
-    log.debug("原始序列: %s", origin_fasta)
+    log.debug("origin fasta len: %s", origin_fasta_len)
 
-    # 读取原始序列对齐的序列(对齐序列)
+    # read msa
     align_seqs = AlignIO.parse(align_fasta, "fasta")
     origin_seq = next(align_seqs)[0]
     log.debug(len(origin_seq.seq))
     assert origin_seq.id == "YP_009724390.1"
-    # 建立 align 前后索引映射
+    # map
     # align_map = []
     align_map = {}
     count_na = 0
@@ -45,10 +38,10 @@ if __name__ == '__main__':
         align_map[i + 1] = {"origin": i + 1 - count_na, "aa": j}
     # log.debug("align map:\n%s", align_map)
 
-    # 计算保守性
-    log.info("计算保守性")
+    # cal conservation
+    log.info("cal conservation")
     if not all([os.path.exists(i) for i in result_files]):
-        log.info("开始计算 type1")
+        log.info("start to cal type1")
         pc = ProbabilityCalculator.ProbabilityCalculator(align_fasta)
         log.info("pc result")
         log.info(pc.get_entropy_0())
@@ -56,51 +49,44 @@ if __name__ == '__main__':
         pc.print_sorted_inf_20()
         pc.inf_to_file_20(result_files[0])
 
-        log.info("开始计算 type2")
+        log.info("start to cal type2")
         mi = MutualInformation.MutualInformation(pc)
         log.info(mi.get_mut_inf())
         mi.mut_inf_to_file(result_files[1])
 
-        log.info("开始计算 type3")
+        log.info("start to cal type3")
         tf = TripletFinder.TripletFinder(mi)
         log.info(tf.get_triplets())
         tf.display_triplets()
         tf.tps_to_file(result_files[2])
     else:
-        log.info("保守性已经计算完毕，直接复用历史文件")
+        log.info("use history filse directly")
 
 
-    # 解析结果数据
+    # parse
     def restore_aa(s, mp):
-        """
-        将 site 复原，e.g. 1030T -> 900T
-        :param s: series 序列
-        :param mp: 映射字典
-        :return: 复原后的 series
-        """
-
         def aux(site):
             i = int(site[:-1])
             a = site[-1]
             if mp[i]["aa"] == a:
                 return f"{mp[i]['origin']}{a}"
             else:
-                raise RuntimeError("映射位点时出错 {}".format(site))
+                raise RuntimeError("error {}".format(site))
 
         res = s.apply(aux)
         return res
 
 
-    log.info("解析 type1")
+    log.info("parse type1")
     t1 = pd.read_csv(result_files[0], sep="\s+", skipfooter=1)
     # t1["restore"] = restore_aa(t1["position"], align_map)
-    t1 = t1[t1["position"].apply(lambda x: x[-1] != "-")]  # 过滤 -
+    t1 = t1[t1["position"].apply(lambda x: x[-1] != "-")]  # filter -
     t1["position"] = restore_aa(t1["position"], align_map)
-    t1["rank"] = np.arange(t1.shape[0]) + 1  # 重置排名
+    t1["rank"] = np.arange(t1.shape[0]) + 1  # rank
     t1["rate"] = t1["rank"] / origin_fasta_len * 100
     # t1.to_csv(result_files[0][:-4] + "_parse.csv", index=False)
 
-    log.info("解析 type2")
+    log.info("parse type2")
     t2 = pd.read_csv(result_files[1], sep="\s+", ).iloc[:, :-1]
     t2.columns = "rank site1 site2 info".split()
     t2 = t2[t2["site1"].apply(lambda x: x[-1] != "-") & t2["site2"].apply(lambda x: x[-1] != "-")]
@@ -110,7 +96,7 @@ if __name__ == '__main__':
     t2["rate"] = t2["rank"] / n * 100
     # t2.to_csv(result_files[1][:-4] + "_parse.csv", index=False)
 
-    log.info("解析 type3")
+    log.info("parse type3")
     t3 = pd.read_csv(result_files[2], sep="\s+", )
     t3["site1"] = restore_aa(t3["site1"], align_map)
     t3["site2"] = restore_aa(t3["site2"], align_map)

@@ -1,16 +1,10 @@
 # -*- coding:utf-8 -*-
-'''
-__author__ = 'XD'
-__mtime__ = 2021/12/29
-__project__ = Cov2_protein
-Fix the Problem, Not the Blame.
-'''
+
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# 初始化参数
 sns.set()
 
 if __name__ == '__main__':
