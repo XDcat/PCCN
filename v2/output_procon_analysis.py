@@ -678,16 +678,37 @@ class ProConNetwork:
         fig.savefig(os.path.join(self.data_dir, "Figure 1 Distribution of conservation.png"), dpi=500)
 
     def _collect_mutation_info(self, save=True):
-        aas = self.analysis_mutation_group.non_duplicated_aas_positions
         funcs: dict = self.get_functions()
-        funcs.pop("co-conservation")
-        funcs.pop("average shortest length")
-        data = {n: f(aas) for n, f in funcs.items()}
+        # funcs.pop("CCS")
+        # funcs.pop("L")
+
+        # position
+        aas = self.analysis_mutation_group.non_duplicated_aas_positions
+        data = {n: f(aas) for n, f in funcs.items() if n not in ["CCS", "L"]}
         data["aa"] = aas
         data = pd.DataFrame(data)
-        data = data.set_index("aa", drop=False).sort_index()
+        data = data.set_index("aa",)
+        # sort
+        positions = data.index.map(lambda x: int(x[:-1]))
+        data = data.iloc[np.argsort(positions.values)]
+        data.index.name = "Position"
         if save:
-            data.to_csv(os.path.join(self.data_dir, "aas_info.csv"))
+            data.to_excel(os.path.join(self.data_dir, "aas_info.xlsx"), na_rep="NA")
+
+        # variant
+        variant_names = self.analysis_mutation_group.aa_groups_info["name"].to_list()
+        variant_data = {}
+        for target_variant in variant_names:
+            variant_index = variant_names.index(target_variant)
+            variant = self.analysis_mutation_group.aa_groups[variant_index]
+            variant = [self._aa2position(i) for i in variant]
+            _data = {n: pd.Series(f(variant), dtype=float).dropna().mean() for n, f in funcs.items()}
+            variant_data[target_variant] = _data
+        variant_report = pd.DataFrame(variant_data)
+        variant_report.columns.name = "Variant"
+        if save:
+            variant_report.T.to_excel(os.path.join(self.data_dir, "variant_info.xlsx"), na_rep="NA")
+
         return data
 
     def calculate_average_shortest_path_length(self, ):
@@ -784,17 +805,79 @@ class ProConNetwork:
     def analysisG(self, ):
         # self._plot_origin_distribution()  # procon distribution
         # self._plot_mutations_relationship()  # mutation relationship: node-mutation site, size-occurrence count, edge-conservation
-        # self._collect_mutation_info()  # collection mutation info and create table
+        self._collect_mutation_info()  # collection mutation info and create table
         # self._plot_2D()  # 2D figure
 
         # substitution
-        self._boxplot_for_all_kinds()
-        self._boxplot_for_all_kinds("BA.4(Omicron)")
-        self._boxplot_for_all_kinds("B.1.617.2(Delta)")
+        # self._boxplot_for_all_kinds()
+        # self._boxplot_for_all_kinds("BA.4(Omicron)")
+        # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # variant
         # self._group_plot_with_node()
+        # self._group_plot_with_node_for_variant("BA.4(Omicron)")
+        # self._group_plot_with_node_for_variant("B.1.617.2(Delta)")
 
+    def _group_plot_with_node_for_variant(self, target_variant):
+        # variant site
+        variant_name = self.analysis_mutation_group.aa_groups_info["name"].to_list()
+        variant_index = variant_name.index(target_variant)
+        variant = self.analysis_mutation_group.aa_groups[variant_index]
+        variant = [self._aa2position(i) for i in variant]
+        # group sample data
+        group_count_sample = self.analysis_mutation_group.group_count_sample
+
+        # init figure
+        fig: plt.Figure
+        axes: List[plt.Axes]
+        fig, axes = plt.subplots(2, 4, figsize=(14, 8), constrained_layout=True)
+        axes = [j for i in axes for j in i]
+
+        # draw
+        funcs = self.get_functions()
+        for index, (name, func) in enumerate(funcs.items()):
+            # score
+            variant_scores = func(variant)
+
+            log.info("length is %s", len(variant_scores))
+            grp_sample = group_count_sample[len(variant)]
+            _sample_scores = [func(group) for group in grp_sample]
+            sample_mean_score = [np.mean(group) for group in _sample_scores]
+            sample_mean_score = sorted(sample_mean_score)  # 排序
+            sample_scores = pd.Series(sample_mean_score).dropna().tolist()
+
+            # draw
+            variant_name = target_variant
+            no_variant_name = "non-mutation"
+            # box plot
+            ax = axes[index]
+            _plot_data = pd.DataFrame(
+                {"score": variant_scores + sample_scores,
+                 "label": [variant_name] * len(variant_scores) + [
+                     no_variant_name] * len(sample_scores)}
+            )
+            x = "label"
+            y = "score"
+            order = [variant_name, no_variant_name]
+            sns.boxplot(data=_plot_data, x=x, y=y, ax=ax, order=order, fliersize=1, width=.5)
+            log.debug("variant score: %s", sorted(variant_scores))
+            # tag p value
+            self.boxplot_add_p_value(_plot_data, ax, x, y, order, "Mann-Whitney")
+            mwu_2 = mannwhitneyu(variant_scores, sample_scores, alternative="two-sided")
+            mwu_less = mannwhitneyu(variant_scores, sample_scores, alternative="less")
+            mwu_greader = mannwhitneyu(variant_scores, sample_scores, alternative="greater")
+            log.info("Mannwhitneyu result %s: for 2-side %s, for less %s, for greater %s", name, mwu_2, mwu_less,
+                     mwu_greader)
+
+            ax.set_xlabel("")
+            ax.set_ylabel(name)
+
+        # save fig
+        fig_file_name = os.path.join(self.data_dir, target_variant, "boxplot_of_group.png")
+        if not os.path.exists(os.path.dirname(fig_file_name)):
+            os.mkdir(os.path.dirname(fig_file_name))
+
+        fig.savefig(fig_file_name)
 
     def output_for_gephi(self):
         # edge
@@ -979,13 +1062,13 @@ class ProConNetwork:
 
         c = (
             Graph(init_opts=opts.InitOpts(width="100%", height="1000px"))
-                .add("", nodes, links, repulsion=8000, layout="circular", )
-                .set_global_opts(
+            .add("", nodes, links, repulsion=8000, layout="circular", )
+            .set_global_opts(
                 title_opts=opts.TitleOpts(title="count"),
                 toolbox_opts=opts.ToolboxOpts(
                     feature=opts.ToolBoxFeatureOpts(
                         save_as_image=opts.ToolBoxFeatureSaveAsImageOpts(pixel_ratio=3, background_color="white"))), )
-                .render(os.path.join(self.data_dir, "mutation relationship.html"))
+            .render(os.path.join(self.data_dir, "mutation relationship.html"))
         )
 
     def _boxplot_for_all_kinds(self, target_variant=None):
@@ -1009,6 +1092,11 @@ class ProConNetwork:
             sns.boxplot(data=_plot_data, x=x, y=y, ax=ax, order=order, fliersize=1, width=.5)
             # tag p value
             self.boxplot_add_p_value(_plot_data, ax, x, y, order, "Mann-Whitney")
+            mwu_2 = mannwhitneyu(variant_scores, sample_scores, alternative="two-sided")
+            mwu_less = mannwhitneyu(variant_scores, sample_scores, alternative="less")
+            mwu_greader = mannwhitneyu(variant_scores, sample_scores, alternative="greater")
+            log.info("Mannwhitneyu result %s: for 2-side %s, for less %s, for greater %s", name, mwu_2, mwu_less,
+                     mwu_greader)
 
             ax.set_xlabel("")
             ax.set_ylabel(name)
@@ -1630,8 +1718,6 @@ class ProConNetwork:
         mutations.to_csv(os.path.join(self.data_dir, "mutation positions.csv"), header=None)
 
 
-
-
 if __name__ == '__main__':
     start_time = time.time()
     # conservation network
@@ -1640,9 +1726,9 @@ if __name__ == '__main__':
     mutation_groups.display_seq_and_aa()
     mutation_groups.count_aa()
     pcn = ProConNetwork(mutation_groups, threshold=100)
-    # pcn.analysisG()  # draw
+    pcn.analysisG()  # draw
 
-    pcn.generate_all_node_top_info()
+    # pcn.generate_all_node_top_info()
 
     # pcn._collect_mutation_info()  # save info
 
