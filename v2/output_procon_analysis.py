@@ -678,16 +678,37 @@ class ProConNetwork:
         fig.savefig(os.path.join(self.data_dir, "Figure 1 Distribution of conservation.png"), dpi=500)
 
     def _collect_mutation_info(self, save=True):
-        aas = self.analysis_mutation_group.non_duplicated_aas_positions
         funcs: dict = self.get_functions()
-        funcs.pop("co-conservation")
-        funcs.pop("average shortest length")
-        data = {n: f(aas) for n, f in funcs.items()}
+        # funcs.pop("CCS")
+        # funcs.pop("L")
+
+        # position
+        aas = self.analysis_mutation_group.non_duplicated_aas_positions
+        data = {n: f(aas) for n, f in funcs.items() if n not in ["CCS", "L"]}
         data["aa"] = aas
         data = pd.DataFrame(data)
-        data = data.set_index("aa", drop=False).sort_index()
+        data = data.set_index("aa",)
+        # sort
+        positions = data.index.map(lambda x: int(x[:-1]))
+        data = data.iloc[np.argsort(positions.values)]
+        data.index.name = "Position"
         if save:
-            data.to_csv(os.path.join(self.data_dir, "aas_info.csv"))
+            data.to_excel(os.path.join(self.data_dir, "aas_info.xlsx"), na_rep="NA")
+
+        # variant
+        variant_names = self.analysis_mutation_group.aa_groups_info["name"].to_list()
+        variant_data = {}
+        for target_variant in variant_names:
+            variant_index = variant_names.index(target_variant)
+            variant = self.analysis_mutation_group.aa_groups[variant_index]
+            variant = [self._aa2position(i) for i in variant]
+            _data = {n: pd.Series(f(variant), dtype=float).dropna().mean() for n, f in funcs.items()}
+            variant_data[target_variant] = _data
+        variant_report = pd.DataFrame(variant_data)
+        variant_report.columns.name = "Variant"
+        if save:
+            variant_report.T.to_excel(os.path.join(self.data_dir, "variant_info.xlsx"), na_rep="NA")
+
         return data
 
     def calculate_average_shortest_path_length(self, ):
@@ -784,7 +805,7 @@ class ProConNetwork:
     def analysisG(self, ):
         # self._plot_origin_distribution()  # procon distribution
         # self._plot_mutations_relationship()  # mutation relationship: node-mutation site, size-occurrence count, edge-conservation
-        # self._collect_mutation_info()  # collection mutation info and create table
+        self._collect_mutation_info()  # collection mutation info and create table
         # self._plot_2D()  # 2D figure
 
         # substitution
@@ -794,7 +815,7 @@ class ProConNetwork:
 
         # variant
         # self._group_plot_with_node()
-        self._group_plot_with_node_for_variant("BA.4(Omicron)")
+        # self._group_plot_with_node_for_variant("BA.4(Omicron)")
         # self._group_plot_with_node_for_variant("B.1.617.2(Delta)")
 
     def _group_plot_with_node_for_variant(self, target_variant):
