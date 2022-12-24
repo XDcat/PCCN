@@ -845,8 +845,8 @@ class ProConNetwork:
 
         # 以 substitution 为单位的图
         self._boxplot_for_all_kinds()
-        self._boxplot_for_all_kinds("BA.4(Omicron)")
-        self._boxplot_for_all_kinds("B.1.617.2(Delta)")
+        # self._boxplot_for_all_kinds("BA.4(Omicron)")
+        # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
         # 以毒株为单位的图
         # self._group_plot_with_node()
@@ -1085,7 +1085,7 @@ class ProConNetwork:
         # init figure
         fig: plt.Figure
         axes: List[plt.Axes]
-        fig, axes = plt.subplots(2, 4, figsize=(14, 8), constrained_layout=True)
+        fig, axes = plt.subplots(2, 4, figsize=(14, 8), constrained_layout=True, dpi=300)
         axes = [j for i in axes for j in i]
         # init func
         funcs = self.get_functions()
@@ -1736,9 +1736,9 @@ if __name__ == '__main__':
     mutation_groups.display_seq_and_aa()
     mutation_groups.count_aa()
     pcn = ProConNetwork(mutation_groups, threshold=100)
-    # pcn.analysisG()  # 绘制图片
+    pcn.analysisG()  # 绘制图片
 
-    pcn.generate_all_node_top_info()
+    # pcn.generate_all_node_top_info()
 
     # pcn._collect_mutation_info()  # 保存网络参数
 
