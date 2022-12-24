@@ -143,14 +143,23 @@ class AllostericAnalysis():
         sp_sorted = sorted(sp, key=lambda x: int(x[:-1]))
         log.info("shortest path(%s -> %s): %s", pst1, pst2, "->".join(sp))
         log.info("shortest path sorted(%s -> %s): %s", pst1, pst2, sp_sorted)
-        self.find_node_in_allosteric_sites(sp)
+        common_sites = self.find_node_in_allosteric_sites(sp)
+        self.result.write("\n".join([
+            "shortest path: %s -> %s" % (pst1, pst2),
+            "path" + "->".join(sp),
+            "sorted: " + " ".join(sp_sorted),
+            "common site: " + " ".join(common_sites)
+        ]))
+        self.result.write("\n\n")
+
         return sp
 
     def find_neighbour(self, n):
         G = self.G
         neighbours = list(nx.neighbors(G, n))
         log.info("%s neighbour: %s", n, neighbours)
-        self.find_node_in_allosteric_sites(neighbours)
+        res = self.find_node_in_allosteric_sites(neighbours)
+        return neighbours, res
 
     def find_common_site_paper_important_site_and_allosteric_site(self):
         allosteric_sites = self.allosteric_sites
@@ -189,22 +198,33 @@ class AllostericAnalysis():
 if __name__ == '__main__':
     # AllostericAnalysis.dump_G()
     g = AllostericAnalysis.load_G()
-    AllostericAnalysis.index_seq()
+    # AllostericAnalysis.index_seq()
 
-    # # find average shortest path length
-    # analysis = AllostericAnalysis(g)
-    # analysis.analysis_top_site()
-    # analysis.find_common_site_paper_important_site_and_allosteric_site()
-    # # BEF L
-    # bfe_l = [("493Q", "547T"), ("478T", "493Q"), ("213V", "493Q")]
-    # for pst1, pst2 in bfe_l:
-    #     log.info("nodes in SP %s-%s", pst1, pst2)
-    #     analysis.find_shortest_path(pst1, pst2)
-    #
-    # for pst1, pst2 in bfe_l:
-    #     log.info("neighbour %s", pst1)
-    #     analysis.find_neighbour(pst1)
-    #     log.info("neighbour %s", pst2)
-    #     analysis.find_neighbour(pst2)
-    #
-    # analysis.close()
+    # find average shortest path length
+    analysis = AllostericAnalysis(g)
+    analysis.analysis_top_site()
+    analysis.find_common_site_paper_important_site_and_allosteric_site()
+    # BEF L
+    bfe_l = [("493Q", "547T"), ("478T", "493Q"), ("213V", "493Q")]
+    for pst1, pst2 in bfe_l:
+        log.info("nodes in SP %s-%s", pst1, pst2)
+        analysis.find_shortest_path(pst1, pst2)
+
+    t_sites = []
+
+    for pst1, pst2 in bfe_l:
+        if pst1 not in t_sites:
+            t_sites.append(pst1)
+        if pst2 not in t_sites:
+            t_sites.append(pst2)
+    for pst in t_sites:
+        log.info("neighbour %s", pst)
+        nei, common_site = analysis.find_neighbour(pst)
+        analysis.result.write("\n".join([
+            "Search neighbour for %s" % pst,
+            "neighbour: " + " ".join(nei),
+            "common_site: " + " ".join(common_site)
+        ]))
+        analysis.result.write("\n\n")
+
+    analysis.close()
