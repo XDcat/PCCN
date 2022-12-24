@@ -1,6 +1,7 @@
 from functools import reduce
 
 import networkx as nx
+import numpy as np
 from Bio import SeqIO
 from output_procon_analysis import *
 import pickle
@@ -82,8 +83,6 @@ class AllostericAnalysis():
                 self.result.write(msg)
             self.result.write("\n")
         self.result.write("\n")
-
-
 
     @staticmethod
     def load_paper_sites(path="../data/PaperSite.txt", ):
@@ -170,24 +169,42 @@ class AllostericAnalysis():
         self.result.write("{}\n".format(res))
         self.result.write("\n")
 
+    @staticmethod
+    def index_seq():
+        seq = SeqIO.read(AllostericAnalysis.fasta_path, "fasta").seq
+        res = pd.Series(list(seq), index=np.arange(len(seq)) + 1)
+        res.to_csv("../data/seq_with_index.csv")
+        with open("../data/AllostericSite.txt") as f:
+            txt = f.read()
+        sites = re.findall("\d+", txt)
+        sites = list(map(int, sites))
+        check_sites = pd.DataFrame({
+            "Site": sites,
+            "Real AA": res.loc[sites]
+        })
+        check_sites.to_excel("../data/check_allosteric_site.xlsx")
+        print(res[sites])
+
+
 if __name__ == '__main__':
     # AllostericAnalysis.dump_G()
     g = AllostericAnalysis.load_G()
+    AllostericAnalysis.index_seq()
 
-    # find average shortest path length
-    analysis = AllostericAnalysis(g)
-    analysis.analysis_top_site()
-    analysis.find_common_site_paper_important_site_and_allosteric_site()
-    # BEF L
-    bfe_l = [("493Q", "547T"), ("478T", "493Q"), ("213V", "493Q")]
-    for pst1, pst2 in bfe_l:
-        log.info("nodes in SP %s-%s", pst1, pst2)
-        analysis.find_shortest_path(pst1, pst2)
-
-    for pst1, pst2 in bfe_l:
-        log.info("neighbour %s", pst1)
-        analysis.find_neighbour(pst1)
-        log.info("neighbour %s", pst2)
-        analysis.find_neighbour(pst2)
-
-    analysis.close()
+    # # find average shortest path length
+    # analysis = AllostericAnalysis(g)
+    # analysis.analysis_top_site()
+    # analysis.find_common_site_paper_important_site_and_allosteric_site()
+    # # BEF L
+    # bfe_l = [("493Q", "547T"), ("478T", "493Q"), ("213V", "493Q")]
+    # for pst1, pst2 in bfe_l:
+    #     log.info("nodes in SP %s-%s", pst1, pst2)
+    #     analysis.find_shortest_path(pst1, pst2)
+    #
+    # for pst1, pst2 in bfe_l:
+    #     log.info("neighbour %s", pst1)
+    #     analysis.find_neighbour(pst1)
+    #     log.info("neighbour %s", pst2)
+    #     analysis.find_neighbour(pst2)
+    #
+    # analysis.close()
