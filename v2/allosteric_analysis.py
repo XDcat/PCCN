@@ -1,3 +1,4 @@
+import json
 from functools import reduce
 
 import networkx as nx
@@ -15,9 +16,12 @@ class AllostericAnalysis():
 
     def __init__(self, G):
         self.G = G
-        self.allosteric_sites = self.load_allosteric_sites()
-        self.result_path = "../data/allosteric_analysis_result.txt"
+        self.result_path = "../data/allosteric_analysis_result.md"
         self.result = open(self.result_path, "w")
+        with open("../data/AllostericSiteDetail.json") as f:
+            self.allosteric_sites_detail = json.load(f)
+        sites = self.allosteric_sites_detail["sites"]
+        self.allosteric_sites = list(map(lambda x: int(x[:-1]), sites))
 
     def close(self):
         self.result.close()
@@ -49,38 +53,52 @@ class AllostericAnalysis():
             res[label] = sites_of_pair
         return res
 
+    def write_result(self, label, intersection, detail=True):
+        self.result.write("* {}\n".format(label))
+        if intersection:
+            for elem in intersection:
+                if detail:
+                    self.result.write(
+                        "\t* {}: {}\n".format(elem, ", ".join(self.allosteric_sites_detail["pst2note"][elem])))
+                else:
+                    self.result.write("\t* {}\n".format(elem))
+        else:
+            self.result.write("\t* No Data\n")
+
     def analysis_top_site(self):
         top_info = self.load_network_top_positions()
         mutations = self.load_mutation_positions()
         # top sites
         # find overlap between top sites and mutations for different properties
-        self.result.write("find overlap between top sites and mutations for different properties\n")
+        self.result.write("# find overlap between top sites and mutations for different properties\n")
         for label, content in top_info.items():
             set1 = set(content)
             set2 = set(mutations)
             intersection = list(set1 & set2)
             intersection = sorted(intersection, key=lambda x: int(x[:-1]))
-            msg = "{}: {}".format(label, intersection)
-            self.result.write(msg + "\n")
+            self.write_result(label, intersection, False)
+
         self.result.write("\n")
 
         # find overlap between top sites and alloteric sites
-        self.result.write("find overlap between top sites and alloteric sites\n")
+        self.result.write("# find overlap between top sites and alloteric sites\n")
         for label, content in top_info.items():
             intersection = self.find_node_in_allosteric_sites(content)
-            msg = "{}: {}".format(label, intersection)
-            self.result.write(msg + "\n")
+            # msg = "{}: {}".format(label, intersection)
+            # self.result.write(msg + "\n")
+            self.write_result(label, intersection, )
         self.result.write("\n")
 
         # find overlap between top sites neighbour and alloteric sites
-        self.result.write("find overlap between top sites neighbour and allosteric sites\n")
+        self.result.write("# find overlap between top sites neighbour and allosteric sites\n")
         for label, content in top_info.items():
-            self.result.write(label + "\n")
+            self.result.write("## {}\n".format(label))
             for site in content:
                 neighbor = list(nx.neighbors(self.G, site))
                 intersection = self.find_node_in_allosteric_sites(neighbor)
-                msg = "{}: {}\n".format(site, ", ".join(intersection))
-                self.result.write(msg)
+                # msg = "{}: {}\n".format(site, ", ".join(intersection))
+                # self.result.write(msg)
+                self.write_result(site, intersection)
             self.result.write("\n")
         self.result.write("\n")
 
@@ -98,15 +116,6 @@ class AllostericAnalysis():
         sites = list(map(int, sites))
         sites = [psts[i] for i in sites]
 
-        return sites
-
-    @staticmethod
-    def load_allosteric_sites(path="../data/AllostericSite.txt"):
-        with open(path) as f:
-            txt = f.read()
-        sites = re.findall("\d+", txt)
-        sites = list(set(sites))
-        sites = list(map(int, sites))
         return sites
 
     @staticmethod
@@ -144,12 +153,14 @@ class AllostericAnalysis():
         log.info("shortest path(%s -> %s): %s", pst1, pst2, "->".join(sp))
         log.info("shortest path sorted(%s -> %s): %s", pst1, pst2, sp_sorted)
         common_sites = self.find_node_in_allosteric_sites(sp)
-        self.result.write("\n".join([
-            "shortest path: %s -> %s" % (pst1, pst2),
-            "path" + "->".join(sp),
+        self.result.write("## shortest path: %s -> %s\n" % (pst1, pst2), )
+        self.result.write("  \n".join([
+            "path: " + "->".join(sp),
             "sorted: " + " ".join(sp_sorted),
             "common site: " + " ".join(common_sites)
         ]))
+        self.result.write("\n")
+        self.write_result("common site detail", common_sites)
         self.result.write("\n\n")
 
         return sp
@@ -162,20 +173,25 @@ class AllostericAnalysis():
         return neighbours, res
 
     def find_common_site_paper_important_site_and_allosteric_site(self):
+        self.result.write("# Paper import sites\n")
         allosteric_sites = self.allosteric_sites
         paper_sites = self.load_paper_sites()
         log.info("allo sites: %s", allosteric_sites)
         log.info("paper sites: %s", paper_sites)
         res = self.find_node_in_allosteric_sites(paper_sites)
-        self.result.write("paper important sites & allosteric sites\n")
-        self.result.write("{}\n".format(res))
+        self.write_result(
+            "paper important sites & allosteric sites",
+            res
+        )
         self.result.write("\n")
 
         # mutations
         mutations = self.load_mutation_positions()
         res = self.find_node_in_allosteric_sites(mutations)
-        self.result.write("all mutation sites & allosteric sites\n")
-        self.result.write("{}\n".format(res))
+        self.write_result(
+            "all mutation sites & allosteric sites",
+            res
+        )
         self.result.write("\n")
 
     @staticmethod
@@ -205,6 +221,7 @@ if __name__ == '__main__':
     analysis.analysis_top_site()
     analysis.find_common_site_paper_important_site_and_allosteric_site()
     # BEF L
+    analysis.result.write("# Shortest Path Info\n")
     bfe_l = [("493Q", "547T"), ("478T", "493Q"), ("213V", "493Q")]
     for pst1, pst2 in bfe_l:
         log.info("nodes in SP %s-%s", pst1, pst2)
@@ -220,11 +237,15 @@ if __name__ == '__main__':
     for pst in t_sites:
         log.info("neighbour %s", pst)
         nei, common_site = analysis.find_neighbour(pst)
-        analysis.result.write("\n".join([
-            "Search neighbour for %s" % pst,
+        analysis.result.write(
+            "## Search neighbour for %s\n" % pst,
+        )
+        analysis.result.write("  \n".join([
             "neighbour: " + " ".join(nei),
             "common_site: " + " ".join(common_site)
         ]))
+        analysis.result.write("\n")
+        analysis.write_result("common site detail", common_site)
         analysis.result.write("\n\n")
 
     analysis.close()
