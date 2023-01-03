@@ -104,4 +104,22 @@ def parse_result():
 
 if __name__ == '__main__':
     # run()
-    parse_result()
+    # parse_result()
+
+    strains = ["BA.5", "BF.7", "BQ.1", "XBB"]
+    res = []
+    for s in strains:
+        mutation_info = get_mutations(s)
+        mutation_info = list(filter(lambda x: (x["gene"] == "S") and (x["type"] == "substitution"), mutation_info))
+        mutation_info = [i["mutation"][2:].upper() for i in mutation_info]
+        mutation_info = list(sorted(mutation_info, key=lambda x: int(x[1:-1])))
+        check_result = list(map(check_mutation, mutation_info))
+        assert sum(check_result) == len(check_result)
+        print(s, ", ".join(mutation_info))
+        print(mutation_info)
+        for mutation in mutation_info:
+            res.append((s, mutation))
+
+    pd.DataFrame(res, columns=["Strain", "Mutation"]).to_excel("./data/tmp/MutationInfo.xlsx")
+
+
