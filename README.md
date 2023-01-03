@@ -1,7 +1,7 @@
 r## Working Flow
 1. Data Preparation.
    * S protein FASTA seq`data/YP_009724390.1.txt`.
-   * Variant of concern `data/总结 - 20211201.xlsx`.
+   * Variant of concern `data/summary - 20211201.xlsx`.
 2. Find [protein family](http://www.ebi.ac.uk/interpro/result/InterProScan/iprscan5-R20210917-073330-0879-28690888-p2m/).
       * Fasta seqs: `data/protein-matching-IPR042578.fasta`.
       * Detail information `data/protein-matching-IPR042578.json` .
@@ -20,7 +20,7 @@ r## Working Flow
 ---
 2022.5.16
 1. Backup the history result in data/v1/
-2. Update the variants `总结 - 20220516`
+2. Update the variants `summary - 20220516`
 3. Run `analysis_procon.py` 
 
 ---
