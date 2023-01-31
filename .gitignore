@@ -8,5 +8,5 @@ r Created by .ignore support plugin (hsz.mobi)
 out/*
 gen
 log
-
+__pycache__
 tmp
