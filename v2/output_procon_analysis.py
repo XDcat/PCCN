@@ -24,7 +24,7 @@ from pyecharts import options as opts
 from pyecharts.charts import Graph
 # 组合数
 from scipy.special import comb
-from scipy.stats import mannwhitneyu, ttest_1samp
+from scipy.stats import mannwhitneyu, ttest_1samp, spearmanr
 from sklearn import preprocessing
 from statannotations.Annotator import Annotator
 
@@ -803,9 +803,9 @@ class ProConNetwork:
         fig.savefig(os.path.join(self.data_dir, "平均最短路径长度 较大值占据毒株比例.png"), dpi=300)
 
     def analysisG(self, ):
-        # self._plot_origin_distribution()  # procon distribution
+        self._plot_origin_distribution()  # procon distribution
         # self._plot_mutations_relationship()  # mutation relationship: node-mutation site, size-occurrence count, edge-conservation
-        self._collect_mutation_info()  # collection mutation info and create table
+        # self._collect_mutation_info()  # collection mutation info and create table
         # self._plot_2D()  # 2D figure
 
         # substitution
@@ -996,19 +996,21 @@ class ProConNetwork:
 
     def _plot_origin_distribution(self):
         type2 = self.type2["info"]
-        type2_count = pd.cut(type2, np.arange(max(type2))).value_counts().sort_index()
-        type2_count.index = np.arange(max(type2))[:len(type2_count)]
-
+        type2= self.type2["info_norm"]
         # plt.plot(x=type2_count.index, y=type2_count.values)
         ax: plt.Axes
-        fig, ax = plt.subplots(figsize=(6.4, 4.8))
-        type2_count.plot(ax=ax)
+        fig, ax = plt.subplots(figsize=(12.8, 4.8))
+        sns.histplot(type2, bins=100, ax=ax, kde=True)
+        log.info("sp result: %s", mannwhitneyu(x=[0.268], y=type2.to_list()))
         # ax.set_xtick(np.arange(max(type2)))
+        ax.text(0.27, 4000, "CCS=0.268")
+        ax.axvline(0.268)
         ax.set_title("")
-        ax.set_ylabel("density")
+        ax.set_ylabel("Density")
+        ax.set_xlabel("CCS")
         fig.tight_layout()
         plt.show()
-        fig.savefig(os.path.join(self.data_dir, "共保守性分布情况.png"), dpi=300)
+        fig.savefig(os.path.join(self.data_dir, "Distribution of co-conservation.png"), dpi=300)
 
     def _plot_mutations_relationship(self):
         groups = self.analysis_mutation_group.aa_groups
