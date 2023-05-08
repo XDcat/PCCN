@@ -667,13 +667,15 @@ class ProConNetwork:
         data = pd.DataFrame({"score": pd.concat([type1_info, type2_info]).reset_index(drop=True),
                              "kind": ["CR"] * len(type1_info) + ["CCR"] * len(type2_info)})
         axes: List[plt.Axes]
-        fig, axes = plt.subplots(1, 2, sharex=True, sharey=True, constrained_layout=True, figsize=(6.4, 4.8))
+        fig, axes = plt.subplots(1, 2, sharex=True, constrained_layout=True, figsize=(6.4, 4.8))
         sns.histplot(data=data[data["kind"] == "CR"], x="score", stat="probability", bins=20, ax=axes[0], )
         sns.histplot(data=data[data["kind"] == "CCR"], x="score", stat="probability", bins=20, ax=axes[1], )
         # axes[0].set_xlabel("")
         # axes[1].set_xlabel("")
         axes[0].set_xlabel("CS")
         axes[1].set_xlabel("CCS")
+        axes[1].axvline(0.268)
+        axes[1].text(0.27, 0.06, "CCS=0.268")
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "Figure 1 Distribution of conservation.png"), dpi=500)
 
@@ -803,13 +805,14 @@ class ProConNetwork:
         fig.savefig(os.path.join(self.data_dir, "平均最短路径长度 较大值占据毒株比例.png"), dpi=300)
 
     def analysisG(self, ):
-        self._plot_origin_distribution()  # procon distribution
+        # self._plot_origin_distribution()  # procon distribution
+        self._plot_procon_distribution()
         # self._plot_mutations_relationship()  # mutation relationship: node-mutation site, size-occurrence count, edge-conservation
         # self._collect_mutation_info()  # collection mutation info and create table
         # self._plot_2D()  # 2D figure
 
         # substitution
-        # self._boxplot_for_all_kinds()
+        self._boxplot_for_all_kinds()
         # self._boxplot_for_all_kinds("BA.4(Omicron)")
         # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 

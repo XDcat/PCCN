@@ -499,7 +499,7 @@ class CombineResult:
                 source = co_info if target["type"] == "co" else single_info
                 sns.regplot(data=source, x=name, y=target["name"], ax=ax)
                 ax.set_ylabel(abbr_map[target["name"]])
-                fig.savefig(os.path.join(data_dir, f"correlation_{name} {idx}.png"))
+                fig.savefig(os.path.join(data_dir, f"correlation_{name} {idx}.png"), dpi=300)
 
     @staticmethod
     def get_graph_top3(
@@ -559,26 +559,26 @@ if __name__ == '__main__':
     pd.set_option('display.width', 5000)
 
     # analysis
-    mutation_groups = AnalysisMutationGroup()
-    pcn = ProConNetwork(mutation_groups, threshold=100)
-    cr = CombineResult()
-
-    # single mutation
-    singe_info = cr.analysis_single_mutation()
-    # co mutation
-    co_info = cr.analysis_co_mutations()
-    # variant
-    cr.analysis_variant()
-
-    # parse result
-    CombineResult.parse_result()
-    CombineResult.parse_variant_result()
+    # mutation_groups = AnalysisMutationGroup()
+    # pcn = ProConNetwork(mutation_groups, threshold=100)
+    # cr = CombineResult()
+    #
+    # # single mutation
+    # singe_info = cr.analysis_single_mutation()
+    # # co mutation
+    # co_info = cr.analysis_co_mutations()
+    # # variant
+    # cr.analysis_variant()
+    #
+    # # parse result
+    # CombineResult.parse_result()
+    # CombineResult.parse_variant_result()
 
     # draw scatter
     CombineResult.plot_correlation_scatter()
 
-    # top3
-    CombineResult.get_graph_top3()
-
-    # draw distribution
-    CombineResult.plot_for_stability_bfe()
+    # # top3
+    # CombineResult.get_graph_top3()
+    #
+    # # draw distribution
+    # CombineResult.plot_for_stability_bfe()
