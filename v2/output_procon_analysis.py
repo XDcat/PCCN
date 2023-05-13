@@ -24,7 +24,7 @@ from pyecharts import options as opts
 from pyecharts.charts import Graph
 # 组合数
 from scipy.special import comb
-from scipy.stats import mannwhitneyu, ttest_1samp
+from scipy.stats import mannwhitneyu, ttest_1samp, spearmanr
 from sklearn import preprocessing
 from statannotations.Annotator import Annotator
 
@@ -667,13 +667,15 @@ class ProConNetwork:
         data = pd.DataFrame({"score": pd.concat([type1_info, type2_info]).reset_index(drop=True),
                              "kind": ["CR"] * len(type1_info) + ["CCR"] * len(type2_info)})
         axes: List[plt.Axes]
-        fig, axes = plt.subplots(1, 2, sharex=True, sharey=True, constrained_layout=True, figsize=(6.4, 4.8))
+        fig, axes = plt.subplots(1, 2, sharex=True, constrained_layout=True, figsize=(6.4, 4.8))
         sns.histplot(data=data[data["kind"] == "CR"], x="score", stat="probability", bins=20, ax=axes[0], )
         sns.histplot(data=data[data["kind"] == "CCR"], x="score", stat="probability", bins=20, ax=axes[1], )
         # axes[0].set_xlabel("")
         # axes[1].set_xlabel("")
         axes[0].set_xlabel("CS")
         axes[1].set_xlabel("CCS")
+        axes[1].axvline(0.268)
+        axes[1].text(0.27, 0.06, "CCS=0.268")
         fig.show()
         fig.savefig(os.path.join(self.data_dir, "Figure 1 Distribution of conservation.png"), dpi=500)
 
@@ -804,12 +806,13 @@ class ProConNetwork:
 
     def analysisG(self, ):
         # self._plot_origin_distribution()  # procon distribution
+        self._plot_procon_distribution()
         # self._plot_mutations_relationship()  # mutation relationship: node-mutation site, size-occurrence count, edge-conservation
-        self._collect_mutation_info()  # collection mutation info and create table
+        # self._collect_mutation_info()  # collection mutation info and create table
         # self._plot_2D()  # 2D figure
 
         # substitution
-        # self._boxplot_for_all_kinds()
+        self._boxplot_for_all_kinds()
         # self._boxplot_for_all_kinds("BA.4(Omicron)")
         # self._boxplot_for_all_kinds("B.1.617.2(Delta)")
 
@@ -996,19 +999,21 @@ class ProConNetwork:
 
     def _plot_origin_distribution(self):
         type2 = self.type2["info"]
-        type2_count = pd.cut(type2, np.arange(max(type2))).value_counts().sort_index()
-        type2_count.index = np.arange(max(type2))[:len(type2_count)]
-
+        type2= self.type2["info_norm"]
         # plt.plot(x=type2_count.index, y=type2_count.values)
         ax: plt.Axes
-        fig, ax = plt.subplots(figsize=(6.4, 4.8))
-        type2_count.plot(ax=ax)
+        fig, ax = plt.subplots(figsize=(12.8, 4.8))
+        sns.histplot(type2, bins=100, ax=ax, kde=True)
+        log.info("sp result: %s", mannwhitneyu(x=[0.268], y=type2.to_list()))
         # ax.set_xtick(np.arange(max(type2)))
+        ax.text(0.27, 4000, "CCS=0.268")
+        ax.axvline(0.268)
         ax.set_title("")
-        ax.set_ylabel("density")
+        ax.set_ylabel("Density")
+        ax.set_xlabel("CCS")
         fig.tight_layout()
         plt.show()
-        fig.savefig(os.path.join(self.data_dir, "共保守性分布情况.png"), dpi=300)
+        fig.savefig(os.path.join(self.data_dir, "Distribution of co-conservation.png"), dpi=300)
 
     def _plot_mutations_relationship(self):
         groups = self.analysis_mutation_group.aa_groups

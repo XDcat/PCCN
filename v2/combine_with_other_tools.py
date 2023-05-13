@@ -46,7 +46,20 @@ class CombineResult:
         nd_aas = mutation_group.non_duplicated_aas
 
         pst_info = pcn._collect_mutation_info(save=False)
-        pst_info = pst_info.reset_index(drop=True)
+        pst_info = pst_info.rename(columns={
+            "CS": "conservation",
+            "Kw": "degree",
+            "P": "page rank",
+            "D": "degree centrality",
+            "B": "betweenness centrality",
+            "C": "closeness centrality",
+        })
+        pst_info = pst_info.loc[:,
+                   ["degree", "conservation", "page rank", "degree centrality", "betweenness centrality",
+                    "closeness centrality"]
+                   ]
+        pst_info = pst_info.reset_index()
+        pst_info = pst_info.rename(columns={"Position": "aa"})
 
         aas_info = pd.DataFrame({"name": nd_aas})
         aas_info["aa"] = aas_info["name"].apply(mutation_group.aa2position)
@@ -173,8 +186,8 @@ class CombineResult:
         bfe = bfe.rename(columns={"score": "BFE"})
         return bfe
 
-    def read_deep_ddg(self, result_file="../tools/try DeepDDG/v2/6vxx.ddg"):
-    # def read_deep_ddg(self, result_file="../tools/try DeepDDG/result-QHD43416.ddg"):
+    # def read_deep_ddg(self, result_file="../tools/try DeepDDG/v2/6vxx.ddg"):
+    def read_deep_ddg(self, result_file="../tools/try DeepDDG/result-QHD43416.ddg"):
         if "result-QHD43416.ddg" in result_file:
             data = pd.read_csv(result_file, delimiter="\s+", skiprows=[0, ], header=None)
             data.columns = "#chain WT ResID Mut ddG".split()
@@ -499,7 +512,7 @@ class CombineResult:
                 source = co_info if target["type"] == "co" else single_info
                 sns.regplot(data=source, x=name, y=target["name"], ax=ax)
                 ax.set_ylabel(abbr_map[target["name"]])
-                fig.savefig(os.path.join(data_dir, f"correlation_{name} {idx}.png"))
+                fig.savefig(os.path.join(data_dir, f"correlation_{name} {idx}.png"), dpi=300)
 
     @staticmethod
     def get_graph_top3(
