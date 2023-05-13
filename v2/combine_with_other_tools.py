@@ -46,7 +46,20 @@ class CombineResult:
         nd_aas = mutation_group.non_duplicated_aas
 
         pst_info = pcn._collect_mutation_info(save=False)
-        pst_info = pst_info.reset_index(drop=True)
+        pst_info = pst_info.rename(columns={
+            "CS": "conservation",
+            "Kw": "degree",
+            "P": "page rank",
+            "D": "degree centrality",
+            "B": "betweenness centrality",
+            "C": "closeness centrality",
+        })
+        pst_info = pst_info.loc[:,
+                   ["degree", "conservation", "page rank", "degree centrality", "betweenness centrality",
+                    "closeness centrality"]
+                   ]
+        pst_info = pst_info.reset_index()
+        pst_info = pst_info.rename(columns={"Position": "aa"})
 
         aas_info = pd.DataFrame({"name": nd_aas})
         aas_info["aa"] = aas_info["name"].apply(mutation_group.aa2position)
@@ -173,8 +186,8 @@ class CombineResult:
         bfe = bfe.rename(columns={"score": "BFE"})
         return bfe
 
-    def read_deep_ddg(self, result_file="../tools/try DeepDDG/v2/6vxx.ddg"):
-    # def read_deep_ddg(self, result_file="../tools/try DeepDDG/result-QHD43416.ddg"):
+    # def read_deep_ddg(self, result_file="../tools/try DeepDDG/v2/6vxx.ddg"):
+    def read_deep_ddg(self, result_file="../tools/try DeepDDG/result-QHD43416.ddg"):
         if "result-QHD43416.ddg" in result_file:
             data = pd.read_csv(result_file, delimiter="\s+", skiprows=[0, ], header=None)
             data.columns = "#chain WT ResID Mut ddG".split()
@@ -559,26 +572,26 @@ if __name__ == '__main__':
     pd.set_option('display.width', 5000)
 
     # analysis
-    # mutation_groups = AnalysisMutationGroup()
-    # pcn = ProConNetwork(mutation_groups, threshold=100)
-    # cr = CombineResult()
-    #
-    # # single mutation
-    # singe_info = cr.analysis_single_mutation()
-    # # co mutation
-    # co_info = cr.analysis_co_mutations()
-    # # variant
-    # cr.analysis_variant()
-    #
-    # # parse result
-    # CombineResult.parse_result()
-    # CombineResult.parse_variant_result()
+    mutation_groups = AnalysisMutationGroup()
+    pcn = ProConNetwork(mutation_groups, threshold=100)
+    cr = CombineResult()
+
+    # single mutation
+    singe_info = cr.analysis_single_mutation()
+    # co mutation
+    co_info = cr.analysis_co_mutations()
+    # variant
+    cr.analysis_variant()
+
+    # parse result
+    CombineResult.parse_result()
+    CombineResult.parse_variant_result()
 
     # draw scatter
     CombineResult.plot_correlation_scatter()
 
-    # # top3
-    # CombineResult.get_graph_top3()
-    #
-    # # draw distribution
-    # CombineResult.plot_for_stability_bfe()
+    # top3
+    CombineResult.get_graph_top3()
+
+    # draw distribution
+    CombineResult.plot_for_stability_bfe()
